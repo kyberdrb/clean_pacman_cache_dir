@@ -37,32 +37,32 @@ Iterate all localy installed packages from the local DB and save each entry into
 
     installedPackages
     |-key: "accounts-qml-module"             ('std::string'/class 'PackageName'/std::unique_ptr<PackageName>)
-      |-value: 'Package' instance              (std::unique_ptr<Package>)
+      |-value:                                 (std::unique_ptr<Package>)
         |-locallyInstalledVersion: 0.7-4         (std::string/Version/std::unique_ptr<Version>)
         |-architecture: x86_64                   (std::string/Architecture/std:unique_ptr<Architecture>)
-        |-relatedDownloadedFiles                 (std::map<???, std::vector<???>>)
-          |-key: 0.7-4                             (std::string/std::unique_ptr<Version>)
+        |-packageVersionsWithRelatedDownloadedFiles (std::map<???, std::vector<???>>)
+          |-key: 0.7-4                                (std::string/std::unique_ptr<Version>)
             |-accounts-qml-module-0.7-4-x86_64.pkg.tar.zst (std::vector<std::string/std::unique_ptr<PackageRelatedDownloadedFile>>
     |-key: "accountsservice"                 (std::unique_ptr<PackageName>)
-      |-value: 'Package' instance              (std::unique_ptr<Package>)
+      |-value:                                 (std::unique_ptr<Package>)
         |-locallyInstalledVersion: 22.08.8-1     (std::unique_ptr<Version>)
         |-architecture: x86_64                   (std:unique_ptr<Architecture>)
-        |-relatedDownloadedFiles                 (std::map<std::unique_ptr<Version> std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>>)
-          |-key: 0.6.55-3                          (std::unique_ptr<Version>)
-          | |-value:                                 (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
+        |-packageVersionsWithRelatedDownloadedFiles (std::map<std::unique_ptr<Version> std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>>)
+          |-key: 0.6.55-3                             (std::unique_ptr<Version>)
+          | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-0.6.55-3-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
           |
-          |-22.04.62-2                             (std::unique_ptr<Version>)
-          | |-value:                                 (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
+          |-22.04.62-2                                (std::unique_ptr<Version>)
+          | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-22.04.62-2-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
           |   |-accountsservice-22.04.62-2-x86_64.pkg.tar.zst.sig (std::unique_ptr<PackageRelatedDownloadedFile>)
           |
-          |-22.08.8-1                              (std::unique_ptr<Version>)
-          | |-value:                                 (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
+          |-22.08.8-1                                 (std::unique_ptr<Version>)
+          | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-22.08.8-1-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
           |   |-accountsservice-22.08.8-1-x86_64.pkg.tar.zst.sig (std::unique_ptr<PackageRelatedDownloadedFile>)
     |-key: "acl"
-      |-value: 'Package' instance
+      |-value:                   
         |-...
 
 ## Algorithm
@@ -117,7 +117,7 @@ Iterate all localy installed packages from the local DB and save each entry into
    6. Iterate the rest of the filename and character-by-character fill the variable `downloadedPackageVersion`
    7. Extract the package `installedVersion` from the `downloadedPackageVersion` with a regular expression that searches for each architecture `-(x86_64|any).pkg.*` and replaces matching text (the trailing one with architecture and extensions) with an empty text `""` leaving only the package installedVersion and save it back to the variable `downloadedPackageVersion`
    8. Use the `packageName` to find the matching key in the `installedPackages` collection
-      1. When the key is found (and thus the package is locally installed on the system), add a new entry to `relatedDownloadedFiles` using the `downloadedPackageVersion` a key
+      1. When the key is found (and thus the package is locally installed on the system), add a new entry to `packageVersionsWithRelatedDownloadedFiles` using the `downloadedPackageVersion` a key
       2. When the key is missing (`nullptr`) (and thus the package had been uninstalled from the system), add the `filename` to the collection `packageFilesDesignatedForDeletion`
 3. Iterate all entries in `packageFilesDesignatedForDeletion`
    1. Move all entries into a separate directory `PACKAGE_CEMETERY` inside the pacman's cache directory
@@ -160,3 +160,6 @@ The version of the algorithm with a tokenization
     - https://stackoverflow.com/questions/9349797/partial-match-for-the-key-of-a-stdmap
     - http://www.cplusplus.com/reference/map/map/lower_bound/
     - to be continued...
+- own projects
+    - duplicate_finder - TODO add Github link
+    - EmployeeManagementSystem - TODO add Github link
