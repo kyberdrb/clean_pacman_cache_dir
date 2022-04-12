@@ -9,6 +9,8 @@
 #include <iostream>
 #include <map>
 
+#include <regex>
+
 int main() {
     std::filesystem::path aPath {"/var/cache/pacman/pkg"};
     std::set<std::string> downloadedPackages;
@@ -103,6 +105,57 @@ int main() {
     std::cout << "\n\n";
     std::cout << "Does '/var/cache/pacman/pkg/accountsservice-22.08.8-1-x86_64.pkg.tar.zst.sig' exist?" << "\n";
     std::cout << std::filesystem::exists("/var/cache/pacman/pkg/accountsservice-22.08.8-1-x86_64.pkg.tar.zst.sig");
+
+    std::cout << "\n\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "REGEX SUBSTITUTION TESTING\n\n";
+
+    std::string pkgFilename = "ca-certificates-utils-20210603-1-any.pkg.tar.zst";
+    std::cout << "Package name:\n";
+    std::cout << pkgFilename << "\n";
+
+    // TODO use 'Architectures' class to access all available architectures to build the regex pattern
+    std::string architecturesAsText{};
+
+    for (const auto& architecture : architectures->architectures) {
+        architecturesAsText += architecture + '|';
+    }
+
+    architecturesAsText.pop_back();
+
+    const std::string pattern = "-(" + architecturesAsText + ")\\.pkg\\..*";
+    std::cout << pattern << "\n";
+    std::regex regularExpression(pattern);
+    auto pkgNameAndVersion = regex_replace(pkgFilename, regularExpression, "");
+    std::cout << pkgNameAndVersion << "\n";
+
+    std::stringstream pkgFilenameAsStream{pkgNameAndVersion};
+    std::string token{};
+    std::vector<std::string> tokens{};
+
+    char delimiter = '-';
+    while(getline(pkgFilenameAsStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+
+    std::string packageName{};
+    std::string packageVersion{};
+
+    for (const auto& token : tokens) {
+        if (!isdigit(token.at(0))) {
+            packageName += token + delimiter;
+            continue;
+        }
+
+        packageVersion += token + delimiter;
+    }
+
+    packageName.pop_back();
+    packageVersion.pop_back();
+
+    std::cout << "Package name:\t\t" << packageName << "\n";
+    std::cout << "Package version:\t" << packageVersion << "\n";
 
     std::cout << "\n";
 

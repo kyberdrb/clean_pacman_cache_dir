@@ -27,7 +27,5 @@ public:
         return out;
     }
 
-private:
-
     std::set<std::string> architectures;
 };
