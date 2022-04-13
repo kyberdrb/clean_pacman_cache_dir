@@ -1,6 +1,6 @@
 # Clear Pacman's Cache Directory
 
-... and leave only the latest installedVersion of each package (maybe except the ignored ones in '/etc/pacman.conf'?)
+... and leave only the latest locallyInstalledVersion of each package (maybe except the ignored ones in '/etc/pacman.conf'?)
 
 ## Result
 
@@ -77,11 +77,11 @@ Iterate all localy installed packages from the local DB and save each entry into
   **but every downloaded package has its installed  package.**
 
 1. iterate through all locally installed packages with `libalpm` library _(1195 entries)_
-   1. create an instance of `package` with its `installedVersion`
+   1. create an instance of `package` with its `locallyInstalledVersion`
    
           // inside the iteration loop
-          std::string installedVersion = alpm_pkg_get_version(pkg);
-          auto package = std::make_unique<Package>(installedVersion);
+          std::string locallyInstalledVersion = alpm_pkg_get_version(pkg);
+          auto package = std::make_unique<Package>(locallyInstalledVersion);
 
    2. save each `package` to the packages with the name of the package being a text key and the `package` instance being the value (`map`?)
 

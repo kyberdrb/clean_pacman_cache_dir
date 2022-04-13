@@ -6,9 +6,9 @@
 #include <vector>
 #include "Package.h"
 
-Package::Package(std::string name, std::string version, std::string architecture) :
+Package::Package(std::string name, std::string locallyInstalledVersion, std::string architecture) :
         name(std::move(name)),
-        installedVersion(std::move(version)),
+        locallyInstalledVersion(std::move(locallyInstalledVersion)),
         architecture(std::move(architecture))
 {}
 
@@ -20,7 +20,7 @@ std::vector<std::string> Package::getPackageNameCandidates() const {
     std::vector<std::string> packageNameCandidatesWithPrefixes{};
 
     for (const auto& prefix : prefixes) {
-        std::string compoundPackageNameWithPrefix = prefix + this->name + this->installedVersion + this->architecture + ".pkg.tar";
+        std::string compoundPackageNameWithPrefix = prefix + this->name + this->locallyInstalledVersion + this->architecture + ".pkg.tar";
         packageNameCandidatesWithPrefixes.emplace_back(std::move(compoundPackageNameWithPrefix));
     }
 
@@ -35,4 +35,8 @@ std::vector<std::string> Package::getPackageNameCandidates() const {
     }
 
     return std::move(compoundPackageNames);
+}
+
+std::string Package::getLocallyInstalledVersion() const {
+    return locallyInstalledVersion;
 }
