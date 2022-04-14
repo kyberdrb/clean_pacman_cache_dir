@@ -6,7 +6,7 @@
 
 class PackageName {
 public:
-    explicit PackageName(std::string& name);
+    explicit PackageName(std::string name);
 
     std::string getName() const;
 

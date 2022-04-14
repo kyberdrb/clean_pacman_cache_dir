@@ -7,7 +7,9 @@
 #include "alpm_list.h"
 
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+
 #include <map>
 
 #include <regex>
@@ -15,24 +17,78 @@
 #include <cassert>
 
 int main() {
+    // FIND IGNORED PACKAGES PART - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
+
+    // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored allPackagesInTextFormat from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
+    //alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
+
+    std::ifstream pacmanConfigFile;
+    // TODO parametrize with argument
+    pacmanConfigFile.open("/etc/pacman.conf");
+
+    std::map<std::unique_ptr<PackageName>, std::unique_ptr<Package>> ignoredPackages;
+
+    std::string lineWithIgnoredPackages;
+    std::smatch match;
+    std::regex regexForIgnoredPackagesInPacmanConfigFile("IgnorePkg = ");
+
+    while (std::getline(pacmanConfigFile, lineWithIgnoredPackages)) {
+        // does the lineWithIgnoredPackages contain 'IgnorePkg' text?
+        bool doesTheLineContainIgnoredPackages = std::regex_search(lineWithIgnoredPackages, match, regexForIgnoredPackagesInPacmanConfigFile);
+        if (doesTheLineContainIgnoredPackages) {
+            break;
+        }
+    }
+
+    // TODO OPTIONAL (assuming no leading spaces/tabs) remove leading and ending blank characters
+    // TODO OPTIONAL (assuming no ending spaces/tabs; only one space delimiting [separating] each package name) replace multiple spaces or tabs with one space
+    // tokenize the line by space in order to  a list of allPackagesInTextFormat
+
+    std::stringstream ignoredPackagesAsStream{lineWithIgnoredPackages};
+    std::string ignoredPackageNameAsText{};
+    std::vector<std::string> ignoredPackageNamesInTextFormat{};
+
+    char delimiterForIgnoredPakcages = ' ';
+    while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPakcages)) {
+        ignoredPackageNamesInTextFormat.push_back(ignoredPackageNameAsText);
+    }
+
+//    ignoredPackageNameAsText.clear();
+//
+//    // iterate through all ignoredPackageNames
+//    for (auto& ignoredPackageNameAsText : ignoredPackageNamesInTextFormat) {
+//        //  check whether the packageName exists in the locallyInstalledPackages
+//        //  if yes, then
+//        //    move the Package (the value) associated with the ignoredPackageName (the key) from the locallyInstalledPackages to the ignoredPakcages
+//        //    delete the entry from the locallyInstalledPackages associated with the packageName (in order to have only one copy of each package
+//        //                                                                                        and in order to have the allPackagesInTextFormat divided into ignored and active)
+//
+//        auto pkgName = std::make_unique<PackageName>(std::move(ignoredPackageNameAsText));
+//        bool isPackageNameLocallyInstalled = locallyInstalledPackages.count(std::move(pkgName));
+//        if (isPackageNameLocallyInstalled) {
+//            pkgName = std::make_unique<PackageName>(std::move(ignoredPackageNameAsText));
+//            auto pkgMovedFromLocallyInstalledToIgnoredPackages = locallyInstalledPackages.at(std::move(pkgName)).get();
+//            ignoredPackages.emplace(pkgName, std::move(pkgMovedFromLocallyInstalledToIgnoredPackages));
+//        }
+//    }
+
     // ALPM PART
 
-    auto* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
+    alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);
     alpm_db_t* db_local = alpm_get_localdb(handle);
 
     alpm_list_t* listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
     alpm_pkg_t* pkg = NULL;
-    std::map<std::string, std::string> packages;
+    std::map<std::string, std::string> allPackagesInTextFormat;
     std::set<std::string> packagesToKeep;
     auto architectures = std::make_unique<Architectures>();
 
     std::map<std::unique_ptr<PackageName>, std::unique_ptr<Package>> locallyInstalledPackages;
-    //std::map<std::string, Package> locallyInstalledPackages;
 
     while (listOfAllLocallyInstalledPackages != NULL) {
         pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
-        packages.emplace(alpm_pkg_get_name(pkg), alpm_pkg_get_version(pkg));
+        allPackagesInTextFormat.emplace(alpm_pkg_get_name(pkg), alpm_pkg_get_version(pkg));
         architectures->addArchitecture(alpm_pkg_get_arch(pkg));
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
@@ -43,8 +99,12 @@ int main() {
         std::string architecture = alpm_pkg_get_arch(pkg);
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
 
+        if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
+            ignoredPackages.emplace(std::move(pkgName), std::move(pkg));
+            continue;
+        }
+
         locallyInstalledPackages.emplace(std::move(pkgName), std::move(pkg));
-        //locallyInstalledPackages.emplace(packageName, std::move(pkg));
     }
 
     free(err);
@@ -57,20 +117,30 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
+    std::cout << "LIST OF IGNORED PACKAGES IN MAP\n\n";
+
+    std::cout << "Found " << ignoredPackages.size() << " ignored allPackagesInTextFormat\n\n";
+
+    for (const auto& [ignoredPackageName, package] : ignoredPackages) {
+        std::cout << *ignoredPackageName << "\t" << *package << "\n";
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
     std::cout << "LIST OF LOCALLY INSTALLED PACKAGES\n\n";
 
-    std::cout << "Found " << packages.size() << " installed packages\n\n";
+    std::cout << "Found " << allPackagesInTextFormat.size() << " installed allPackagesInTextFormat\n\n";
 
-    for (const auto& [installedPackageName, installedPackageVersion] : packages) {
+    for (const auto& [installedPackageName, installedPackageVersion] : allPackagesInTextFormat) {
         std::cout << installedPackageName << "-" << installedPackageVersion << "\n";
     }
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF LOCALLY INSTALLED PACKAGES IN MAP\n\n";
+    std::cout << "LIST OF LOCALLY INSTALLED PACKAGES IN MAP WITH CUSTOM-OBJECT KEYS\n\n";
 
-    std::cout << "Found " << locallyInstalledPackages.size() << " installed packages\n\n";
-    assert(packages.size() == locallyInstalledPackages.size());
+    std::cout << "Found " << locallyInstalledPackages.size() << " installed allPackagesInTextFormat\n\n";
+    assert(locallyInstalledPackages.size() <= allPackagesInTextFormat.size());
 
     for (const auto& [installedPackageName, package] : locallyInstalledPackages) {
         std::cout << *installedPackageName << "\t" << *package << "\n";
@@ -123,8 +193,7 @@ int main() {
             std::vector<std::string> tokens{};
 
             char delimiter = '-';
-            while(getline(pkgFilenameAsStream, token, delimiter))
-            {
+            while(getline(pkgFilenameAsStream, token, delimiter)) {
                 tokens.push_back(token);
             }
 
@@ -145,9 +214,15 @@ int main() {
 
             //std::cout << "Package name:\t\t" << packageName << "\n";
             //std::cout << "Package version:\t" << packageVersion << "\n";
-            
-            // TODO verify that the extracted package name and extracted package version matches the values already set for the Package instances in the locallyInstalledPackages map
+
             auto pkgName = std::make_unique<PackageName>(packageName);
+            if (ignoredPackages.count(pkgName) == 1) {
+                std::cout << "Package '" << packageName << "' is marked as ignored and listed in pacman's configuration file in 'IgnorePkg' entry" << "\n";
+                continue;
+            }
+
+            // TODO verify that the extracted package name and extracted package version matches the values already set for the Package instances in the locallyInstalledPackages map
+            pkgName = std::make_unique<PackageName>(packageName);
 
             if (locallyInstalledPackages.count(std::move(pkgName)) == 0) {
                 std::cout << "Package: '" << packageName << "' not found. The package is no longer present in the system, "
@@ -160,8 +235,9 @@ int main() {
             pkgName = std::make_unique<PackageName>(packageName);
             const std::string&& locallyInstalledVersion = locallyInstalledPackages.at(std::move(pkgName))->getLocallyInstalledVersion();
             if (packageVersion != locallyInstalledVersion) {    // possibly nullptr (key not found) and consequent crash on error
-                std::cout << "Package: '" << packageName << "' has different package file and locally installed version: "
-                    << "'" << packageVersion << "' and '" << locallyInstalledVersion << "'" << "\n";
+                // for debugging purposes
+                //std::cout << "Package: '" << packageName << "' has different package file and locally installed version: " << "'" << packageVersion << "' and '" << locallyInstalledVersion << "'" << "\n";
+
                 packageFilesDesignatedForDeletion.emplace(packageRelatedFilename);
             }
         }
@@ -173,7 +249,7 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF PACKAGES MARKED FOR DELETION\n\n";
 
-    std::cout << "Found " << packageFilesDesignatedForDeletion.size() << " packages designated for deletion\n\n";
+    std::cout << "Found " << packageFilesDesignatedForDeletion.size() << " designated for deletion\n\n";
 
     for (const auto& packageForDeletion : packageFilesDesignatedForDeletion) {
         std::cout << packageForDeletion << "\n";
@@ -183,7 +259,7 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF LOCALLY DOWNLOADED PACKAGES\n\n";
 
-    std::cout << "Found " << downloadedPackages.size() << " downloaded packages\n\n";
+    std::cout << "Found " << downloadedPackages.size() << " downloaded allPackagesInTextFormat\n\n";
 
     for (const auto& downloadedPackageFilename : downloadedPackages) {
         std::cout << downloadedPackageFilename << "\n";

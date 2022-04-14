@@ -4,7 +4,7 @@
 
 #include "PackageName.h"
 
-PackageName::PackageName(std::string& name) :
+PackageName::PackageName(std::string name) :
     name(name)
 {}
 
