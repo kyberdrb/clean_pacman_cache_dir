@@ -167,9 +167,49 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?q=c%2B%2B+map+find+key+containing+pattern+substring&t=ffab&ia=web
     - https://stackoverflow.com/questions/9349797/partial-match-for-the-key-of-a-stdmap
     - http://www.cplusplus.com/reference/map/map/lower_bound/
-    - TODO add sources for using an custom class as a key in map
+    - https://duckduckgo.com/?q=c%2B%2B+custom+object+std+map+key+keys&t=ffab&ia=web&iax=qa
+    - https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key
+    - https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key#1102720
+    - https://www.techiedelight.com/use-custom-objects-keys-std-map-cpp/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+map+change+comparator+at+runtime&ia=web
+    - https://stackoverflow.com/questions/5733254/how-can-i-create-my-own-comparator-for-a-map
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+map+custom+object+class+key+error%3A+no+match+for+%E2%80%98operator%3C%E2%80%99&ia=web
+    - https://stackoverflow.com/questions/22248284/error-no-match-for-operator-in-x-y-when-trying-to-insert-in-two-map
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+map+custom+object+class+unique+ptr+key+error%3A+no+match+for+%27operator%3C%27&ia=web
+    - https://duckduckgo.com/?t=ffab&q=Using+std%3A%3Aunique_ptr+inside+a+map+as+a+key&ia=web
+    - https://stackoverflow.com/questions/29887185/using-stdunique-ptr-inside-a-map-as-a-key
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+smart+pointer+map+key&ia=web
+    - https://stackoverflow.com/questions/26252698/smart-pointers-as-map-key
+        - using smart pointers as a key in `std::map` - specialize template for `less` functor in the `std` namespace for my custom class, so that the `map` uses the specialized version of `less` to compare the smart pointers with custom objects, in order to search in it by key. **The `less` specialization is NOT necessary if the keys in the `map` will be only inserted and iterated through (and never looked up by key with `find`).**
+    - https://duckduckgo.com/?q=c%2B%2B+map+get+key++custom+object+value&t=ffab&ia=web
+    - https://www.lonecpluspluscoder.com/2015/08/13/an-elegant-way-to-extract-keys-from-a-c-map/
+    - https://www.geeksforgeeks.org/c-map-key-user-define-data-type/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+map+custom+object+key+find&ia=web
+    - https://stackoverflow.com/questions/53402737/c-using-stdfind-in-a-map-where-the-key-is-a-custom-class
+        - using custom comparator at runtime  to looking up elements in the `map` - with `std::find_if` or `std::any_of` with a custom predicate
+- C++20 SPACESHIP OPERATOR `<=>` (for comparison of custom objects - also for the keys in a `std::map` of a custom type)
+    - https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key/70319881#70319881
+        - specific answer for C++20 for a `map` with keys of custom type from: https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key
+    - https://duckduckgo.com/?q=c%2B%2B+20+spaceship+operator+map+key+custom+object+class&t=ffab&ia=web&iax=qa
+    - http://modernescpp.com/index.php/c-20-more-details-to-the-spaceship-operator
+    - https://stackoverflow.com/questions/20168173/when-using-stdmap-should-i-overload-operator-for-the-key-type#20168253
 - regex
-    - TODO add sources for using string substitution with a regex
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
+    - https://www.softwaretestinghelp.com/regex-in-cpp/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+regex_replace+example&ia=web
+    - https://www.cplusplus.com/reference/regex/regex_replace/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+regex_search&ia=web
+    - https://cplusplus.com/reference/regex/regex_search/
+- string
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+tokenize+string&ia=web
+    - https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
+    - https://duckduckgo.com/?q=c%2B%2B+check+if+number&t=ffab&ia=web
+    - https://www.tutorialspoint.com/how-to-check-if-input-is-numeric-in-cplusplus
+    - https://duckduckgo.com/?q=c%2B%2B+string+clear&t=ffab&ia=web
+- vector
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+contains&ia=web&iax=qa
+    - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906
 - own projects
     - duplicate_finder - TODO add Github link
     - EmployeeManagementSystem - TODO add Github link
