@@ -19,11 +19,11 @@
 int main() {
     // FIND IGNORED PACKAGES PART - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
 
-    // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored allPackagesInTextFormat from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
+    // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
     //alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
 
     std::ifstream pacmanConfigFile;
-    // TODO parametrize with argument
+    // TODO parametrize with argument (maybe use getopt?) - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists; otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages in order to exclude them from deletion
     pacmanConfigFile.open("/etc/pacman.conf");
 
     std::map<std::unique_ptr<PackageName>, std::unique_ptr<Package>> ignoredPackages;
@@ -42,7 +42,7 @@ int main() {
 
     // TODO OPTIONAL (assuming no leading spaces/tabs) remove leading and ending blank characters
     // TODO OPTIONAL (assuming no ending spaces/tabs; only one space delimiting [separating] each package name) replace multiple spaces or tabs with one space
-    // tokenize the line by space in order to  a list of allPackagesInTextFormat
+    // tokenize the line by space in order to build a list of ignored packages
 
     std::stringstream ignoredPackagesAsStream{lineWithIgnoredPackages};
     std::string ignoredPackageNameAsText{};
@@ -61,7 +61,7 @@ int main() {
 //        //  if yes, then
 //        //    move the Package (the value) associated with the ignoredPackageName (the key) from the locallyInstalledPackages to the ignoredPakcages
 //        //    delete the entry from the locallyInstalledPackages associated with the packageName (in order to have only one copy of each package
-//        //                                                                                        and in order to have the allPackagesInTextFormat divided into ignored and active)
+//        //                                                                                        and in order to have the packages divided into ignored and active)
 //
 //        auto pkgName = std::make_unique<PackageName>(std::move(ignoredPackageNameAsText));
 //        bool isPackageNameLocallyInstalled = locallyInstalledPackages.count(std::move(pkgName));
@@ -119,7 +119,7 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF IGNORED PACKAGES IN MAP\n\n";
 
-    std::cout << "Found " << ignoredPackages.size() << " ignored allPackagesInTextFormat\n\n";
+    std::cout << "Found " << ignoredPackages.size() << " ignored packages\n\n";
 
     for (const auto& [ignoredPackageName, package] : ignoredPackages) {
         std::cout << *ignoredPackageName << "\t" << *package << "\n";
@@ -129,7 +129,7 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF LOCALLY INSTALLED PACKAGES\n\n";
 
-    std::cout << "Found " << allPackagesInTextFormat.size() << " installed allPackagesInTextFormat\n\n";
+    std::cout << "Found " << allPackagesInTextFormat.size() << " installed packages\n\n";
 
     for (const auto& [installedPackageName, installedPackageVersion] : allPackagesInTextFormat) {
         std::cout << installedPackageName << "-" << installedPackageVersion << "\n";
@@ -139,8 +139,12 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF LOCALLY INSTALLED PACKAGES IN MAP WITH CUSTOM-OBJECT KEYS\n\n";
 
-    std::cout << "Found " << locallyInstalledPackages.size() << " installed allPackagesInTextFormat\n\n";
-    assert(locallyInstalledPackages.size() <= allPackagesInTextFormat.size());
+    std::cout << "Found " << locallyInstalledPackages.size() << " installed packages\n";
+    if (locallyInstalledPackages.size() <= allPackagesInTextFormat.size()) {
+        std::cout << "Found " << ignoredPackages.size() << " ignored packages\n";
+        std::cout << "Found " << locallyInstalledPackages.size() + ignoredPackages.size() << " packages altogether\n\n";
+        assert(locallyInstalledPackages.size() + ignoredPackages.size() == allPackagesInTextFormat.size());
+    }
 
     for (const auto& [installedPackageName, package] : locallyInstalledPackages) {
         std::cout << *installedPackageName << "\t" << *package << "\n";
@@ -259,7 +263,7 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF LOCALLY DOWNLOADED PACKAGES\n\n";
 
-    std::cout << "Found " << downloadedPackages.size() << " downloaded allPackagesInTextFormat\n\n";
+    std::cout << "Found " << downloadedPackages.size() << " downloaded packages\n\n";
 
     for (const auto& downloadedPackageFilename : downloadedPackages) {
         std::cout << downloadedPackageFilename << "\n";
