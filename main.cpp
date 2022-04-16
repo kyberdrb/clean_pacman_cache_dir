@@ -220,7 +220,15 @@ int main() {
             for (const auto& token : tokens) {
                 // TODO handle (rare) cases for package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
                 //  and package version that begin with a letter e.g. '	a25.b-3'
-                //  adjust 'operator<'? write a custom comparator? add them to ignoredPackages? add them to unhandled/other packages? assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
+                //   - adjust 'operator<'?
+                //   - write a custom comparator that will check character by character for prefix similarity?
+                //   - add them to ignoredPackages?
+                //   - add them to unhandled/other packages and then handle manually?/automatically?
+                //   - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
+                // Problematic package filenames use-cases:
+                //  libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
+                //  libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
+                //  libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
                 // this parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
                 //  - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
                 //  or when the package version has as the first token a letter
@@ -365,6 +373,8 @@ int main() {
     std::cout << "Package version:\t" << packageVersion << "\n";
 
     std::cout << "\n";
+
+    // TODO add report which packages have 0 packageVersionsWithRelatedDownloadedFiles
 
     return 0;
 }
