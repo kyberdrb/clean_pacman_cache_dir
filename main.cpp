@@ -211,9 +211,19 @@ int main() {
 
             bool hasPackageNameMoreTokens = true;
 
+            // assuming package filename format
+            //  (\w.*-?)*(\d.*-?)*
+            //  ˇˇˇˇˇˇˇˇˇ.........
+            //  package  package
+            //  name     version
+
             for (const auto& token : tokens) {
-                // this breaks when the first character of any of the tokens belonging to the package name is a number
+                // TODO handle (rare) cases for package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
+                //  and package version that begin with a letter e.g. '	a25.b-3'
+                //  adjust 'operator<'? write a custom comparator? add them to ignoredPackages? add them to unhandled/other packages? assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
+                // this parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
                 //  - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
+                //  or when the package version has as the first token a letter
                 bool isFirstCharacterOfTokenCharacter = !isdigit(token.at(0));
 
                 if (isFirstCharacterOfTokenCharacter && hasPackageNameMoreTokens) {
