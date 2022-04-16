@@ -132,7 +132,7 @@ int main() {
     std::cout << "Found " << allPackagesInTextFormat.size() << " installed packages\n\n";
 
     for (const auto& [installedPackageName, installedPackageVersion] : allPackagesInTextFormat) {
-        std::cout << installedPackageName << "-" << installedPackageVersion << "\n";
+        std::cout << installedPackageName << "\t" << installedPackageVersion << "\n";
     }
 
     std::cout << "\n";
@@ -201,14 +201,27 @@ int main() {
                 tokens.push_back(token);
             }
 
+            // for debugging purposes - pakcage with longer version
+//            if (pkgNameAndVersion == "adobe-source-code-pro-fonts-2.038ro+1.058it+1.018var-1") {
+//                auto p = static_cast<std::string*>(&pkgNameAndVersion);
+//            }
+
             std::string packageName{};
             std::string packageVersion{};
 
+            bool hasPackageNameMoreTokens = true;
+
             for (const auto& token : tokens) {
-                if (!isdigit(token.at(0))) {
+                // this breaks when the first character of any of the tokens belonging to the package name is a number
+                //  - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
+                bool isFirstCharacterOfTokenCharacter = !isdigit(token.at(0));
+
+                if (isFirstCharacterOfTokenCharacter && hasPackageNameMoreTokens) {
                     packageName += token + delimiter;
                     continue;
                 }
+
+                hasPackageNameMoreTokens = false;
 
                 packageVersion += token + delimiter;
             }
@@ -218,6 +231,11 @@ int main() {
 
             //std::cout << "Package name:\t\t" << packageName << "\n";
             //std::cout << "Package version:\t" << packageVersion << "\n";
+
+            // for debugging purposes - pakcage with longer version
+//            if (packageName == "adobe-source-code-pro-fonts") {
+//                auto p = static_cast<std::string*>(&packageName);
+//            }
 
             auto pkgName = std::make_unique<PackageName>(packageName);
             if (ignoredPackages.count(pkgName) == 1) {
