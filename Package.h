@@ -8,6 +8,7 @@ class Package {
 public:
     Package(std::string name, std::string locallyInstalledVersion, std::string architecture);
 
+    // TODO maybe delete this function altogether
     std::vector<std::string> getPackageNameCandidates() const;
 
     std::string getLocallyInstalledVersion() const;

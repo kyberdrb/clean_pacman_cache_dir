@@ -40,14 +40,14 @@ Iterate all localy installed packages from the local DB and save each entry into
       |-value:                                 (std::unique_ptr<Package>)
         |-locallyInstalledVersion: 0.7-4         (std::string/Version/std::unique_ptr<Version>)
         |-architecture: x86_64                   (std::string/Architecture/std:unique_ptr<Architecture>)
-        |-packageVersionsWithRelatedDownloadedFiles (std::map<???, std::vector<???>>)
+        |-packageVersionsWithTheirRelatedDownloadedFiles (std::map<???, std::vector<???>>)
           |-key: 0.7-4                                (std::string/std::unique_ptr<Version>)
             |-accounts-qml-module-0.7-4-x86_64.pkg.tar.zst (std::vector<std::string/std::unique_ptr<PackageRelatedDownloadedFile>>
     |-key: "accountsservice"                 (std::unique_ptr<PackageName>)
       |-value:                                 (std::unique_ptr<Package>)
         |-locallyInstalledVersion: 22.08.8-1     (std::unique_ptr<Version>)
         |-architecture: x86_64                   (std:unique_ptr<Architecture>)
-        |-packageVersionsWithRelatedDownloadedFiles (std::map<std::unique_ptr<Version> std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>>)
+        |-packageVersionsWithTheirRelatedDownloadedFiles (std::map<std::unique_ptr<Version> std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>>)
           |-key: 0.6.55-3                             (std::unique_ptr<Version>)
           | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-0.6.55-3-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
@@ -66,8 +66,9 @@ Iterate all localy installed packages from the local DB and save each entry into
         |-...
 
 - class `PackageName` will use overloaded less-than-operator i.e. `operator<`, because the class is only used as a key in a `installedPackages` map, in order to indicate that the class is used as a key
-- class `Version` will use custom comparator functor class `VersionComparator`, because its used as a key in a map `packageVersionsWithRelatedDownloadedFiles` and as a field in the `PackagesAndTheirFiles` to indicate variability of usage of the class
+- class `Version` will use custom comparator functor class `VersionComparator`, because its used as a key in a map `packageVersionsWithTheirRelatedDownloadedFiles` and as a field in the `PackagesAndTheirFiles` to indicate variability of usage of the class
   - I'll use `operator<` from standard string, because the `alpm_pkg_vercmp` function from `alpm.h` ignores package release versions, and I want to do a complete comparison of Versions
+- `ignoredPackageNamesInTextFormat` - keep package files that are listed next to `IgnorePkg` option in the pacman's configuration file
 
 ## Algorithm
 
@@ -125,7 +126,7 @@ Iterate all localy installed packages from the local DB and save each entry into
                append the token to the packageVersion
    9. remove the dash `-` at the end of `packageName` and `packageVersion`
    10. Use the `packageName` to find the matching key in the `installedPackages` collection
-When the key is found (and thus the package is locally installed on the system), add a new entry to `packageVersionsWithRelatedDownloadedFiles` using the `downloadedPackageVersion` a key
+When the key is found (and thus the package is locally installed on the system), add a new entry to `packageVersionsWithTheirRelatedDownloadedFiles` using the `downloadedPackageVersion` a key
    11. When the key is missing (`nullptr`) (and thus the package had been uninstalled from the system), add the `filename` to the collection `packageFilesDesignatedForDeletion`
 6. Iterate all entries in `packageFilesDesignatedForDeletion`
    1. Move all entries into a separate directory `PACKAGE_CEMETERY` inside the pacman's cache directory

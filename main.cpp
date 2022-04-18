@@ -33,7 +33,6 @@ int main() {
     std::regex regexForIgnoredPackagesInPacmanConfigFile("IgnorePkg = ");
 
     while (std::getline(pacmanConfigFile, lineWithIgnoredPackages)) {
-        // does the lineWithIgnoredPackages contain 'IgnorePkg' text?
         bool doesTheLineContainIgnoredPackages = std::regex_search(lineWithIgnoredPackages, match, regexForIgnoredPackagesInPacmanConfigFile);
         if (doesTheLineContainIgnoredPackages) {
             break;
@@ -42,7 +41,7 @@ int main() {
 
     // TODO OPTIONAL (assuming no leading spaces/tabs) remove leading and ending blank characters
     // TODO OPTIONAL (assuming no ending spaces/tabs; only one space delimiting [separating] each package name) replace multiple spaces or tabs with one space
-    // tokenize the line by space in order to build a list of ignored packages
+    // build a list of ignored packages
 
     std::stringstream ignoredPackagesAsStream{lineWithIgnoredPackages};
     std::string ignoredPackageNameAsText{};
@@ -53,25 +52,6 @@ int main() {
         ignoredPackageNamesInTextFormat.push_back(ignoredPackageNameAsText);
     }
 
-//    ignoredPackageNameAsText.clear();
-//
-//    // iterate through all ignoredPackageNames
-//    for (auto& ignoredPackageNameAsText : ignoredPackageNamesInTextFormat) {
-//        //  check whether the packageName exists in the locallyInstalledPackages
-//        //  if yes, then
-//        //    move the Package (the value) associated with the ignoredPackageName (the key) from the locallyInstalledPackages to the ignoredPakcages
-//        //    delete the entry from the locallyInstalledPackages associated with the packageName (in order to have only one copy of each package
-//        //                                                                                        and in order to have the packages divided into ignored and active)
-//
-//        auto pkgName = std::make_unique<PackageName>(std::move(ignoredPackageNameAsText));
-//        bool isPackageNameLocallyInstalled = locallyInstalledPackages.count(std::move(pkgName));
-//        if (isPackageNameLocallyInstalled) {
-//            pkgName = std::make_unique<PackageName>(std::move(ignoredPackageNameAsText));
-//            auto pkgMovedFromLocallyInstalledToIgnoredPackages = locallyInstalledPackages.at(std::move(pkgName)).get();
-//            ignoredPackages.emplace(pkgName, std::move(pkgMovedFromLocallyInstalledToIgnoredPackages));
-//        }
-//    }
-
     // ALPM PART
 
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
@@ -79,7 +59,7 @@ int main() {
     alpm_db_t* db_local = alpm_get_localdb(handle);
 
     alpm_list_t* listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
-    alpm_pkg_t* pkg = NULL;
+    alpm_pkg_t* alpm_pkg = NULL;
     std::map<std::string, std::string> allPackagesInTextFormat;
     std::set<std::string> packagesToKeep;
     auto architectures = std::make_unique<Architectures>();
@@ -87,16 +67,50 @@ int main() {
     std::map<std::unique_ptr<PackageName>, std::unique_ptr<Package>> locallyInstalledPackages;
 
     while (listOfAllLocallyInstalledPackages != NULL) {
-        pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
-        allPackagesInTextFormat.emplace(alpm_pkg_get_name(pkg), alpm_pkg_get_version(pkg));
-        architectures->addArchitecture(alpm_pkg_get_arch(pkg));
+        alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
+        allPackagesInTextFormat.emplace(alpm_pkg_get_name(alpm_pkg), alpm_pkg_get_version(alpm_pkg));
+        architectures->addArchitecture(alpm_pkg_get_arch(alpm_pkg));
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
-        std::string packageName = alpm_pkg_get_name(pkg);
+        std::string packageName = alpm_pkg_get_name(alpm_pkg);
+
+        // TODO handle special package names:
+        //   if the first character packageName is a number
+        //     create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be empty - all will be saved in the packageVersion]
+        //  For multi-word package names:
+        //   tokenize the packageName by dashes
+        //   for each token in tokens
+        //     when the first character of the token is a number
+        //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package name will be save in the packageVersion]
+
         auto pkgName = std::make_unique<PackageName>(packageName);
 
-        std::string locallyInstalledVersion = alpm_pkg_get_version(pkg);
-        std::string architecture = alpm_pkg_get_arch(pkg);
+        std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
+
+        // TODO handle special package versions:
+        //   if the first character packageVersion is a letter
+        //     create a <PackageName, Package> pair and add it to the specialPackages map [packageVersion may be empty or incomplete - the rest will be saved in the packageName]
+        //  For multi-word package versions (e.g. with included release version):
+        //   tokenize the packageVersion by dashes
+        //   for each token in tokens
+        //     when the first character of the token is a letter
+        //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName may be empty or incomplete - the rest of the package version will be save in the packageName]
+        //  Note for handling special packages: in (rare) cases there occure package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
+        //   and package version that begin with a letter e.g. '	a25.b-3'
+        //    - adjust 'operator<'?
+        //    - write a custom comparator that will check character by character for prefix similarity?
+        //    - add them to ignoredPackages?
+        //    - add them to unhandled/other/special packages and then handle manually?/automatically? << MAYBE THIS WILL BE THE OPTION I'll try out
+        //    - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
+        //  Problematic package filenames use-cases:
+        //   libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
+        //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
+        //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
+        //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
+        //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
+        //   or when the package version has as the first token a letter
+
+        std::string architecture = alpm_pkg_get_arch(alpm_pkg);
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
 
         if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
@@ -158,26 +172,26 @@ int main() {
     std::set<std::string> packageFilesDesignatedForDeletion;
 
     for (const auto& packageRelatedFile : std::filesystem::directory_iterator(aPath)) {
-        const auto& packageRelatedFilename = packageRelatedFile.path().filename().string();
+        const auto& packageFilename = packageRelatedFile.path().filename().string();
         const auto& extension = packageRelatedFile.path().extension().string();
         if (packageRelatedFile.is_regular_file() ) {
             // for debugging purposes
-//            std::cout << packageRelatedFilename << "\n";
+//            std::cout << packageFilename << "\n";
             if (extension == ".part") {
-                packageFilesDesignatedForDeletion.emplace(packageRelatedFilename);
+                packageFilesDesignatedForDeletion.emplace(packageFilename);
                 continue;
             }
 
-            downloadedPackages.emplace(packageRelatedFilename);
+            downloadedPackages.emplace(packageFilename);
             extensions->addExtension(extension);
 
-            // REGEX REPLACE TESTING IN THE LOOP THAT ITERATES THE PACKAGE FILES
+            // REGEX REPLACE TO REPLACING THE TRAILING PART OF PACKAGE FILENAMES
+            //  leaving only package name and package version
 
-            std::string pkgFilename = packageRelatedFilename;
+            std::string pkgFilename = packageFilename;
             //std::cout << "Package name:\n";
             //std::cout << pkgFilename << "\n";
 
-            // TODO use 'Architectures' class to access all available architectures to build the regex pattern
             std::string architecturesRegexPatternAsText{};
 
             for (const auto& architecture : architectures->architectures) {
@@ -218,23 +232,9 @@ int main() {
             //  name     version
 
             for (const auto& token : tokens) {
-                // TODO handle (rare) cases for package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
-                //  and package version that begin with a letter e.g. '	a25.b-3'
-                //   - adjust 'operator<'?
-                //   - write a custom comparator that will check character by character for prefix similarity?
-                //   - add them to ignoredPackages?
-                //   - add them to unhandled/other packages and then handle manually?/automatically?
-                //   - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
-                // Problematic package filenames use-cases:
-                //  libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
-                //  libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
-                //  libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
-                // this parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
-                //  - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
-                //  or when the package version has as the first token a letter
-                bool isFirstCharacterOfTokenCharacter = !isdigit(token.at(0));
+                bool isFirstCharacterOfTokenLetter = !isdigit(token.at(0));
 
-                if (isFirstCharacterOfTokenCharacter && hasPackageNameMoreTokens) {
+                if (isFirstCharacterOfTokenLetter && hasPackageNameMoreTokens) {
                     packageName += token + delimiter;
                     continue;
                 }
@@ -250,7 +250,7 @@ int main() {
             //std::cout << "Package name:\t\t" << packageName << "\n";
             //std::cout << "Package version:\t" << packageVersion << "\n";
 
-            // for debugging purposes - pakcage with longer version
+            // for debugging purposes - package with longer version
 //            if (packageName == "adobe-source-code-pro-fonts") {
 //                auto p = static_cast<std::string*>(&packageName);
 //            }
@@ -264,11 +264,11 @@ int main() {
             // TODO verify that the extracted package name and extracted package version matches the values already set for the Package instances in the locallyInstalledPackages map
             pkgName = std::make_unique<PackageName>(packageName);
 
-            if (locallyInstalledPackages.count(std::move(pkgName)) == 0) {
+            if (locallyInstalledPackages.count(pkgName) == 0) {
                 std::cout << "Package: '" << packageName << "' not found. The package is no longer present in the system, "
                                                             "or the package had been repackaged to another name, "
                                                             "or the package had been uninstalled" << "\n";
-                packageFilesDesignatedForDeletion.emplace(packageRelatedFilename);
+                packageFilesDesignatedForDeletion.emplace(packageFilename);
                 continue;
             }
 
@@ -278,12 +278,18 @@ int main() {
                 // for debugging purposes
                 //std::cout << "Package: '" << packageName << "' has different package file and locally installed version: " << "'" << packageVersion << "' and '" << locallyInstalledVersion << "'" << "\n";
 
-                packageFilesDesignatedForDeletion.emplace(packageRelatedFilename);
+                packageFilesDesignatedForDeletion.emplace(packageFilename);
             }
         }
     }
 
     std::cout << *extensions << "\n";
+
+    // TODO check whether each package in locallyInstalledPackages has at least one related package file
+    //   if a locallyInstalledPackage has 0 related files
+    //     iterate all files in the pacman's cache directory, compound a filename from the package member variables in format "packageName-packageVersion-packageArchitecture" and find all package files that begin like that
+
+    // TODO check whether each package in locallyInstalledPackageWithSpecialNames has at least one related package file
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
@@ -329,7 +335,6 @@ int main() {
     std::cout << "Package name:\n";
     std::cout << pkgFilename << "\n";
 
-    // TODO use 'Architectures' class to access all available architectures to build the regex pattern
     std::string architecturesAsText{};
 
     for (const auto& architecture : architectures->architectures) {
