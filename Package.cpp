@@ -40,3 +40,43 @@ std::vector<std::string> Package::getPackageNameCandidates() const {
 std::string Package::getLocallyInstalledVersion() const {
     return locallyInstalledVersion;
 }
+
+bool Package::isSpecial() const {
+    // TODO handle special package names:
+    //   if the first character packageName is a number
+    //     create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be empty - all will be saved in the packageVersion]
+    //  For multi-word package names:
+    //   tokenize the packageName by dashes
+    //   for each token in tokens
+    //     when the first character of the token is a number
+    //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package name will be save in the packageVersion]
+
+    // TODO handle special package versions:
+    //   if the first character packageVersion is a letter
+    //     create a <PackageName, Package> pair and add it to the specialPackages map [packageVersion may be empty or incomplete - the rest will be saved in the packageName]
+    //  For multi-word package versions (e.g. with included release version):
+    //   tokenize the packageVersion by dashes
+    //   for each token in tokens
+    //     when the first character of the token is a letter
+    //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName may be empty or incomplete - the rest of the package version will be save in the packageName]
+    //  Note for handling special packages: in (rare) cases there occure package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
+    //   and package version that begin with a letter e.g. '	a25.b-3'
+    //    - adjust 'operator<'?
+    //    - write a custom comparator that will check character by character for prefix similarity?
+    //    - add them to ignoredPackages?
+    //    - add them to unhandled/other/special packages and then handle manually?/automatically? << MAYBE THIS WILL BE THE OPTION I'll try out
+    //    - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
+    //  Problematic package filenames use-cases:
+    //   libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
+    //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
+    //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
+    //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
+    //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
+    //   or when the package version has as the first token a letter
+
+    if ( ( std::isdigit(this->name.at(0) ) ) || ( ! std::isdigit(this->locallyInstalledVersion.at(0) ) ) ) {
+        return true;
+    }
+
+    return false;
+}

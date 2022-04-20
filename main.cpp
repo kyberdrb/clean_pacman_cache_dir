@@ -57,64 +57,35 @@ int main() {
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);
     alpm_db_t* db_local = alpm_get_localdb(handle);
-
     alpm_list_t* listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
-    alpm_pkg_t* alpm_pkg = NULL;
+
     std::map<std::string, std::string> allPackagesInTextFormat;
     std::set<std::string> packagesToKeep;
     auto architectures = std::make_unique<Architectures>();
 
     std::map<std::unique_ptr<PackageName>, std::unique_ptr<Package>> locallyInstalledPackages;
+    std::map<std::unique_ptr<PackageName>, std::unique_ptr<Package>> locallyInstalledSpecialPackages;
 
     while (listOfAllLocallyInstalledPackages != NULL) {
-        alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
+        alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
         allPackagesInTextFormat.emplace(alpm_pkg_get_name(alpm_pkg), alpm_pkg_get_version(alpm_pkg));
         architectures->addArchitecture(alpm_pkg_get_arch(alpm_pkg));
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
         std::string packageName = alpm_pkg_get_name(alpm_pkg);
-
-        // TODO handle special package names:
-        //   if the first character packageName is a number
-        //     create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be empty - all will be saved in the packageVersion]
-        //  For multi-word package names:
-        //   tokenize the packageName by dashes
-        //   for each token in tokens
-        //     when the first character of the token is a number
-        //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package name will be save in the packageVersion]
+        std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
+        std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         auto pkgName = std::make_unique<PackageName>(packageName);
-
-        std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
-
-        // TODO handle special package versions:
-        //   if the first character packageVersion is a letter
-        //     create a <PackageName, Package> pair and add it to the specialPackages map [packageVersion may be empty or incomplete - the rest will be saved in the packageName]
-        //  For multi-word package versions (e.g. with included release version):
-        //   tokenize the packageVersion by dashes
-        //   for each token in tokens
-        //     when the first character of the token is a letter
-        //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName may be empty or incomplete - the rest of the package version will be save in the packageName]
-        //  Note for handling special packages: in (rare) cases there occure package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
-        //   and package version that begin with a letter e.g. '	a25.b-3'
-        //    - adjust 'operator<'?
-        //    - write a custom comparator that will check character by character for prefix similarity?
-        //    - add them to ignoredPackages?
-        //    - add them to unhandled/other/special packages and then handle manually?/automatically? << MAYBE THIS WILL BE THE OPTION I'll try out
-        //    - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
-        //  Problematic package filenames use-cases:
-        //   libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
-        //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
-        //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
-        //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
-        //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
-        //   or when the package version has as the first token a letter
-
-        std::string architecture = alpm_pkg_get_arch(alpm_pkg);
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
 
         if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
             ignoredPackages.emplace(std::move(pkgName), std::move(pkg));
+            continue;
+        }
+
+        if (pkg->isSpecial()) {     // introducing new member variable 'bool isSpecialPackage' defaulting to 'false', and in constructor is set to 'true' if theconditions in the above TODO items are met
+            locallyInstalledSpecialPackages.emplace(std::move(pkgName), std::move(pkg));
             continue;
         }
 
@@ -141,12 +112,12 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF LOCALLY INSTALLED PACKAGES\n\n";
+    std::cout << "LIST OF SPECIAL PACKAGES IN MAP\n\n";
 
-    std::cout << "Found " << allPackagesInTextFormat.size() << " installed packages\n\n";
+    std::cout << "Found " << locallyInstalledSpecialPackages.size() << " ignored packages\n\n";
 
-    for (const auto& [installedPackageName, installedPackageVersion] : allPackagesInTextFormat) {
-        std::cout << installedPackageName << "\t" << installedPackageVersion << "\n";
+    for (const auto& [specialPackageName, package] : locallyInstalledSpecialPackages) {
+        std::cout << *specialPackageName << "\t" << *package << "\n";
     }
 
     std::cout << "\n";
@@ -156,15 +127,30 @@ int main() {
     std::cout << "Found " << locallyInstalledPackages.size() << " installed packages\n";
     if (locallyInstalledPackages.size() <= allPackagesInTextFormat.size()) {
         std::cout << "Found " << ignoredPackages.size() << " ignored packages\n";
-        std::cout << "Found " << locallyInstalledPackages.size() + ignoredPackages.size() << " packages altogether\n\n";
-        assert(locallyInstalledPackages.size() + ignoredPackages.size() == allPackagesInTextFormat.size());
+        std::cout << "Found " << locallyInstalledSpecialPackages.size() << " special packages\n";
+        std::cout << "Found " << locallyInstalledPackages.size() + ignoredPackages.size() + locallyInstalledSpecialPackages.size() << " packages altogether\n\n";
+        assert(locallyInstalledPackages.size() + ignoredPackages.size() + locallyInstalledSpecialPackages.size() == allPackagesInTextFormat.size());
     }
 
     for (const auto& [installedPackageName, package] : locallyInstalledPackages) {
         std::cout << *installedPackageName << "\t" << *package << "\n";
     }
 
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF LOCALLY INSTALLED PACKAGES\n\n";
+
+    std::cout << "Found " << allPackagesInTextFormat.size() << " installed packages\n\n";
+
+    for (const auto& [installedPackageName, installedPackageVersion] : allPackagesInTextFormat) {
+        std::cout << installedPackageName << "\t" << installedPackageVersion << "\n";
+    }
+
     // FILESYSTEM PART
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF PACKAGE FILES\n\n";
 
     std::filesystem::path aPath {"/var/cache/pacman/pkg"};
     std::set<std::string> downloadedPackages;
@@ -257,7 +243,7 @@ int main() {
 
             auto pkgName = std::make_unique<PackageName>(packageName);
             if (ignoredPackages.count(pkgName) == 1) {
-                std::cout << "Package '" << packageName << "' is marked as ignored and listed in pacman's configuration file in 'IgnorePkg' entry" << "\n";
+                std::cout << "Package '" << packageName << "' is marked as ignored, i. e. listed in pacman's configuration file in 'IgnorePkg' entry" << "\n";
                 continue;
             }
 

@@ -13,8 +13,10 @@ public:
 
     std::string getLocallyInstalledVersion() const;
 
+    bool isSpecial() const;
+
     friend std::ostream &operator<<(std::ostream &out, const Package &package) {
-        out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture;
+        out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture << "\t" << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
 
         if ( std::isdigit(package.name.at(0) ) ) {
             out << "\t" << "PACKAGE NAME BEGINNS WITH A NUMBER";
