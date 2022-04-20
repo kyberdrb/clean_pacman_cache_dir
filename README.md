@@ -1,6 +1,8 @@
 # Clear Pacman's Cache Directory
 
-... and leave only the latest locallyInstalledVersion of each package (maybe except the ignored ones in '/etc/pacman.conf'?)
+A utility to delete the contents of the pacman's cache directory `/var/cache/pacman/pkg/` and leave in mentioned directory only package files, that the locally installed packages were installed from.
+
+The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages need to be deleted manually.
 
 ## Result
 
