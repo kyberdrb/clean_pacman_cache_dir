@@ -49,7 +49,7 @@ bool Package::isSpecial() const {
     //   tokenize the packageName by dashes
     //   for each token in tokens
     //     when the first character of the token is a number
-    //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package name will be save in the packageVersion]
+    //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package filename will be save in the packageVersion]
 
     // TODO handle special package versions:
     //   if the first character packageVersion is a letter
@@ -70,8 +70,8 @@ bool Package::isSpecial() const {
     //   libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
     //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
     //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
-    //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package name is a number
-    //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package name together with the version
+    //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package filename is a number
+    //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package filename together with the version
     //   or when the package version has as the first token a letter
 
     if ( ( std::isdigit(this->name.at(0) ) ) || ( ! std::isdigit(this->locallyInstalledVersion.at(0) ) ) ) {
@@ -79,4 +79,13 @@ bool Package::isSpecial() const {
     }
 
     return false;
+}
+
+std::string Package::buildPartialPackageNamePrefix() const {
+    // Verify whether the name and locallyInstalledVersion will be enough to find a single related package
+    return this->name + "-" + this->locallyInstalledVersion + "-" + this->architecture;
+}
+
+const std::string &Package::getName() const {
+    return name;
 }

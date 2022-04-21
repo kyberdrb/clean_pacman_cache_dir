@@ -15,6 +15,8 @@ public:
 
     bool isSpecial() const;
 
+    std::string buildPartialPackageNamePrefix() const;
+
     friend std::ostream &operator<<(std::ostream &out, const Package &package) {
         out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture << "\t" << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
 
@@ -28,6 +30,8 @@ public:
 
         return out;
     }
+
+    const std::string &getName() const;
 
 private:
     std::string name;

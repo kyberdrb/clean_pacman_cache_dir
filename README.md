@@ -76,8 +76,8 @@ Iterate all localy installed packages from the local DB and save each entry into
 
 ### Algorithm 1 - Composite
 
-- **Is it true that after each word of package name in its filename comes a delimiter (likely a dash '-') followed by a number?**  
-**So I can iterate the package filename until I hit a number and then go back two characters (or remove/pop_back last two characters) and get the package name? Which will then serve me as a key to the `map` and the actual filename as the value?**
+- **Is it true that after each word of package filename in its filename comes a delimiter (likely a dash '-') followed by a number?**  
+**So I can iterate the package filename until I hit a number and then go back two characters (or remove/pop_back last two characters) and get the package filename? Which will then serve me as a key to the `map` and the actual filename as the value?**
 - **Not every installed  package has its downloaded package that it was installed from**  
   **but every downloaded package has its installed  package.**
 
@@ -88,11 +88,11 @@ Iterate all localy installed packages from the local DB and save each entry into
           std::string locallyInstalledVersion = alpm_pkg_get_version(pkg);
           auto package = std::make_unique<Package>(locallyInstalledVersion);
 
-   2. save each `package` to the packages with the name of the package being a text key and the `package` instance being the value (`map`?)
+   2. save each `package` to the packages with the filename of the package being a text key and the `package` instance being the value (`map`?)
 
           // structure declaration - before the iteration loop
           std::map<
-              std::string              // package name
+              std::string              // package filename
               std::unique_ptr<Package> // package instance
           > packages;
    
@@ -102,14 +102,14 @@ Iterate all localy installed packages from the local DB and save each entry into
           packages.emplace_back(alpm_pkg_get_name(pkg), std::move(package));
    
 2. iterate through all files of the pacman's cache directory with the `std::filesystem` library _(7284/7293 files)_
-   1. save the name of the file to a variable `filename`
+   1. save the filename of the file to a variable `filename`
    2. save the extension of the file to a variable `extension`
    3. if the extension equals to ".part"
       1. add the `filename` to the set of `packageFilesDesignatedForDeletion`
 
              // structure declaration - before the iteration loop
              std::set<
-                 std::string              // package name
+                 std::string              // package filename
              > packageFilesDesignatedForDeletion;
 
              ...
@@ -118,8 +118,8 @@ Iterate all localy installed packages from the local DB and save each entry into
              packageFilesDesignatedForDeletion.emplace(filename);
       2. continue
    4. Build the regular expression pattern with the help of the `Architecture` class that accumulated all available versions from the previous loop.
-   5. shorten the `filename` only to package name and version by removing the trailing text with a regular expression, and save the result into a variable `packageNameAndVersion`
-   6. separate the package name and version by tokenizing the `packageNameAndVersion` by dash `-` delimiter into `tokens` vector through `token` string
+   5. shorten the `filename` only to package filename and version by removing the trailing text with a regular expression, and save the result into a variable `packageNameAndVersion`
+   6. separate the package filename and version by tokenizing the `packageNameAndVersion` by dash `-` delimiter into `tokens` vector through `token` string
    7. initialize a text variables `packageName` and `packageVersion` to empty text
    8. iterate `tokens`  
         
@@ -157,7 +157,7 @@ The version of the algorithm with a tokenization
 ### Algorithm 3 - Compound Substring Key Find with Partial Match
 
 1. Add each filename of every file in pacman's cache directory into a map<PackageFilename, PackageWithPartialFilename>, with PackageFilename being the filename of the file (without absolute path - only the filename), and PackageWithPartialFilename being empty/null
-2. Find all locally installed packages, form a partial filename as prefix by compounding the name, version and architecture of the package in the format "PACKAGE_NAME-PACKAGE_VERSION-PACKAGE_ARCHITECTURE", and searching for all keys with such prefix in PackageFilename. For all found keys assign for the value of PackageWithPartialFilename the compound package name.
+2. Find all locally installed packages, form a partial filename as prefix by compounding the filename, version and architecture of the package in the format "PACKAGE_NAME-PACKAGE_VERSION-PACKAGE_ARCHITECTURE", and searching for all keys with such prefix in PackageFilename. For all found keys assign for the value of PackageWithPartialFilename the compound package filename.
    - When no package file was found a given package, report it?/download it only to the pacmans cache dir? (with alpm? or from archive.archlinux.com by building the URL and webscraping all links that partially match with the compound package filename and downloading all files from the links with `curl` and adding the package filenames manually to the map so that the package files for the locally installed package will be preserved?)
 3. Go through each package filename in the map and move to a separate directory FORMER_PACKAGE_VERSIONS such package files that have their values of PackageWithPartialFilename empty/null.
 
