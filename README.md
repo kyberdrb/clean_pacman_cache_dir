@@ -4,6 +4,10 @@ A utility to delete the contents of the pacman's cache directory `/var/cache/pac
 
 The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages need to be deleted manually.
 
+## Usage
+
+    sudo ./clean_pacman_cache_dir
+
 ## Result
 
     PACKAGE FILENAME                                                              PACKAGE NAME                              DOWNLOADED PACKAGE VERSION   INSTALLED PACKAGE VERSION   ARE VERSIONS MATCHING?   KEEP THE PACKAGE?
@@ -54,12 +58,12 @@ Iterate all localy installed packages from the local DB and save each entry into
           | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-0.6.55-3-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
           |
-          |-22.04.62-2                                (std::unique_ptr<Version>)
+          |-key: 22.04.62-2                                (std::unique_ptr<Version>)
           | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-22.04.62-2-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
           |   |-accountsservice-22.04.62-2-x86_64.pkg.tar.zst.sig (std::unique_ptr<PackageRelatedDownloadedFile>)
           |
-          |-22.08.8-1                                 (std::unique_ptr<Version>)
+          |-key: 22.08.8-1                                 (std::unique_ptr<Version>)
           | |-value:                                    (std::vector<std::unique_ptr<PackageRelatedDownloadedFile>>)
           |   |-accountsservice-22.08.8-1-x86_64.pkg.tar.zst (std::unique_ptr<PackageRelatedDownloadedFile>)
           |   |-accountsservice-22.08.8-1-x86_64.pkg.tar.zst.sig (std::unique_ptr<PackageRelatedDownloadedFile>)
@@ -156,8 +160,8 @@ The version of the algorithm with a tokenization
 
 ### Algorithm 3 - Compound Substring Key Find with Partial Match
 
-1. Add each filename of every file in pacman's cache directory into a map<PackageFilename, PackageWithPartialFilename>, with PackageFilename being the filename of the file (without absolute path - only the filename), and PackageWithPartialFilename being empty/null
-2. Find all locally installed packages, form a partial filename as prefix by compounding the filename, version and architecture of the package in the format "PACKAGE_NAME-PACKAGE_VERSION-PACKAGE_ARCHITECTURE", and searching for all keys with such prefix in PackageFilename. For all found keys assign for the value of PackageWithPartialFilename the compound package filename.
+1. Add each filename of every file in pacman's cache directory into a map<PackageFile, PackageWithPartialFilename>, with PackageFile being the filename of the file (without absolute path - only the filename), and PackageWithPartialFilename being empty/null
+2. Find all locally installed packages, form a partial filename as prefix by compounding the filename, version and architecture of the package in the format "PACKAGE_NAME-PACKAGE_VERSION-PACKAGE_ARCHITECTURE", and searching for all keys with such prefix in PackageFile. For all found keys assign for the value of PackageWithPartialFilename the compound package filename.
    - When no package file was found a given package, report it?/download it only to the pacmans cache dir? (with alpm? or from archive.archlinux.com by building the URL and webscraping all links that partially match with the compound package filename and downloading all files from the links with `curl` and adding the package filenames manually to the map so that the package files for the locally installed package will be preserved?)
 3. Go through each package filename in the map and move to a separate directory FORMER_PACKAGE_VERSIONS such package files that have their values of PackageWithPartialFilename empty/null.
 

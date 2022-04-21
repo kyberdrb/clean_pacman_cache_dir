@@ -89,3 +89,7 @@ std::string Package::buildPartialPackageNamePrefix() const {
 const std::string &Package::getName() const {
     return name;
 }
+
+bool Package::isEmpty() const {
+    return this->name.empty() && this->locallyInstalledVersion.empty() && this->architecture.empty();
+}
