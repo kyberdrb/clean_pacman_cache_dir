@@ -72,7 +72,9 @@ Iterate all localy installed packages from the local DB and save each entry into
   - I'll use `operator<` from standard string, because the `alpm_pkg_vercmp` function from `alpm.h` ignores package release versions, and I want to do a complete comparison of Versions
 - `ignoredPackageNamesInTextFormat` - keep package files that are listed next to `IgnorePkg` option in the pacman's configuration file
 
-## Algorithm
+## Algorithms
+
+### Algorithm 1 - Composite
 
 - **Is it true that after each word of package name in its filename comes a delimiter (likely a dash '-') followed by a number?**  
 **So I can iterate the package filename until I hit a number and then go back two characters (or remove/pop_back last two characters) and get the package name? Which will then serve me as a key to the `map` and the actual filename as the value?**
@@ -139,7 +141,7 @@ When the key is found (and thus the package is locally installed on the system),
       2. call `moveAllPackageFilesInNonlocalVersionToSeparateDirectory`, where the destination directory will be provided as a parameter?/as an attribute in the class `PackagesAndTheirFiles`?
 8. Run the algorithm again to check whether each installed package has exactly one package file that matches the local version of the installed package, and with an optional signature file.
    
----
+### Algorithm 2 - Tokenization
 
 The version of the algorithm with a tokenization
 
@@ -152,9 +154,18 @@ The version of the algorithm with a tokenization
        2. check if the `packages` contains and entry that is exactly matching the key stored in `cumulativePackageName`
           1. if yes, add current file to the collection of files for matching `package`
 
+### Algorithm 3 - Compound Substring Key Find with Partial Match
+
+1. Add each filename of every file in pacman's cache directory into a map<PackageFilename, PackageWithPartialFilename>, with PackageFilename being the filename of the file (without absolute path - only the filename), and PackageWithPartialFilename being empty/null
+2. Find all locally installed packages, form a partial filename as prefix by compounding the name, version and architecture of the package in the format "PACKAGE_NAME-PACKAGE_VERSION-PACKAGE_ARCHITECTURE", and searching for all keys with such prefix in PackageFilename. For all found keys assign for the value of PackageWithPartialFilename the compound package name.
+   - When no package file was found a given package, report it?/download it only to the pacmans cache dir? (with alpm? or from archive.archlinux.com by building the URL and webscraping all links that partially match with the compound package filename and downloading all files from the links with `curl` and adding the package filenames manually to the map so that the package files for the locally installed package will be preserved?)
+3. Go through each package filename in the map and move to a separate directory FORMER_PACKAGE_VERSIONS such package files that have their values of PackageWithPartialFilename empty/null.
+
+- lookup and handle packages within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
+
 ## Sources
 
-- libalpm - library of the Arch Linux Package Manager
+- `libalpm` - library of the Arch Linux Package Manager - the `pacman`
     - https://duckduckgo.com/?q=libalpm&ia=web
     - https://duckduckgo.com/?q=libalpm+list+packages&ia=web
     - https://man.archlinux.org/man/libalpm.3
