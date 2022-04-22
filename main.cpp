@@ -368,8 +368,6 @@ int main() {
 
     std::cout << "\n";
 
-    // TODO implement Algorithm 3
-
     std::cout << "\n";
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF PACKAGE FILES FOR ALGORITHM 3\n\n";
@@ -405,6 +403,14 @@ int main() {
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
 
+//      For debugging purposes
+//        if (packageName == "clang") {
+//        if (packageName == "clion") {
+//        if (packageName == "clion-cmake") {
+//        if (packageName == "linux-lts-headers") {
+//            std::cout << "Here we go..." << "\n";
+//        }
+
         if (std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
             auto partialPackageNamePrefixAsText = pkg->getName();
             auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
@@ -413,13 +419,6 @@ int main() {
             // TODO for ignored packages, build the partial filename only with packageName,
             //  then find ALL package files that begin with the name of the package
             //  and add/move the package as a Package value to the corresponding PackageFile keys (don't worry about the duplicate instances - we will handle them later by references)
-//          For debugging purposes
-//            if (packageName == "clion") {
-//            if (packageName == "clion-cmake") {
-//            if (packageName == "linux-lts-headers") {
-//                std::cout << "Here we go..." << "\n";
-//            }
-
             while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) && partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(*partialPackageFilenamePrefix) == 0) {
                 pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);  // Don't mind of duplicates
                 partiallyMatchedPackageFileElementByPrefix->second = std::move(pkg);

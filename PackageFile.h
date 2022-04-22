@@ -1,8 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <ostream>
+#include <string>
+#include <vector>
 
 class PackageFile {
 public:
@@ -28,8 +29,13 @@ public:
 private:
     std::string filename;
     std::string absolutePath;
+    std::string extractedPackageNameFromFilename;
+    std::string extractedPackageVersionFromFilename;
+
+    void setPackageNameAndVersionFromFilename();
 };
 
+// overload the 'less' functor in order to enable lookup ('find') in map with instances of this class as a key
 namespace std {
     template<>
     struct less<unique_ptr<PackageFile>> {
