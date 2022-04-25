@@ -370,6 +370,12 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
+    std::cout << "LIST OF PACKAGES FOR ALGORITHM 3\n\n";
+
+    // TODO implement a 'set' of locally installed packages
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
     std::cout << "LIST OF PACKAGE FILES FOR ALGORITHM 3\n\n";
 
     std::map<std::unique_ptr<PackageFile>, std::unique_ptr<Package>> packageFilesWithPackages;
@@ -378,6 +384,12 @@ int main() {
     for (const auto& packageFile : std::filesystem::directory_iterator(aPath)) {
         const auto& packageFilenameAsText = packageFile.path().filename().string();
         const auto& packageAbsolutePathAsText = packageFile.path().string();
+
+//      For debugging purposes
+        if (packageFilenameAsText == "libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst") {
+            std::cout << "Here we go..." << "\n";
+        }
+
         auto packageFilename = std::make_unique<PackageFile>(packageFilenameAsText, packageAbsolutePathAsText);
 
         if (packageFile.is_regular_file()) {
@@ -408,6 +420,7 @@ int main() {
 //        if (packageName == "clion") {
 //        if (packageName == "clion-cmake") {
 //        if (packageName == "linux-lts-headers") {
+//        if (packageName == "libyuv") {
 //            std::cout << "Here we go..." << "\n";
 //        }
 
@@ -420,9 +433,11 @@ int main() {
             //  then find ALL package files that begin with the name of the package
             //  and add/move the package as a Package value to the corresponding PackageFile keys (don't worry about the duplicate instances - we will handle them later by references)
             while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) && partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(*partialPackageFilenamePrefix) == 0) {
-                pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);  // Don't mind of duplicates
-                partiallyMatchedPackageFileElementByPrefix->second = std::move(pkg);
-                std::cout << *partiallyMatchedPackageFileElementByPrefix->first << "\t"<< *partiallyMatchedPackageFileElementByPrefix->second << "\n";
+//                if (pkg->getName() == partiallyMatchedPackageFileElementByPrefix->first->getExtractedPackageName() ) {
+                    pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);  // Don't mind of duplicates
+                    partiallyMatchedPackageFileElementByPrefix->second = std::move(pkg);
+                    std::cout << *partiallyMatchedPackageFileElementByPrefix->first << "\t" << *partiallyMatchedPackageFileElementByPrefix->second << "\n";
+//                }
                 ++partiallyMatchedPackageFileElementByPrefix;
             }
             continue;
@@ -457,6 +472,10 @@ int main() {
         std::cout << *packageFileWithPackage.first << "\t";
         std::cout << *packageFileWithPackage.second << "\n";
     }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF LOCALLY INSTALLED PACKAGES WITH MISSING PACKAGE FILES WHICH THEY WERE INSTALLED FROM\n\n";
 
     err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     handle = alpm_initialize("/", "/var/lib/pacman/", err);
@@ -494,17 +513,28 @@ int main() {
         }
     }
 
+    free(err);
+    err = nullptr;
+
+    alpm_release(handle);
+    handle = nullptr;
+
     // MOVING PACKAGE FILES TO SEPARATE DIRECTORY PART
 
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "MOVING PACKAGES\n\n";
+
     std::string pathToDuplicateFilesDirectoryAsText = pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
-    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
+//    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
     for (const auto& [packageFile, package] : packageFilesWithPackages) {
-        if (package->isEmpty()) {
+        bool packageFileReferrsToMissingLocallyInstalledPackage = package->isEmpty();
+        if (packageFileReferrsToMissingLocallyInstalledPackage) {
             const std::string& from = packageFile->getAbsolutePath();
             const std::string& to = pathToDuplicateFilesDirectoryAsText + packageFile->getFilename();
             std::cout << "Moving package file\t" << from << "\nto separate directory\t" << to << "\n\n";
-            std::filesystem::rename(from, to);
+//            std::filesystem::rename(from, to);
         }
     }
 

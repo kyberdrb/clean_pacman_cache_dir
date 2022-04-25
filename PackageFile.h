@@ -7,9 +7,9 @@
 
 class PackageFile {
 public:
-    explicit PackageFile(std::string filename, std::string absolutePath);
+    PackageFile(std::string filename, std::string absolutePath);
 
-    PackageFile(std::string filename);
+    explicit PackageFile(std::string filename);
 
     std::string getFilename() const;
 
@@ -21,8 +21,9 @@ public:
         return this->getFilename() < packageFilename.getFilename();
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const PackageFile &packageFilename) {
-        os << packageFilename.filename;
+    friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {
+        os << packageFilename.filename << "\t" << packageFilename.extractedPackageNameFromFilename << "\t" << packageFilename.extractedPackageVersionFromFilename;
+//        os << "\tisPackageSpecial: " << packageFilename.isPackageSpecial;
         return os;
     }
 
@@ -31,6 +32,7 @@ private:
     std::string absolutePath;
     std::string extractedPackageNameFromFilename;
     std::string extractedPackageVersionFromFilename;
+//    bool isPackageSpecial;
 
     void setPackageNameAndVersionFromFilename();
 };

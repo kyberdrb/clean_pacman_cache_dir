@@ -4,11 +4,14 @@
 
 #include "PackageFile.h"
 
-#include <regex>
+//#include <regex>
+#include <algorithm>
+#include <sstream>
 
 PackageFile::PackageFile(std::string filename, std::string absolutePath) :
         filename(std::move(filename)),
         absolutePath(absolutePath)
+//        ,isPackageSpecial(false)
 {
     setPackageNameAndVersionFromFilename();
 }
@@ -20,6 +23,7 @@ PackageFile::PackageFile(std::string filename, std::string absolutePath) :
 PackageFile::PackageFile(std::string filename) :
         filename(std::move(filename)),
         absolutePath(" ")
+//        ,isPackageSpecial(false)
 {}
 
 void PackageFile::setPackageNameAndVersionFromFilename() {
@@ -30,7 +34,7 @@ void PackageFile::setPackageNameAndVersionFromFilename() {
     //std::cout << "Package filename:\n";
     //std::cout << pkgFilename << "\n";
 
-    // strip the extensions and architecture from package filename and leave only package version and name
+    // strip the extensions and architecture from package filename leaving only package name and package version
     //  I couldn't find out how to do first-match or non-greedy replace with regex_replace,
     //  so I'm writing my own algorithm
     std::reverse(pkgFilename.begin(), pkgFilename.end());
@@ -83,7 +87,7 @@ void PackageFile::setPackageNameAndVersionFromFilename() {
     //  filename     version
 
     for (const auto& token : tokens) {
-        bool isFirstCharacterOfTokenLetter = !isdigit(token.at(0));
+        bool isFirstCharacterOfTokenLetter = isalpha(token.at(0));
 
         if (isFirstCharacterOfTokenLetter && hasPackageNameMoreTokens) {
             packageName += token + delimiter;
@@ -91,52 +95,136 @@ void PackageFile::setPackageNameAndVersionFromFilename() {
         }
 
         hasPackageNameMoreTokens = false;
-
         packageVersion += token + delimiter;
     }
 
-    // TODO handle special package names:
-    //   if the first character packageName is a number
-    //     create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be empty - all will be saved in the packageVersion]
-    //  For multi-word package names:
-    //   tokenize the packageName by dashes
-    //   for each token in tokens
-    //     when the first character of the token is a number
-    //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package filename will be save in the packageVersion]
+    // Check whether the package name and package version conform to the standard naming convention
+    //  - package name has as the first character of each token a letter/alphabetic character
+    //  - package version has as the first character of each token a number/numeric character
 
-    // TODO handle special package versions:
-    //   if the first character packageVersion is a letter
-    //     create a <PackageName, Package> pair and add it to the specialPackages map [packageVersion may be empty or incomplete - the rest will be saved in the packageName]
-    //  For multi-word package versions (e.g. with included release version):
-    //   tokenize the packageVersion by dashes
-    //   for each token in tokens
-    //     when the first character of the token is a letter
-    //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName may be empty or incomplete - the rest of the package version will be save in the packageName]
-    //  Note for handling special packages: in (rare) cases there occure package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
-    //   and package version that begin with a letter e.g. '	a25.b-3'
-    //    - adjust 'operator<'?
-    //    - write a custom comparator that will check character by character for prefix similarity?
-    //    - add them to ignoredPackages?
-    //    - add them to unhandled/other/special packages and then handle manually?/automatically? << MAYBE THIS WILL BE THE OPTION I'll try out
-    //    - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
-    //  Problematic package filenames use-cases:
-    //   libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
-    //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
-    //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
-    //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package filename is a number
-    //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package filename together with the version
-    //   or when the package version has as the first token a letter
+    bool isPackageNameSpecial = false;
 
-    packageName.pop_back();
-    packageVersion.pop_back();
+    if ( ! packageName.empty() ) {
+        packageName.pop_back();
+
+        // TODO handle special package names:
+        //   if the first character packageName is a number
+        //     create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be empty - all will be saved in the packageVersion]
+        //  For multi-word package names:
+        //   tokenize the packageName by dashes
+        //   for each token in tokens
+        //     when the first character of the token is a number
+        //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName will be incomplete - the rest of the package filename will be save in the packageVersion]
+
+//        auto numberOfDelimiterOccurrences = std::count(packageName.begin(), packageName.end(), delimiter);
+//
+//        if (numberOfDelimiterOccurrences == 0) {
+//            bool isFirstCharacterOfPackageNameSomethingElseThanAlphabeticCharacter = !std::isalpha(packageName.at(0));
+//
+//            if (isFirstCharacterOfPackageNameSomethingElseThanAlphabeticCharacter) {
+//                isPackageNameSpecial = true;
+//            }
+//        } else {
+            std::stringstream pkgNameAsStream{packageName};
+            std::string packageNameToken{};
+            std::vector<std::string> packageNameTokens{};
+
+            while (getline(pkgNameAsStream, packageNameToken, delimiter)) {
+                packageNameTokens.push_back(packageNameToken);
+            }
+
+            for (const auto &packageNameToken: packageNameTokens) {
+                bool isFirstCharacterOfTokenSomethingElseThanAlphabeticCharacter = !std::isalpha(packageNameToken.at(0));
+
+                if (isFirstCharacterOfTokenSomethingElseThanAlphabeticCharacter) {
+                    isPackageNameSpecial = true;
+                    break;
+                }
+            }
+//        }
+    } else {
+        isPackageNameSpecial = true;
+    }
+
+    bool isPackageVersionSpecial = false;
+
+    if ( ! packageVersion.empty() ) {
+        packageVersion.pop_back();
+
+        // TODO handle special package versions:
+        //   if the first character packageVersion is a letter
+        //     create a <PackageName, Package> pair and add it to the specialPackages map [packageVersion may be empty or incomplete - the rest will be saved in the packageName]
+        //  For multi-word package versions (e.g. with included release version):
+        //   tokenize the packageVersion by dashes
+        //   for each token in tokens
+        //     when the first character of the token is a letter
+        //       create a <PackageName, Package> pair and add it to the specialPackages map [packageName may be empty or incomplete - the rest of the package version will be save in the packageName]
+        //  Note for handling special packages: in (rare) cases there occure package names with numbers as the first character e.g. '0ad' and  after the dash e.g. '-1.16'
+        //   and package version that begin with a letter e.g. '	a25.b-3'
+        //    - adjust 'operator<'?
+        //    - write a custom comparator that will check character by character for prefix similarity?
+        //    - add them to ignoredPackages?
+        //    - add them to unhandled/other/special packages and then handle manually?/automatically? << MAYBE THIS WILL BE THE OPTION I'll try out
+        //    - assemble a package filename by trial-and-error from available extensions and check whether the file under assembles filename exists?
+        //  Problematic package filenames use-cases:
+        //   libyuv-r2212+dfaf7534-2-x86_64.pkg.tar.zst
+        //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst
+        //   libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst.sig
+        //  the parsing algorithm breaks when the first character of any of the tokens belonging to the package filename is a number
+        //   - then packageName stays empty or incomplete, the packageVersion has the rest of the package filename together with the version
+        //   or when the package version has as the first token a letter
+
+//        auto numberOfDelimiterOccurrences = std::count(packageVersion.begin(), packageVersion.end(), delimiter);
+//
+//        if (numberOfDelimiterOccurrences == 0) {
+//            bool isFirstCharacterOfPackageVersionSomethingElseThanAlphabeticCharacter = !std::isdigit(packageVersion.at(0));
+//
+//            if (isFirstCharacterOfPackageVersionSomethingElseThanAlphabeticCharacter) {
+//                isPackageVersionSpecial = true;
+//            }
+//        } else {
+            std::stringstream pkgVersionAsStream{packageVersion};
+            std::string packageVersionToken{};
+            std::vector<std::string> packageVersionTokens{};
+
+            while (getline(pkgVersionAsStream, packageVersionToken, delimiter)) {
+                packageVersionTokens.push_back(packageVersionToken);
+            }
+
+            for (const auto &packageVersionToken: packageVersionTokens) {
+                bool isFirstCharacterOfTokenSomethingElseThanNumber = !std::isdigit(packageVersionToken.at(0));
+
+                if (isFirstCharacterOfTokenSomethingElseThanNumber) {
+                    isPackageVersionSpecial = true;
+                    break;
+                }
+            }
+//        }
+    } else {
+        isPackageVersionSpecial = true;
+    }
+
     bool isPackageSpecial = false;
 
-    if ( ( std::isdigit(packageName.at(0) ) ) || ( ! std::isdigit(packageVersion.at(0) ) ) ) {
+    if ( isPackageNameSpecial || isPackageVersionSpecial ) {
         isPackageSpecial = true;
+//        this->isPackageSpecial = true;
+    }
+
+    if ( isPackageSpecial ) {
+        // TODO perform a lookup of the compound package name and version as key in the 'packageFilesWithPackages'
+        //  but when  inferring the package name and version from the package name the 'packageFilesWithPackages' map is still incomplete
+        //  and I need a complete locally installed package set beforehand to perform lookup in the set (for performance reasons - O(log(N)) - instead of alpm db - O(n))
+        //  and pass the reference for the set here - to this class.
+        //  Assuming that each package has only one locally installed version with possibly multiple related package files for multiple versions that the Package will remember with itself
+        //  and not as a value for the Package key
+        //      - therefore a 'set' and not 'multiset', 'map' or 'multimap'
+        //  - perform only when the string is non-empty
+        //   if key was NOT found, strip the coumpound package key by one character from the end and perform lookup again
+        //   if the key WAS found, break the loop
     }
 
     this->extractedPackageNameFromFilename = packageName;
-
     this->extractedPackageVersionFromFilename = packageVersion;
 }
 
