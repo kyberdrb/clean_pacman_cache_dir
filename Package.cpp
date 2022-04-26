@@ -2,15 +2,33 @@
 // Created by laptop on 4/9/22.
 //
 
+#include "Package.h"
+
+#include <iostream>
 #include <utility>
 #include <vector>
-#include "Package.h"
 
 Package::Package(std::string name, std::string locallyInstalledVersion, std::string architecture) :
         name(std::move(name)),
         locallyInstalledVersion(std::move(locallyInstalledVersion)),
         architecture(std::move(architecture))
 {}
+
+Package::Package(std::string inferredPackageName) :
+    name(inferredPackageName)
+{}
+
+bool Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
+    if (
+            this->name != packageRelatedPackageFile->getRelatedPackageName() &&
+            this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion())
+    {
+        this->packageFilesForDeletion.emplace_back(std::move(packageRelatedPackageFile));
+        return true;
+    }
+
+    return false;
+}
 
 std::vector<std::string> Package::getPackageNameCandidates() const {
     // Naming convention for packages
@@ -86,10 +104,19 @@ std::string Package::buildPartialPackageNamePrefix() const {
     return this->name + "-" + this->locallyInstalledVersion + "-" + this->architecture;
 }
 
-const std::string &Package::getName() const {
+std::string Package::getName() const {
     return name;
 }
 
 bool Package::isEmpty() const {
     return this->name.empty() && this->locallyInstalledVersion.empty() && this->architecture.empty();
+}
+
+void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
+    for (const auto& packageFileForDeletion: this->packageFilesForDeletion) {
+        const std::string& from = packageFileForDeletion->getAbsolutePath();
+        const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles + packageFileForDeletion->getFilename();
+        std::cout << "Moving package file\t" << from << "\nto separate directory\t" << to << "\n\n";
+//            std::filesystem::rename(from, to);
+    }
 }

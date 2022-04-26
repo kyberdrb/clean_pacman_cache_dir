@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PackageFile.h"
+
 #include <string>
 #include <vector>
 #include <ostream>
@@ -8,10 +10,19 @@ class Package {
 public:
     Package(std::string name, std::string locallyInstalledVersion, std::string architecture);
 
-    // TODO maybe delete this function altogether
-    std::vector<std::string> getPackageNameCandidates() const;
+    explicit Package(std::string inferredPackageName);
+
+    std::string getName() const;
 
     std::string getLocallyInstalledVersion() const;
+
+    bool addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile);
+
+    void movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles);
+
+
+
+
 
     bool isSpecial() const;
 
@@ -19,7 +30,10 @@ public:
 
     bool isEmpty() const;
 
-    friend std::ostream &operator<<(std::ostream &out, const Package &package) {
+    // TODO maybe delete this function altogether
+    std::vector<std::string> getPackageNameCandidates() const;
+
+    friend std::ostream& operator<<(std::ostream& out, const Package& package) {
         out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture << "\t" << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
 
         if ( ! package.name.empty() && std::isdigit(package.name.at(0) ) ) {
@@ -30,19 +44,43 @@ public:
             out << "\t" << "PACKAGE VERSION BEGINNS WITH A LETTER";
         }
 
+        if ( ! package.packageFilesForDeletion.empty() ) {
+            for (const auto& packageRelatedFile: package.packageFilesForDeletion) {
+                out << "\n";
+                out << "  - " << *packageRelatedFile;
+            }
+        }
+
         return out;
     }
 
-    const std::string &getName() const;
-
-    bool operator==(const Package &rhs) const {
-        return name == rhs.name &&
-               locallyInstalledVersion == rhs.locallyInstalledVersion &&
-               architecture == rhs.architecture;
+    bool operator==(const Package& package) const {
+        return name == package.name &&
+               locallyInstalledVersion == package.locallyInstalledVersion &&
+               architecture == package.architecture;
     }
+
+    bool operator<(const Package& package) const {
+        return this->getName() < package.getName();
+    }
+
+//    bool operator==(const PackageFile& packageFile) const {
+//        return name == packageFile.getExtractedPackageName();
+//    }
 
 private:
     std::string name;
     std::string locallyInstalledVersion;
     std::string architecture;
+
+    std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
 };
+
+namespace std {
+    template<>
+    struct less<unique_ptr<Package>> {
+        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
+            return *lhs < *rhs;
+        }
+    };
+}

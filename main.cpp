@@ -370,33 +370,9 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF PACKAGES FOR ALGORITHM 3\n\n";
+    std::cout << "IMPLEMENTATION OF ALGORITHM 3\n\n";
 
-    // TODO implement a 'set' of locally installed packages
-
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "LIST OF PACKAGE FILES FOR ALGORITHM 3\n\n";
-
-    std::map<std::unique_ptr<PackageFile>, std::unique_ptr<Package>> packageFilesWithPackages;
-    std::set<std::string> packageFilesDeletionCandidates;
-
-    for (const auto& packageFile : std::filesystem::directory_iterator(aPath)) {
-        const auto& packageFilenameAsText = packageFile.path().filename().string();
-        const auto& packageAbsolutePathAsText = packageFile.path().string();
-
-//      For debugging purposes
-        if (packageFilenameAsText == "libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst") {
-            std::cout << "Here we go..." << "\n";
-        }
-
-        auto packageFilename = std::make_unique<PackageFile>(packageFilenameAsText, packageAbsolutePathAsText);
-
-        if (packageFile.is_regular_file()) {
-            auto package = std::make_unique<Package>("", "", "");
-            packageFilesWithPackages.emplace(std::move(packageFilename), std::move(package));
-        }
-    }
+    std::set<std::unique_ptr<Package>> installedPackages{};
 
     err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     handle = alpm_initialize("/", "/var/lib/pacman/", err);
@@ -415,6 +391,216 @@ int main() {
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
 
+        installedPackages.emplace(std::move(pkg));
+    }
+
+    free(err);
+    err = nullptr;
+
+    alpm_release(handle);
+    handle = nullptr;
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF PACKAGES FOR ALGORITHM 3\n\n";
+
+    std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
+
+    for (const auto& package : installedPackages) {
+        std::cout << *package << "\n";
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF PACKAGE FILES FOR ALGORITHM 3\n\n";
+
+    std::map<std::unique_ptr<PackageFile>, std::unique_ptr<Package>> packageFilesWithPackages;
+    std::set<std::string> packageFilesDeletionCandidates;
+
+    std::set<std::unique_ptr<PackageFile>> packageFilesRelatedToMissingPackages;
+    std::set<std::unique_ptr<PackageFile>> partlyDownloadedPackageFiles;
+
+    for (const auto& packageFile : std::filesystem::directory_iterator(aPath)) {
+        const auto& packageFilenameAsText = packageFile.path().filename().string();
+        const auto& packageAbsolutePathAsText = packageFile.path().string();
+        const auto& packageFileExtension = packageFile.path().extension().string();
+
+        if (packageFileExtension == ".part") {
+            auto partlyDownloadedPackageFile= std::make_unique<PackageFile>(packageAbsolutePathAsText, packageAbsolutePathAsText);
+            partlyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
+            continue;
+        }
+
+//      For debugging purposes
+        if (packageFilenameAsText == "libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst") {
+            std::cout << "Here we go..." << "\n";
+        }
+
+        if (packageFile.is_regular_file()) {
+//            auto packageFile = std::make_unique<PackageFile>(packageFilenameAsText, packageAbsolutePathAsText);
+//            auto package = std::make_unique<Package>("", "", "");
+//            packageFilesWithPackages.emplace(std::move(packageFile), std::move(package));
+
+            // strip the extensions and architecture from package filename leaving only package name and package version
+            //  I couldn't find out how to do first-match or non-greedy replace with regex_replace,
+            //  so I'm writing my own algorithm
+            auto pkgFilenameAsText = packageFilenameAsText;
+            std::reverse(pkgFilenameAsText.begin(), pkgFilenameAsText.end());
+            std::stringstream packageNameAndVersionReversed{};
+            char delimiter = '-';
+            bool stillSearchingForFirstDelimiterOccurence = true;
+
+            //find the first dash '-' in the reversed filename and append everything after
+            for (auto character : pkgFilenameAsText) {
+                if (character != delimiter && stillSearchingForFirstDelimiterOccurence) {
+                    continue;
+                }
+
+                stillSearchingForFirstDelimiterOccurence = false;
+                packageNameAndVersionReversed << character;
+            }
+
+            auto packageNameAndVersion = packageNameAndVersionReversed.str();
+            std::reverse(packageNameAndVersion.begin(), packageNameAndVersion.end());
+            packageNameAndVersion.pop_back();
+
+            // TODO perform a lookup of the compound package name and version as key in the 'installedPackages'
+            //  Assuming that each package has only one locally installed version with possibly multiple related package files for multiple versions that the Package will remember with itself
+            //  and not as a value for the Package key
+            //      - therefore a 'set' and not 'multiset' [only one package name with multiple possible versions of it], 'map' [the values are related and contained in the key itself] or 'multimap' [the key - package name - is unique]
+            //  - perform only when the string is non-empty
+
+            auto inferredPackageNameAsText = packageNameAndVersion;
+            uint8_t lastPositionForPackageName = inferredPackageNameAsText.size() - 1;
+
+            while ( ! inferredPackageNameAsText.empty() ) {
+                // search for the matching package element in the 'installedPackages' by 'inferredPackageName'
+                auto inferredPackageName = std::make_unique<Package>(inferredPackageNameAsText);
+                auto matchingPackage = installedPackages.find(inferredPackageName);
+
+                // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
+                bool packageWithInferredNameIsMissing = matchingPackage == installedPackages.end();
+                if (packageWithInferredNameIsMissing) {
+                    inferredPackageNameAsText.pop_back();
+                    --lastPositionForPackageName;
+                    continue;
+                }
+
+                // if the key WAS found,
+                //  - infer the package version from the compound package name and version,
+                //  - create a package file with filename, absolute path and package version and add it to the matching locally installed package
+                //  - break out of the loop
+                auto startingPositionForPackageVersion = lastPositionForPackageName + 2;
+                auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
+                auto packageFile = std::make_unique<PackageFile>(packageFilenameAsText, packageAbsolutePathAsText, inferredPackageNameAsText, inferredPackageVersionAsText);
+
+                matchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageFile));
+                
+                break;
+            }
+
+            // handle package files for missing reference to locally installed package
+            //  i.e. add the package files to another container 'packageFilesForDeletion'
+            if (inferredPackageNameAsText.empty()) {
+                auto packageFileForMissingPackage = std::make_unique<PackageFile>(packageAbsolutePathAsText, packageAbsolutePathAsText);
+                packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
+            }
+        }
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF INSTALLED PACKAGES\n\n";
+
+    std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
+
+    for (const auto& package : installedPackages) {
+        std::cout << *package << "\n";
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF PARTLY DOWNLOADED PACKAGE FILES\n\n";
+
+    std::cout << "Found " << partlyDownloadedPackageFiles.size() << " partly downloaded package files\n\n";
+
+    for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
+        std::cout << *partlyDownloadedPackageFile << "\n";
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF PACKAGE FILES RELATED TO MISSING PACKAGES\n\n";
+
+    std::cout << "Found " << packageFilesRelatedToMissingPackages.size() << " package files related to missing packages\n\n";
+
+    for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
+        std::cout << *packageFilesRelatedToMissingPackage << "\n";
+    }
+
+    // TODO iterate all packages in 'installedPackages' and for each package call function
+    //  that deletes all package files for all versions that are different from the locally installed one
+
+    // TODO delete all entries of package files by absolute path from 'partlyDownloadedPackageFiles' and 'packageFilesRelatedToMissingPackages'
+
+    // MOVING PACKAGE FILES TO SEPARATE DIRECTORY PART
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "MOVING PACKAGES\n\n";
+
+    std::string pathToDuplicateFilesDirectoryAsText =
+            pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
+//    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
+
+    for (const auto& installedPackage: installedPackages) {
+        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir(pathToDuplicateFilesDirectoryAsText);
+    }
+
+    for (const auto& partlyDownloadedPackageFile: partlyDownloadedPackageFiles) {
+            const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
+            const std::string& to = pathToDuplicateFilesDirectoryAsText + partlyDownloadedPackageFile->getFilename();
+            std::cout << "Moving package file\t" << from << "\nto separate directory\t" << to << "\n\n";
+//            std::filesystem::rename(from, to);
+    }
+
+    for (const auto& packageFilesRelatedToMissingPackage: packageFilesRelatedToMissingPackages) {
+        const std::string& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
+        const std::string& to = pathToDuplicateFilesDirectoryAsText + packageFilesRelatedToMissingPackage->getFilename();
+        std::cout << "Moving package file\t" << from << "\nto separate directory\t" << to << "\n\n";
+//            std::filesystem::rename(from, to);
+    }
+
+    // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
+    //  by not deleting the pikaur directories themselves, but by deleting all files within the pikaur directories
+
+
+
+
+
+
+
+
+
+
+    if (false) {
+        err = reinterpret_cast<alpm_errno_t *>(calloc(1, sizeof(alpm_errno_t)));
+        handle = alpm_initialize("/", "/var/lib/pacman/", err);
+        db_local = alpm_get_localdb(handle);
+        listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
+
+        //listOfAllLocallyInstalledPackages = alpm_list_last(listOfAllLocallyInstalledPackages);
+
+        while (listOfAllLocallyInstalledPackages != NULL) {
+            alpm_pkg_t *alpm_pkg = reinterpret_cast<alpm_pkg_t *>(listOfAllLocallyInstalledPackages->data);
+            listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
+            //listOfAllLocallyInstalledPackages = alpm_list_previous(listOfAllLocallyInstalledPackages);
+
+            std::string packageName = alpm_pkg_get_name(alpm_pkg);
+            std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
+            std::string architecture = alpm_pkg_get_arch(alpm_pkg);
+            auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
+
 //      For debugging purposes
 //        if (packageName == "clang") {
 //        if (packageName == "clion") {
@@ -424,117 +610,134 @@ int main() {
 //            std::cout << "Here we go..." << "\n";
 //        }
 
-        if (std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
-            auto partialPackageNamePrefixAsText = pkg->getName();
-            auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
-            auto partiallyMatchedPackageFileElementByPrefix = packageFilesWithPackages.lower_bound(partialPackageFilenamePrefix);
+            if (std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(),
+                          packageName) != ignoredPackageNamesInTextFormat.end()) {
+                auto partialPackageNamePrefixAsText = pkg->getName();
+                auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
+                auto partiallyMatchedPackageFileElementByPrefix = packageFilesWithPackages.lower_bound(
+                        partialPackageFilenamePrefix);
 
-            // TODO for ignored packages, build the partial filename only with packageName,
-            //  then find ALL package files that begin with the name of the package
-            //  and add/move the package as a Package value to the corresponding PackageFile keys (don't worry about the duplicate instances - we will handle them later by references)
-            while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) && partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(*partialPackageFilenamePrefix) == 0) {
+                // TODO for ignored packages, build the partial filename only with packageName,
+                //  then find ALL package files that begin with the name of the package
+                //  and add/move the package as a Package value to the corresponding PackageFile keys (don't worry about the duplicate instances - we will handle them later by references)
+                while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) &&
+                       partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(
+                               *partialPackageFilenamePrefix) == 0) {
 //                if (pkg->getName() == partiallyMatchedPackageFileElementByPrefix->first->getExtractedPackageName() ) {
-                    pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);  // Don't mind of duplicates
+                    pkg = std::make_unique<Package>(packageName, locallyInstalledVersion,
+                                                    architecture);  // Don't mind of duplicates
                     partiallyMatchedPackageFileElementByPrefix->second = std::move(pkg);
-                    std::cout << *partiallyMatchedPackageFileElementByPrefix->first << "\t" << *partiallyMatchedPackageFileElementByPrefix->second << "\n";
+                    std::cout << *partiallyMatchedPackageFileElementByPrefix->first << "\t"
+                              << *partiallyMatchedPackageFileElementByPrefix->second << "\n";
 //                }
+                    ++partiallyMatchedPackageFileElementByPrefix;
+                }
+                continue;
+            }
+
+            auto partialPackageNamePrefixAsText = pkg->buildPartialPackageNamePrefix();
+            auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
+            auto partiallyMatchedPackageFileElementByPrefix = packageFilesWithPackages.lower_bound(
+                    partialPackageFilenamePrefix);
+
+            while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) &&
+                   partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(
+                           *partialPackageFilenamePrefix) == 0) {
+                pkg = std::make_unique<Package>(packageName, locallyInstalledVersion,
+                                                architecture);  // Don't mind of duplicates
+                partiallyMatchedPackageFileElementByPrefix->second = std::move(pkg);
+                std::cout << *partiallyMatchedPackageFileElementByPrefix->first << "\t"
+                          << *partiallyMatchedPackageFileElementByPrefix->second << "\n";
                 ++partiallyMatchedPackageFileElementByPrefix;
             }
-            continue;
         }
 
-        auto partialPackageNamePrefixAsText = pkg->buildPartialPackageNamePrefix();
-        auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
-        auto partiallyMatchedPackageFileElementByPrefix = packageFilesWithPackages.lower_bound(partialPackageFilenamePrefix);
+        free(err);
+        err = nullptr;
 
-        while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) && partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(*partialPackageFilenamePrefix) == 0) {
-            pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);  // Don't mind of duplicates
-            partiallyMatchedPackageFileElementByPrefix->second = std::move(pkg);
-            std::cout << *partiallyMatchedPackageFileElementByPrefix->first << "\t"<< *partiallyMatchedPackageFileElementByPrefix->second << "\n";
-            ++partiallyMatchedPackageFileElementByPrefix;
+        alpm_release(handle);
+        handle = nullptr;
+
+        // report/verification which packages have 0 packageVersionsWithRelatedDownloadedFiles
+        std::cout << "\n";
+        std::cout << "===============================================\n\n";
+        std::cout << "LIST OF PACKAGE FILES WITH ASSIGNED PACKAGES\n\n";
+
+        std::cout << "Found " << packageFilesWithPackages.size() << " package files with packages\n\n";
+
+        for (const auto &packageFileWithPackage: packageFilesWithPackages) {
+            std::cout << *packageFileWithPackage.first << "\t";
+            std::cout << *packageFileWithPackage.second << "\n";
         }
-    }
 
-    free(err);
-    err = nullptr;
+        std::cout << "\n";
+        std::cout << "===============================================\n\n";
+        std::cout << "LIST OF LOCALLY INSTALLED PACKAGES WITH MISSING PACKAGE FILES WHICH THEY WERE INSTALLED FROM\n\n";
 
-    alpm_release(handle);
-    handle = nullptr;
+        err = reinterpret_cast<alpm_errno_t *>(calloc(1, sizeof(alpm_errno_t)));
+        handle = alpm_initialize("/", "/var/lib/pacman/", err);
+        db_local = alpm_get_localdb(handle);
+        listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
 
-    // report/verification which packages have 0 packageVersionsWithRelatedDownloadedFiles
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "LIST OF PACKAGE FILES WITH ASSIGNED PACKAGES\n\n";
+        while (listOfAllLocallyInstalledPackages != NULL) {
+            alpm_pkg_t *alpm_pkg = reinterpret_cast<alpm_pkg_t *>(listOfAllLocallyInstalledPackages->data);
+            listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
-    std::cout << "Found " << packageFilesWithPackages.size() << " package files with packages\n\n";
+            std::string packageName = alpm_pkg_get_name(alpm_pkg);
+            std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
+            std::string architecture = alpm_pkg_get_arch(alpm_pkg);
+            auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
 
-    for (const auto& packageFileWithPackage : packageFilesWithPackages) {
-        std::cout << *packageFileWithPackage.first << "\t";
-        std::cout << *packageFileWithPackage.second << "\n";
-    }
+            auto partialPackageNamePrefixAsText = pkg->getName();
+            auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
+            auto partiallyMatchedPackageFileElementByPrefix = packageFilesWithPackages.lower_bound(
+                    partialPackageFilenamePrefix);
+            bool hasPackageItsPackageFile = false;
 
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "LIST OF LOCALLY INSTALLED PACKAGES WITH MISSING PACKAGE FILES WHICH THEY WERE INSTALLED FROM\n\n";
+            while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) &&
+                   partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(
+                           *partialPackageFilenamePrefix) == 0) {
+                pkg = std::make_unique<Package>(packageName, locallyInstalledVersion,
+                                                architecture);  // Don't mind of duplicates
+                hasPackageItsPackageFile = *partiallyMatchedPackageFileElementByPrefix->second == *pkg;
 
-    err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
-    handle = alpm_initialize("/", "/var/lib/pacman/", err);
-    db_local = alpm_get_localdb(handle);
-    listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
+                if (hasPackageItsPackageFile) {
+                    break;
+                }
 
-    while (listOfAllLocallyInstalledPackages != NULL) {
-        alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
-        listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
-
-        std::string packageName = alpm_pkg_get_name(alpm_pkg);
-        std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
-        std::string architecture = alpm_pkg_get_arch(alpm_pkg);
-        auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
-
-        auto partialPackageNamePrefixAsText = pkg->getName();
-        auto partialPackageFilenamePrefix = std::make_unique<PackageFile>(partialPackageNamePrefixAsText);
-        auto partiallyMatchedPackageFileElementByPrefix = packageFilesWithPackages.lower_bound(partialPackageFilenamePrefix);
-        bool hasPackageItsPackageFile = false;
-
-        while (partiallyMatchedPackageFileElementByPrefix != std::end(packageFilesWithPackages) && partiallyMatchedPackageFileElementByPrefix->first->isPartiallyMatchingInPrefix(*partialPackageFilenamePrefix) == 0) {
-            pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);  // Don't mind of duplicates
-            hasPackageItsPackageFile = *partiallyMatchedPackageFileElementByPrefix->second == *pkg;
-
-            if (hasPackageItsPackageFile) {
-                break;
+                ++partiallyMatchedPackageFileElementByPrefix;
             }
 
-            ++partiallyMatchedPackageFileElementByPrefix;
+            bool isPackageFileForPackageMissing = !hasPackageItsPackageFile;
+            if (isPackageFileForPackageMissing) {
+                std::cout << "Missing package file for package: " << *pkg << "\n";
+            }
         }
 
-        bool isPackageFileForPackageMissing = ! hasPackageItsPackageFile;
-        if (isPackageFileForPackageMissing) {
-            std::cout << "Missing package file for package: " << *pkg << "\n";
-        }
-    }
+        free(err);
+        err = nullptr;
 
-    free(err);
-    err = nullptr;
+        alpm_release(handle);
+        handle = nullptr;
 
-    alpm_release(handle);
-    handle = nullptr;
+        // MOVING PACKAGE FILES TO SEPARATE DIRECTORY PART
 
-    // MOVING PACKAGE FILES TO SEPARATE DIRECTORY PART
+        std::cout << "\n";
+        std::cout << "===============================================\n\n";
+        std::cout << "MOVING PACKAGES\n\n";
 
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "MOVING PACKAGES\n\n";
-
-    std::string pathToDuplicateFilesDirectoryAsText = pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
+        std::string pathToDuplicateFilesDirectoryAsText =
+                pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
 //    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
-    for (const auto& [packageFile, package] : packageFilesWithPackages) {
-        bool packageFileReferrsToMissingLocallyInstalledPackage = package->isEmpty();
-        if (packageFileReferrsToMissingLocallyInstalledPackage) {
-            const std::string& from = packageFile->getAbsolutePath();
-            const std::string& to = pathToDuplicateFilesDirectoryAsText + packageFile->getFilename();
-            std::cout << "Moving package file\t" << from << "\nto separate directory\t" << to << "\n\n";
+        for (const auto&[packageFile, package]: packageFilesWithPackages) {
+            bool packageFileReferrsToMissingLocallyInstalledPackage = package->isEmpty();
+            if (packageFileReferrsToMissingLocallyInstalledPackage) {
+                const std::string &from = packageFile->getAbsolutePath();
+                const std::string &to = pathToDuplicateFilesDirectoryAsText + packageFile->getFilename();
+                std::cout << "Moving package file\t" << from << "\nto separate directory\t" << to << "\n\n";
 //            std::filesystem::rename(from, to);
+            }
         }
     }
 

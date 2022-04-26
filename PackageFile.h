@@ -11,11 +11,15 @@ public:
 
     explicit PackageFile(std::string filename);
 
+    PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion);
+
     std::string getFilename() const;
 
     uint32_t isPartiallyMatchingInPrefix(const PackageFile& compoundPartialPackageFilenamePrefix) const;
 
     std::string getAbsolutePath() const;
+    std::string getRelatedPackageName() const;
+    std::string getRelatedPackageVersion() const;
 
     bool operator<(const PackageFile& packageFilename) const {
         return this->getFilename() < packageFilename.getFilename();
@@ -33,6 +37,8 @@ private:
     std::string extractedPackageNameFromFilename;
     std::string extractedPackageVersionFromFilename;
 //    bool isPackageSpecial;
+    std::string relatedPackageVersion;
+    std::string relatedPackageName;
 
     void setPackageNameAndVersionFromFilename();
 };

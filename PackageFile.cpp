@@ -13,7 +13,7 @@ PackageFile::PackageFile(std::string filename, std::string absolutePath) :
         absolutePath(absolutePath)
 //        ,isPackageSpecial(false)
 {
-    setPackageNameAndVersionFromFilename();
+//    setPackageNameAndVersionFromFilename();
 }
 
 // for creating PackageFiles with partial filename prefix to be used with 'lower_bound' function in map
@@ -24,6 +24,13 @@ PackageFile::PackageFile(std::string filename) :
         filename(std::move(filename)),
         absolutePath(" ")
 //        ,isPackageSpecial(false)
+{}
+
+PackageFile::PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion) :
+        filename(filename),
+        absolutePath(absolutePath),
+        relatedPackageName(relatedPackageName),
+        relatedPackageVersion(relatedPackageVersion)
 {}
 
 void PackageFile::setPackageNameAndVersionFromFilename() {
@@ -245,4 +252,12 @@ uint32_t PackageFile::isPartiallyMatchingInPrefix(const PackageFile& compoundPar
 
 std::string PackageFile::getAbsolutePath() const {
     return absolutePath;
+}
+
+std::string PackageFile::getRelatedPackageName() const {
+    return this->relatedPackageName;
+}
+
+std::string PackageFile::getRelatedPackageVersion() const {
+    return this->relatedPackageVersion;
 }
