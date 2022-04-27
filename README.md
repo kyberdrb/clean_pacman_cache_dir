@@ -4,6 +4,26 @@ A utility to delete the contents of the pacman's cache directory `/var/cache/pac
 
 The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages need to be deleted manually.
 
+## Build
+
+### CLion `Release` build
+
+1. Generate makefiles
+
+        $ /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/opt/clion/bin/ninja/linux/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
+
+2. Compile the binary
+
+        $ /opt/clion/bin/cmake/linux/bin/cmake --build /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release --target clean_pacman_cache_dir
+
+### Generic CMake `Release` build (when CLion utilities are not available or accessible)
+
+    $ # Install 'cmake' and 'ninja'
+    $ sudo pacman --sync --refresh --refresh --needed cmake ninja
+
+    $ /usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
+    $ /usr/bin/cmake --build /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release --target clean_pacman_cache_dir
+
 ## Usage
 
 1. Check the contents of the pacman's cache directory
@@ -12,16 +32,27 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 2. Move package file in versions for other than the locally installed package version into a separate directory by executing
 
-        sudo ./clean_pacman_cache_dir
+        $ cd /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
+        $ sudo ./clean_pacman_cache_dir
 
 3. Verify contents of directories
 
         ls -1 /var/cache/pacman/pkg | less
+        du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
         ls -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
 
 4. Delete the directory with collected package files
+   
+    - Less destructive - possibility to restore packages if needed and delete the rest later
 
-        sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+          $ sudo chown --recursive /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED --reference "${HOME}"
+          $ sudo move /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
+          $ gio trash ~/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+        
+    - More destructive - delete all files for other pakcage version immediately
+
+          $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+
 5. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
 
         ls -1 /var/cache/pacman/pkg | less
@@ -53,7 +84,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 ---
 
-Internal structural representation
+Internal structural representation - a coarse draft
 
 Iterate all localy installed packages from the local DB and save each entry into a hashmap `installedPackages` in an instance of class `InstalledPackages`
 
@@ -199,7 +230,7 @@ The version of the algorithm with a tokenization
     - https://bugs.archlinux.org/index.php?project=3
     - https://duckduckgo.com/?t=ffab&q=libalpm+example&ia=web
     - https://code.toofishes.net/pacman/doc/group__alpm__api__databases.html
-- map
+- `std::map`
     - https://duckduckgo.com/?q=c%2B%2B+map+find+key+containing+pattern+substring&t=ffab&ia=web
     - https://stackoverflow.com/questions/9349797/partial-match-for-the-key-of-a-stdmap
     - http://www.cplusplus.com/reference/map/map/lower_bound/
@@ -223,13 +254,20 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+map+custom+object+key+find&ia=web
     - https://stackoverflow.com/questions/53402737/c-using-stdfind-in-a-map-where-the-key-is-a-custom-class
         - using custom comparator at runtime  to looking up elements in the `map` - with `std::find_if` or `std::any_of` with a custom predicate
+    - - https://duckduckgo.com/?q=c%2B%2B+map+find+key+beginning+with+substring+partial+match+prefix&t=ffab&ia=web&iax=qa
+    - https://stackoverflow.com/questions/9349797/partial-match-for-the-key-of-a-stdmap/57905386#57905386
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+map+lower_bound&ia=web
+    - https://www.cplusplus.com/reference/map/map/lower_bound/
 - C++20 SPACESHIP OPERATOR `<=>` (for comparison of custom objects - also for the keys in a `std::map` of a custom type)
     - https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key/70319881#70319881
         - specific answer for C++20 for a `map` with keys of custom type from: https://stackoverflow.com/questions/1102392/how-can-i-use-stdmaps-with-user-defined-types-as-key
     - https://duckduckgo.com/?q=c%2B%2B+20+spaceship+operator+map+key+custom+object+class&t=ffab&ia=web&iax=qa
     - http://modernescpp.com/index.php/c-20-more-details-to-the-spaceship-operator
     - https://stackoverflow.com/questions/20168173/when-using-stdmap-should-i-overload-operator-for-the-key-type#20168253
-- regex
+- `std::set`
+    - https://www.cplusplus.com/reference/set/set/
+    - https://www.cplusplus.com/reference/set/set/find/
+- `regex`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
     - https://www.softwaretestinghelp.com/regex-in-cpp/
@@ -237,15 +275,88 @@ The version of the algorithm with a tokenization
     - https://www.cplusplus.com/reference/regex/regex_replace/
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+regex_search&ia=web
     - https://cplusplus.com/reference/regex/regex_search/
-- string
+    - https://regex101.com/
+    - https://duckduckgo.com/?t=ffab&q=regex+match+from+backwards&ia=web
+    - https://stackoverflow.com/questions/1103149/non-greedy-reluctant-regex-matching-in-sed
+- `string`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+tokenize+string&ia=web
     - https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
     - https://duckduckgo.com/?q=c%2B%2B+check+if+number&t=ffab&ia=web
     - https://www.tutorialspoint.com/how-to-check-if-input-is-numeric-in-cplusplus
     - https://duckduckgo.com/?q=c%2B%2B+string+clear&t=ffab&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+reverse+string&ia=web
+    - https://www.journaldev.com/35816/reverse-string-c-plus-plus
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+find+occurrence+character&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substring+extract+index+position&ia=web
+    - https://www.educba.com/c-plus-plus-substring/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substr&ia=web
+    - https://www.cplusplus.com/reference/string/string/substr/
 - vector
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+contains&ia=web&iax=qa
     - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906
+- `std::filesystem`
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
+    - https://en.cppreference.com/w/cpp/filesystem/remove
+    - https://techoverflow.net/2019/04/21/how-to-recursively-delete-directory-using-c17-filesystem-library/
 - own projects
     - duplicate_finder - TODO add Github link
     - EmployeeManagementSystem - TODO add Github link
+- C++ specific
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
+    - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+string+compare+longest+match+prefix&t=ffab&ia=web&iax=qa
+    - https://stackoverflow.com/questions/22615838/string-matching-computing-the-longest-prefix-suffix-array-in-kmp-algorithm#22616474
+    - https://docs.microsoft.com/en-us/cpp/cpp/delegating-constructors?view=msvc-170
+- `libarchive`
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
+- CMake, LLVM toolchain, `clang`, cross-compiling
+    - https://stackoverflow.com/questions/53879422/how-to-set-g-compile-options-in-clion
+    - ---
+    - https://duckduckgo.com/?t=ffab&q=cmake+options+o2+optimize&ia=web&iax=qa
+    - https://stackoverflow.com/questions/41264827/setting-optimization-settings-in-visual-studio-through-cmake
+    - ---
+    - https://duckduckgo.com/?t=ffab&q=clang+undfined+reference+to&ia=web
+    - https://duckduckgo.com/?t=ffab&q=undefined+reference+to+%60std%3A%3Abasic_ifstream%3Cchar%2C+std%3A%3Achar_traits%3Cchar%3E+%3E%3A%3Abasic_ifstream()%27&ia=web
+    - https://stackoverflow.com/questions/22972545/undefined-reference-with-clang-with-o2
+    - https://stackoverflow.com/questions/21689228/c-undefined-reference-using-fstream/21689297#21689297
+        - **i. e. not `clang` but `clang++` instead**
+    - https://duckduckgo.com/?q=llvm+c%2B%2B17&ia=web
+    - https://wiki.archlinux.org/title/LLVM
+    - https://wiki.archlinux.org/title/GNU#Toolchain
+    - https://duckduckgo.com/?q=clion+lld+clang+linker&t=ffab&ia=web
+    - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1?page=1#community_comment_360000166850
+    - https://intellij-support.jetbrains.com/hc/en-us/community/posts/206606735-Using-Clang-With-CLion-on-Windows?page=1#community_comment_115000631284
+    - https://stackoverflow.com/questions/56447526/how-to-add-linker-flags-in-clion
+    - https://duckduckgo.com/?t=ffab&q=clion+clang+toolchain+c%2B%2B&ia=web
+    - https://duckduckgo.com/?t=ffab&q=clang+c%2B%2B+compiler&ia=web
+    - https://duckduckgo.com/?t=ffab&q=cmake+pass+build+options+to+clang&ia=web
+    - https://stackoverflow.com/questions/41775000/correctly-passing-command-line-arguments-to-clang-llvm
+    - https://duckduckgo.com/?q=cmake+clang-13%3A+warning%3A+-lalpm%3A+%27linker%27+input+unused+%5B-Wunused-command-line-argument%5D&t=ffab&ia=web
+    - https://stackoverflow.com/questions/38855817/cmake-import-lpthread-and-others
+    - https://duckduckgo.com/?t=ffab&q=cmake+link+libraries&ia=web
+    - https://duckduckgo.com/?t=ffab&q=cmake+detect+compiler&ia=web
+    - https://stackoverflow.com/questions/10046114/in-cmake-how-can-i-test-if-the-compiler-is-clang
+    - https://stackoverflow.com/questions/10046114/in-cmake-how-can-i-test-if-the-compiler-is-clang/10055571#10055571
+    - [-DCMAKE_LINKER=/usr/bin/lld - Google search](https://www.google.com/search?q=-DCMAKE_LINKER%3D%2Fusr%2Fbin%2Flld&source=hp&ei=gqRpYsKhBYHMaLyUpsgO&iflsig=AHkkrS4AAAAAYmmykhO9pSPpbch5vF3LJzwnIaT37LmD&ved=0ahUKEwjC6sfTh7X3AhUBJhoKHTyKCekQ4dUDCAc&uact=5&oq=-DCMAKE_LINKER%3D%2Fusr%2Fbin%2Flld&gs_lcp=Cgdnd3Mtd2l6EANQAFgAYN4CaABwAHgAgAFbiAFbkgEBMZgBAKABAqABAQ&sclient=gws-wiz)
+    - [clion lld - Google search](https://www.google.com/search?q=clion+lld&source=hp&ei=yaRpYvv2K8Oaa9XqrGA&iflsig=AHkkrS4AAAAAYmmy2RVSzGzk6d7nbtiNWhma98T2As1F&ved=0ahUKEwi7_9v1h7X3AhVDzRoKHVU1CwwQ4dUDCAc&uact=5&oq=clion+lld&gs_lcp=Cgdnd3Mtd2l6EAMyBggAEBYQHjIGCAAQFhAeMgYIABAWEB4yBggAEBYQHjIGCAAQFhAeMgYIABAWEB4yBggAEBYQHjIGCAAQFhAeOgsIABCABBCxAxCDAToFCAAQgAQ6CAgAEIAEELEDOhEILhCABBCxAxCDARDHARCjAjoRCC4QgAQQsQMQgwEQxwEQ0QM6CAguEIAEELEDOg4ILhCABBCxAxDHARCvAToLCC4QsQMQgwEQ1AI6DgguEIAEELEDEIMBENQCOgUILhCABDoRCC4QgAQQsQMQgwEQxwEQrwE6CAguEIAEENQCOgQIABANOgYIABANEB46CAgAEA0QChAeUABYiQlgrwtoAHAAeACAAckBiAGVCZIBBTEuNy4xmAEAoAEB&sclient=gws-wiz)
+    - https://blog.jetbrains.com/clion/2020/12/setting-up-clang-on-windows/
+    - [cmake linux exe cross compile - Google search](https://www.google.com/search?q=cmake+linux+exe+cross+compile&source=hp&ei=TalpYuO3I8eN9u8P_bWMmAQ&iflsig=AHkkrS4AAAAAYmm3XaHxBQwantog6U8KFOhmtmJ9BY5b&ved=0ahUKEwijkvCcjLX3AhXHhv0HHf0aA0MQ4dUDCAc&uact=5&oq=cmake+linux+exe+cross+compile&gs_lcp=Cgdnd3Mtd2l6EAMyBQghEKABMgUIIRCgATIFCCEQoAEyBQghEKABMggIIRAWEB0QHlAAWABg_ANoAHAAeACAAZoBiAGaAZIBAzAuMZgBAKABAqABAQ&sclient=gws-wiz)
+    - https://stackoverflow.com/questions/63178407/cmake-compile-in-linux-execute-in-windows
+        - it appears that I need to use a `mingw-w64` for cross-compiling a binary for Windows on a system with Linux/UNIX
+    - [clion cmake compile in linux execute in windows exe cross compile - Google search](https://www.google.com/search?q=clion+cmake+compile+in+linux+execute+in+windows+exe+cross+compile&ei=TqlpYuzFOJKB9u8P8dGlqAs&ved=0ahUKEwjspMKdjLX3AhWSgP0HHfFoCbUQ4dUDCA4&uact=5&oq=clion+cmake+compile+in+linux+execute+in+windows+exe+cross+compile&gs_lcp=Cgdnd3Mtd2l6EAM6BwgAEEcQsANKBAhBGABKBAhGGABQph1Y0Vlg3WVoAXABeACAAa8BiAGeIJIBBDcuMjmYAQCgAQHIAQjAAQE&sclient=gws-wiz)
+- Linux/UNIX
+    - https://duckduckgo.com/?t=ffab&q=extract+single+file+from+tar&ia=web
+    - https://www.cyberciti.biz/faq/linux-unix-extracting-specific-files/
+    - https://wiki.archlinux.org/title/Arch_Linux_Archive
+        - example of a URL for a specific package: `https://archive.archlinux.org/packages/a/a52dec/`
+    - https://duckduckgo.com/?q=less+case+sensitive+search+command+line&t=ffab&ia=web
+    - https://unix.stackexchange.com/questions/116395/less-searches-are-always-case-insensitive#116401
+        - case sensitive search is enabled in `less` by default
+        - for case _insensitive_ search use `less -i` or `less --ignore-case` or even `less --IGNORE_CASE`
+    - https://duckduckgo.com/?t=ffab&q=open+man+page+in+custom+editor&ia=web
+- CLion
+    - https://duckduckgo.com/?t=ffab&q=clion+sudo&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+ninja+optimize+o2+clion&t=ffab&ia=web
+    - https://blog.jetbrains.com/clion/2019/10/clion-2019-3-eap-ninja-cmake-generators/
+    - https://duckduckgo.com/?t=ffab&q=clion+lldb+error%3A+unknown+option%3A+--interpreter%3Dmi2&ia=web
+  - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1
