@@ -359,4 +359,10 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?q=c%2B%2B+ninja+optimize+o2+clion&t=ffab&ia=web
     - https://blog.jetbrains.com/clion/2019/10/clion-2019-3-eap-ninja-cmake-generators/
     - https://duckduckgo.com/?t=ffab&q=clion+lldb+error%3A+unknown+option%3A+--interpreter%3Dmi2&ia=web
-  - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1
+    - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1
+    - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1?page=1#community_comment_360000254800
+    - [ CLion Fails to Debug cc_binary target on macOS #494 - Open - ]https://github.com/bazelbuild/intellij/issues/494
+        - making `gdbserver` executable - but I didn't find any
+        - https://github.com/bazelbuild/intellij/issues/494#issuecomment-475546577
+        - https://github.com/bazelbuild/intellij/issues/494#issuecomment-496557330
+        - https://github.com/bazelbuild/intellij/issues/494#issuecomment-621376800
