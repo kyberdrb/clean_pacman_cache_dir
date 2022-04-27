@@ -8,31 +8,23 @@
 
 class Package {
 public:
-    Package(std::string name, std::string locallyInstalledVersion, std::string architecture);
     Package(std::string name, std::string locallyInstalledVersion, std::string architecture, bool isIgnored);
 
     explicit Package(std::string inferredPackageName);
 
     std::string getName() const;
 
-    std::string getLocallyInstalledVersion() const;
+    void getNextInferredPackageNameCandidate();
 
-    bool addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile);
+    bool hasStillSomethingInPackageName() const;
+
+    bool isPackageNameEmpty() const;
+
+    uint8_t getStartingPositionForPackageVersion() const;
+
+    void addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile);
 
     void movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles);
-
-
-
-
-
-    bool isSpecial() const;
-
-    std::string buildPartialPackageNamePrefix() const;
-
-    bool isEmpty() const;
-
-    // TODO maybe delete this function altogether
-    std::vector<std::string> getPackageNameCandidates() const;
 
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
         out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture << "\t" << "isPackageIgnored: " << package.isIgnored << "\t" << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
@@ -55,19 +47,9 @@ public:
         return out;
     }
 
-    bool operator==(const Package& package) const {
-        return name == package.name &&
-               locallyInstalledVersion == package.locallyInstalledVersion &&
-               architecture == package.architecture;
-    }
-
     bool operator<(const Package& package) const {
         return this->getName() < package.getName();
     }
-
-//    bool operator==(const PackageFile& packageFile) const {
-//        return name == packageFile.getExtractedPackageName();
-//    }
 
 private:
     std::string name;
@@ -78,6 +60,7 @@ private:
     std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
 };
 
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
 namespace std {
     template<>
     struct less<unique_ptr<Package>> {
