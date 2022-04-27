@@ -389,7 +389,13 @@ int main() {
         std::string packageName = alpm_pkg_get_name(alpm_pkg);
         std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
-        auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture);
+
+        bool isIgnored = false;
+        if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
+            isIgnored = true;
+        }
+
+        auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture, isIgnored);
 
         installedPackages.emplace(std::move(pkg));
     }

@@ -11,7 +11,15 @@
 Package::Package(std::string name, std::string locallyInstalledVersion, std::string architecture) :
         name(std::move(name)),
         locallyInstalledVersion(std::move(locallyInstalledVersion)),
-        architecture(std::move(architecture))
+        architecture(std::move(architecture)),
+        isIgnored(false)
+{}
+
+Package::Package(std::string name, std::string locallyInstalledVersion, std::string architecture, bool isIgnored) :
+        name(std::move(name)),
+        locallyInstalledVersion(std::move(locallyInstalledVersion)),
+        architecture(std::move(architecture)),
+        isIgnored(isIgnored)
 {}
 
 Package::Package(std::string inferredPackageName) :
@@ -20,8 +28,9 @@ Package::Package(std::string inferredPackageName) :
 
 bool Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
     if (
-            this->name != packageRelatedPackageFile->getRelatedPackageName() &&
-            this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion())
+            this->name == packageRelatedPackageFile->getRelatedPackageName() &&
+            this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion() &&
+            !this->isIgnored)
     {
         this->packageFilesForDeletion.emplace_back(std::move(packageRelatedPackageFile));
         return true;
