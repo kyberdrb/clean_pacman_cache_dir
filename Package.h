@@ -16,7 +16,7 @@ public:
     void addPackageVersion(std::string packageVersionAsText);
 
     const PackageVersion& getVersion() const;
-    const PackageName& getName() const;
+    std::string moveNameHere();
 
     void getNextInferredPackageNameCandidate();
 
@@ -57,7 +57,7 @@ public:
     }
 
     bool operator<(const Package& package) const {
-        return this->getName() < package.getName();
+        return this->name < package.name;
     }
 
 private:

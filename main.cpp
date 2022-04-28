@@ -148,6 +148,7 @@ int main() {
 
             std::string inferredPackageNameAsText = packageNameAndVersion;
             auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText));
+            bool wasInferredPackageRefferingToMissingPackage = false;
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
@@ -167,15 +168,12 @@ int main() {
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
 
-//                packageWithInferredName->addPackageVersion(std::move(inferredPackageVersionAsText));
-//                auto PackageWithInferredNameAndVersion = std::move(packageWithInferredName);
-
-                // TODO create constructor for the class 'PackageWithInferredNameAndVersion'
+                std::string inferredPackageName = std::move(packageWithInferredName->moveNameHere());
+                wasInferredPackageRefferingToMissingPackage = inferredPackageName.empty();
                 auto packageWithInferredNameAndVersion = std::make_unique<PackageWithInferredNameAndVersion>(
-                        packageWithInferredName->getName().string(),
+                        std::move(inferredPackageName),
                         std::move(inferredPackageVersionAsText));
 
-                // TODO adjust constructor of PackageFile - 3rd argument - from Package to PackageWithInferredNameAndVersion
                 auto packageRelatedFile = std::make_unique<PackageFile>(
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
@@ -187,7 +185,7 @@ int main() {
 
             // handle package files for missing reference to locally installed package
             //  i.e. add the package files to another container 'packageFilesForDeletion'
-            if (packageWithInferredName->isPackageNameEmpty()) {
+            if (wasInferredPackageRefferingToMissingPackage) {
                 auto packageFileForMissingPackage = std::make_unique<PackageFile>(packageAbsolutePathAsText);
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
