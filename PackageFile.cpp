@@ -11,9 +11,15 @@ PackageFile::PackageFile(std::string absolutePath) :
 PackageFile::PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion) :
         filename(std::move(filename)),
         absolutePath(std::move(absolutePath)),
-        relatedPackageName(std::move(relatedPackageName)),
-        relatedPackageVersion(std::make_unique<PackageVersion>(std::move(relatedPackageVersion)))
+        relatedPackageName(std::make_unique<PackageName>(std::move(relatedPackageName) ) ),
+        relatedPackageVersion(std::make_unique<PackageVersion>(std::move(relatedPackageVersion) ) )
 {}
+
+//PackageFile::PackageFile(std::string filename, std::string absolutePath, std::unique_ptr<Package> packageWithInferredNameAndVersion) :
+//        filename(std::move(filename)),
+//        absolutePath(std::move(absolutePath)),
+//        relatedPackage(std::make_unique<PackageName>(std::move(packageWithInferredNameAndVersion) ) )
+//{}
 
 std::string PackageFile::getFilename() const {
     return filename;
@@ -23,14 +29,14 @@ std::string PackageFile::getAbsolutePath() const {
     return absolutePath;
 }
 
-std::string PackageFile::getRelatedPackageName() const {
-    return this->relatedPackageName;
+const PackageName& PackageFile::getRelatedPackageName() const {
+    return *(this->relatedPackageName);
 }
 
-//const PackageVersion& PackageFile::getRelatedPackageVersion() const {
-//    return *(this->relatedPackageVersion);
+const PackageVersion& PackageFile::getRelatedPackageVersion() const {
+    return *(this->relatedPackageVersion);
+}
+
+//const std::string& PackageFile::getRelatedPackageVersion() const {
+//    return this->relatedPackageVersion->getVersion();
 //}
-
-const std::string& PackageFile::getRelatedPackageVersion() const {
-    return this->relatedPackageVersion->getVersion();
-}

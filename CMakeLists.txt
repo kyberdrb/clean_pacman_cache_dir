@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(clean_pacman_cache_dir)
+project(clean_pacman_cache_dir CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -17,8 +17,13 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     link_libraries(alpm)
 
     # I also tried to use these compiler options for CMake
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+#    set(COMPILE_LANGUAGE CXX)
+#    set(COMPILER_LANGUAGE CXX)
+#    set(LINKER_LANGUAGE CXX)
+#    set(CMAKE_CXX_COMPILE_FEATURES "${CMAKE_CXX_COMPILE_FEATURES}" cxx_std_17)
     #   -DCMAKE_LINKER=/usr/bin/ld.lld -DLINK_LIBRARIES="lalpm" -DCMAKE_CXX_LINK_EXECUTABLE="<CMAKE_LINKER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>"
-    #  but the compilation stopped at the linking, because the linker didn't find 'ifstream' library. Maybe explicitly specifying compilation and linking language helps?
+    #  but the compilation stopped either at the compilation or at the linking, because the linker didn't find 'ifstream' library. Maybe explicitly specifying compilation and linking language helps?
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message("using Visual Studio C++ compiler")
 endif()

@@ -165,11 +165,13 @@ int main() {
                 //  - break out of the loop
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
+//                packageWithInferredName->addPackageVersion(std::move(inferredPackageVersionAsText));
+//                auto packageWithInferredNameAndVersion = std::move(packageWithInferredName);
                 auto packageRelatedFile = std::make_unique<PackageFile>(
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
-                        std::move(packageWithInferredName->getName()),
-                        std::move(inferredPackageVersionAsText) );
+                        packageWithInferredName->getName().string(),
+                        std::move(inferredPackageVersionAsText));
 
                 matchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
                 break;

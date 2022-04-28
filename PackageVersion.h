@@ -25,18 +25,16 @@ public:
 //        return packageVersion.getVersion() != anotherPackageVersion.getVersion();
 //    }
 
-//    bool operator!=(const std::unique_ptr<PackageVersion>& packageVersion, const std::string& anotherPakcageVersion);
-
     // Member operator comparison works only when comparing
     //  - a (const) reference to instance of this type on the left hand side next to the operator (imiplicit 'this') and
     //  - a (const) reference to instance on the right hand side next to the operator given by the type of the value (explicit parameter)
-//    bool operator!=(const PackageVersion& otherPackageVersion) const {
-//        return this->version != otherPackageVersion.getVersion();
-//    }
-
-    bool operator!=(const std::string& packageVersionAsText) const {
-        return this->version != packageVersionAsText;
+    bool operator!=(const PackageVersion& otherPackageVersion) const {
+        return this->version != otherPackageVersion.getVersion();
     }
+
+//    bool operator!=(const std::string& packageVersionAsText) const {
+//        return this->version != packageVersionAsText;
+//    }
 
 private:
     std::string version;

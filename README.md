@@ -287,7 +287,7 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+reverse+string&ia=web
     - https://www.journaldev.com/35816/reverse-string-c-plus-plus
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+find+occurrence+character&ia=web
-    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substring+extract+index+position&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substring+extract+index+at&ia=web
     - https://www.educba.com/c-plus-plus-substring/
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substr&ia=web
     - https://www.cplusplus.com/reference/string/string/substr/
@@ -297,16 +297,19 @@ The version of the algorithm with a tokenization
 - `std::filesystem`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
     - https://en.cppreference.com/w/cpp/filesystem/remove
-    - https://techoverflow.net/2019/04/21/how-to-recursively-delete-directory-using-c17-filesystem-library/
-- own projects
-    - duplicate_finder - TODO add Github link
-    - EmployeeManagementSystem - TODO add Github link
-- C++ specific
+      - https://techoverflow.net/2019/04/21/how-to-recursively-delete-directory-using-c17-filesystem-library/
+- C++ specific, OOP, operators
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
     - https://duckduckgo.com/?q=c%2B%2B+string+compare+longest+match+prefix&t=ffab&ia=web&iax=qa
     - https://stackoverflow.com/questions/22615838/string-matching-computing-the-longest-prefix-suffix-array-in-kmp-algorithm#22616474
     - https://docs.microsoft.com/en-us/cpp/cpp/delegating-constructors?view=msvc-170
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+overload+operator+not+equals&ia=web
+    - https://stackoverflow.com/questions/26208519/overloading-operators
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+overloading+operators+inline+friend+member&ia=web
+- own projects
+      - duplicate_finder - TODO add Github link
+      - EmployeeManagementSystem - TODO add Github link
 - `libarchive`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
 - CMake, LLVM toolchain, `clang`, cross-compiling
