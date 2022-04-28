@@ -11,7 +11,7 @@
 
 class PackageWithInferredNameAndVersion {
 public:
-    PackageWithInferredNameAndVersion(std::string inferredPackageName, std::string inferredPackageVersion);
+    PackageWithInferredNameAndVersion(std::unique_ptr<PackageName> inferredPackageName, std::string inferredPackageVersion);
 
     const PackageName& getName() const;
     const PackageVersion& getVersion() const;

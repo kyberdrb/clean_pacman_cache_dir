@@ -4,8 +4,8 @@
 
 #include "PackageWithInferredNameAndVersion.h"
 
-PackageWithInferredNameAndVersion::PackageWithInferredNameAndVersion(std::string inferredPackageName, std::string inferredPackageVersion) :
-        inferredPackageName(std::make_unique<PackageName>(std::move(inferredPackageName) ) ),
+PackageWithInferredNameAndVersion::PackageWithInferredNameAndVersion(std::unique_ptr<PackageName> inferredPackageName, std::string inferredPackageVersion) :
+        inferredPackageName(std::move(inferredPackageName) ),
         inferredPackageVersion(std::make_unique<PackageVersion>(std::move(inferredPackageVersion) ) )
 {}
 

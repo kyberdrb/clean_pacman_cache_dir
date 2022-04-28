@@ -167,9 +167,10 @@ int main() {
                 //  - break out of the loop
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
+                wasInferredPackageRefferingToMissingPackage = inferredPackageVersionAsText.empty();
 
-                std::string inferredPackageName = std::move(packageWithInferredName->moveNameHere());
-                wasInferredPackageRefferingToMissingPackage = inferredPackageName.empty();
+                std::unique_ptr<PackageName> inferredPackageName = std::move(packageWithInferredName->moveNameHere());
+
                 auto packageWithInferredNameAndVersion = std::make_unique<PackageWithInferredNameAndVersion>(
                         std::move(inferredPackageName),
                         std::move(inferredPackageVersionAsText));

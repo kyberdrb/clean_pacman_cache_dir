@@ -16,7 +16,7 @@ public:
     void addPackageVersion(std::string packageVersionAsText);
 
     const PackageVersion& getVersion() const;
-    std::string moveNameHere();
+    std::unique_ptr<PackageName> moveNameHere();
 
     void getNextInferredPackageNameCandidate();
 

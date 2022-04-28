@@ -36,8 +36,8 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
     }
 }
 
-std::string Package::moveNameHere() {
-    return std::move( *const_cast<std::string*>( &(this->name->string()) ) );
+std::unique_ptr<PackageName> Package::moveNameHere() {
+    return std::move( *const_cast<std::unique_ptr<PackageName>*>( &(this->name) ) );
 }
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
