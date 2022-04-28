@@ -253,11 +253,37 @@ int main() {
             std::filesystem::rename(from, to);
     }
 
-    // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
-    //  by not deleting the pikaur directories themselves, but by deleting all files within the pikaur directories
+    std::vector<std::filesystem::directory_entry> pikaurNestedDirs;
 
-    // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
-    //  by not deleting the pikaur directories themselves, but by deleting all files within the pikaur directories
+    std::filesystem::path pikaurCacheDirPath("/var/cache/pikaur");
+
+    for (auto& pikaurCacheEntry : std::filesystem::directory_iterator(pikaurCacheDirPath)) {
+        if (pikaurCacheEntry.is_directory()) {
+            pikaurNestedDirs.emplace_back(std::move(*const_cast<std::filesystem::directory_entry*>( &(pikaurCacheEntry)) ) );
+        }
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST PIKAUR CACHE DIRS\n\n";
+
+    for (auto& pikaurCacheNestedDir : pikaurNestedDirs) {
+        std::cout << pikaurCacheNestedDir.path().string() << "\n";
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "DELETE PIKAUR NESTED CACHE ENTRIES\n\n";
+
+    for (auto& pikaurCacheNestedDir : pikaurNestedDirs) {
+        std::filesystem::path pikaurCacheDirPath(pikaurCacheNestedDir.path().string());
+
+        for (auto& pikaurNestedCacheEntry : std::filesystem::directory_iterator(pikaurCacheDirPath)) {
+            std::cout << "Deleting file:" << "\n";
+            std::cout << pikaurNestedCacheEntry.path().string() << "\n\n";
+            std::filesystem::remove_all(pikaurNestedCacheEntry);
+        }
+    }
 
     return 0;
 }
