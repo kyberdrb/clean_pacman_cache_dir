@@ -21,8 +21,8 @@ public:
         return out;
     }
 
-//    friend bool operator!=(const PackageVersion& packageVersion, const PackageVersion& anotherPackageVersion) {
-//        return packageVersion.getVersion() != anotherPackageVersion.getVersion();
+//    friend bool operator!=(const PackageVersion& inferredPackageVersion, const PackageVersion& anotherPackageVersion) {
+//        return inferredPackageVersion.getVersion() != anotherPackageVersion.getVersion();
 //    }
 
     // Member operator comparison works only when comparing
@@ -43,10 +43,10 @@ private:
 // Fails at linking with error message:
 //   "multiple definition of `operator!=(PackageVersion const&, PackageVersion const&)'; CMakeFiles/clean_pacman_cache_dir.dir/main.cpp.o:/home/laptop/git/kyberdrb/clean_pacman_cache_dir/PackageVersion.h:43: first defined here"
 //  prefixing function header with 'inline' keyword solves the issue, because multiple inline definition are allowed as long as they have the same function body
-//bool operator!=(const PackageVersion& packageVersion, const PackageVersion& anotherPackageVersion) {
-//    return packageVersion.getVersion() != anotherPackageVersion.getVersion();
+//bool operator!=(const PackageVersion& inferredPackageVersion, const PackageVersion& anotherPackageVersion) {
+//    return inferredPackageVersion.getVersion() != anotherPackageVersion.getVersion();
 //}
 
-//inline bool operator!=(const PackageVersion& packageVersion, const PackageVersion& anotherPackageVersion) {
-//    return packageVersion.getVersion() != anotherPackageVersion.getVersion();
+//inline bool operator!=(const PackageVersion& inferredPackageVersion, const PackageVersion& anotherPackageVersion) {
+//    return inferredPackageVersion.getVersion() != anotherPackageVersion.getVersion();
 //}

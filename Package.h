@@ -1,8 +1,8 @@
 #pragma once
 
-#include "PackageFile.h"
 #include "PackageName.h"
 #include "PackageVersion.h"
+#include "PackageFile.h"
 
 #include <ostream>
 #include <string>
@@ -15,6 +15,7 @@ public:
     explicit Package(std::string inferredPackageNameAsText);
     void addPackageVersion(std::string packageVersionAsText);
 
+    const PackageVersion& getVersion() const;
     const PackageName& getName() const;
 
     void getNextInferredPackageNameCandidate();
@@ -60,15 +61,14 @@ public:
     }
 
 private:
-//    std::string name;
     std::unique_ptr<PackageName> name;
-
     std::unique_ptr<PackageVersion> locallyInstalledVersion;
 
     std::string architecture;
     bool isIgnored;
 
     std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
+//    std::vector<std::unique_ptr<PackageWithInferredNameAndVersion>> packageFilesForDeletion;
 };
 
 // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key

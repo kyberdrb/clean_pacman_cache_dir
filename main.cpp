@@ -1,4 +1,5 @@
 #include "Package.h"
+#include "PackageWithInferredNameAndVersion.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -165,13 +166,20 @@ int main() {
                 //  - break out of the loop
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
+
 //                packageWithInferredName->addPackageVersion(std::move(inferredPackageVersionAsText));
-//                auto packageWithInferredNameAndVersion = std::move(packageWithInferredName);
+//                auto PackageWithInferredNameAndVersion = std::move(packageWithInferredName);
+
+                // TODO create constructor for the class 'PackageWithInferredNameAndVersion'
+                auto packageWithInferredNameAndVersion = std::make_unique<PackageWithInferredNameAndVersion>(
+                        packageWithInferredName->getName().string(),
+                        std::move(inferredPackageVersionAsText));
+
+                // TODO adjust constructor of PackageFile - 3rd argument - from Package to PackageWithInferredNameAndVersion
                 auto packageRelatedFile = std::make_unique<PackageFile>(
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
-                        packageWithInferredName->getName().string(),
-                        std::move(inferredPackageVersionAsText));
+                        std::move(packageWithInferredNameAndVersion) );
 
                 matchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
                 break;

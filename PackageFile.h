@@ -2,6 +2,7 @@
 
 #include "PackageName.h"
 #include "PackageVersion.h"
+#include "PackageWithInferredNameAndVersion.h"
 
 #include <memory>
 #include <ostream>
@@ -11,8 +12,8 @@ class PackageFile {
 public:
     PackageFile(std::string absolutePath);
 
-    PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion);
-//    PackageFile(std::string filename, std::string absolutePath, std::unique_ptr<Package> packageWithInferredNameAndVersion);
+//    PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion);
+    PackageFile(std::string filename, std::string absolutePath, std::unique_ptr<PackageWithInferredNameAndVersion> packageWithInferredNameAndVersion);
 
     std::string getFilename() const;
 
@@ -28,17 +29,16 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {
-        os << packageFilename.filename << "\t" << *(packageFilename.relatedPackageName) << "\t" << *(packageFilename.relatedPackageVersion) << "\t" << packageFilename.absolutePath;
+        os <<
+            packageFilename.filename << "\t" <<
+            packageFilename.relatedPackage->getName() << "\t" <<
+            packageFilename.relatedPackage->getVersion() << "\t" <<
+            packageFilename.absolutePath;
         return os;
     }
 
 private:
     std::string filename;
     std::string absolutePath;
-
-//    std::string relatedPackageName;
-    std::unique_ptr<PackageName> relatedPackageName;
-
-//    std::string relatedPackageVersion;
-    std::unique_ptr<PackageVersion> relatedPackageVersion;
+    std::unique_ptr<PackageWithInferredNameAndVersion> relatedPackage;
 };

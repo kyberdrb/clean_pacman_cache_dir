@@ -173,16 +173,16 @@ Iterate all localy installed packages from the local DB and save each entry into
    4. Build the regular expression pattern with the help of the `Architecture` class that accumulated all available versions from the previous loop.
    5. shorten the `filename` only to package filename and version by removing the trailing text with a regular expression, and save the result into a variable `packageNameAndVersion`
    6. separate the package filename and version by tokenizing the `packageNameAndVersion` by dash `-` delimiter into `tokens` vector through `token` string
-   7. initialize a text variables `packageName` and `packageVersion` to empty text
+   7. initialize a text variables `inferredPackageName` and `inferredPackageVersion` to empty text
    8. iterate `tokens`  
         
            For each token
                if the first character of the token is not a number
-                   append the token to the packageName
+                   append the token to the inferredPackageName
                    continue
-               append the token to the packageVersion
-   9. remove the dash `-` at the end of `packageName` and `packageVersion`
-   10. Use the `packageName` to find the matching key in the `installedPackages` collection
+               append the token to the inferredPackageVersion
+   9. remove the dash `-` at the end of `inferredPackageName` and `inferredPackageVersion`
+   10. Use the `inferredPackageName` to find the matching key in the `installedPackages` collection
 When the key is found (and thus the package is locally installed on the system), add a new entry to `packageVersionsWithTheirRelatedDownloadedFiles` using the `downloadedPackageVersion` a key
    11. When the key is missing (`nullptr`) (and thus the package had been uninstalled from the system), add the `filename` to the collection `packageFilesDesignatedForDeletion`
 6. Iterate all entries in `packageFilesDesignatedForDeletion`
