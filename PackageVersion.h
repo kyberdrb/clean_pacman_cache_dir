@@ -43,17 +43,6 @@ private:
 //    return packageVersion->getVersion() != anotherPakcageVersion;
 //}
 
-inline bool operator!=(const std::unique_ptr<PackageVersion>& packageVersion, const std::string& anotherPakcageVersion) {
-    return packageVersion->getVersion() != anotherPakcageVersion;
+inline bool operator!=(const PackageVersion& packageVersion, const PackageVersion& anotherPackageVersion) {
+    return packageVersion.getVersion() != anotherPackageVersion.getVersion();
 }
-
-
-
-
-
-
-
-
-
-
-

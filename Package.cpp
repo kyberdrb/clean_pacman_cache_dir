@@ -20,7 +20,7 @@ Package::Package(std::string inferredPackageName) :
 
 void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
     bool isPackageNamesMatching = this->name == packageRelatedPackageFile->getRelatedPackageName();
-    bool isPackageVersionDifferent = this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion();
+    bool isPackageVersionDifferent = *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
     bool isPackageNonignored = !this->isIgnored;
 
     if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {
