@@ -27,6 +27,10 @@ std::string PackageFile::getRelatedPackageName() const {
     return this->relatedPackageName;
 }
 
-const PackageVersion& PackageFile::getRelatedPackageVersion() const {
-    return *(this->relatedPackageVersion);
+//const PackageVersion& PackageFile::getRelatedPackageVersion() const {
+//    return *(this->relatedPackageVersion);
+//}
+
+const std::string& PackageFile::getRelatedPackageVersion() const {
+    return this->relatedPackageVersion->getVersion();
 }

@@ -16,7 +16,8 @@ public:
 
     std::string getAbsolutePath() const;
     std::string getRelatedPackageName() const;
-    const PackageVersion& getRelatedPackageVersion() const;
+//    const PackageVersion& getRelatedPackageVersion() const;
+    const std::string& getRelatedPackageVersion() const;
 
     bool operator<(const PackageFile& packageFilename) const {
         return this->getFilename() < packageFilename.getFilename();
