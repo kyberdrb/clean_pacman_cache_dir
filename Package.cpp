@@ -9,7 +9,7 @@
 
 Package::Package(std::string name, std::string locallyInstalledVersion, std::string architecture, bool isIgnored) :
         name(std::move(name)),
-        locallyInstalledVersion(std::move(locallyInstalledVersion)),
+        locallyInstalledVersion(std::make_unique<PackageVersion>(std::move(locallyInstalledVersion) ) ),
         architecture(std::move(architecture)),
         isIgnored(isIgnored)
 {}
@@ -38,7 +38,7 @@ void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string path
         const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +
                 packageFileForDeletion->getFilename();
         std::cout << "Locally installed package:                    " <<
-            this->name << "-" << this->locallyInstalledVersion << "-" << this->architecture << "\n";
+            this->name << "-" << *(this->locallyInstalledVersion.get()) << "-" << this->architecture << "\n";
         std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
             std::filesystem::rename(from, to);
     }

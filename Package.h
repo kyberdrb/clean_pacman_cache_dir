@@ -1,10 +1,12 @@
 #pragma once
 
 #include "PackageFile.h"
+#include "PackageName.h"
+#include "PackageVersion.h"
 
+#include <ostream>
 #include <string>
 #include <vector>
-#include <ostream>
 
 class Package {
 public:
@@ -27,13 +29,18 @@ public:
     void movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles);
 
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
-        out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture << "\t" << "isPackageIgnored: " << package.isIgnored << "\t" << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
+        out
+            << package.name << "\t"
+            << *(package.locallyInstalledVersion) << "\t"
+            << package.architecture << "\t"
+            << "isPackageIgnored: " << package.isIgnored << "\t"
+            << package.name << "-" << *(package.locallyInstalledVersion) << "-" << package.architecture;
 
         if ( ! package.name.empty() && std::isdigit(package.name.at(0) ) ) {
             out << "\t" << "PACKAGE NAME BEGINNS WITH A NUMBER";
         }
 
-        if ( ! package.locallyInstalledVersion.empty() && ! std::isdigit(package.locallyInstalledVersion.at(0) ) ) {
+        if ( ! package.locallyInstalledVersion->empty() && ! std::isdigit(package.locallyInstalledVersion->at(0) ) ) {
             out << "\t" << "PACKAGE VERSION BEGINNS WITH A LETTER";
         }
 
@@ -53,7 +60,10 @@ public:
 
 private:
     std::string name;
-    std::string locallyInstalledVersion;
+//    std::unique_ptr<PackageName> name;
+
+    std::unique_ptr<PackageVersion> locallyInstalledVersion;
+
     std::string architecture;
     bool isIgnored;
 
