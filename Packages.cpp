@@ -16,14 +16,18 @@
 void Packages::cleanCachedFilesOfPackageManagers() {
     this->findIgnoredPackageNames();
     this->printIgnoredPackageNames();
+
     this->findLocallyInstalledPackages();
+
     this->relateInstallationPackageFilesToLocallyInstalledPackages();
+
     this->printInstalledPackages();
     this->printPartiallyDownloadedInstallationPackageFiles();
     this->printInstallationPackageFilesRelatedToMissingLocallyInstalledPackages();
+
     this->moveInstallationPackageFilesToSeparateDirForDeletion();
 
-    this->deleteAllCachedFilesForPikaur();
+    this->deleteAllCachedFilesForPikaur();  // TODO or run the algorithm again for pikaur cache subdirs?
 }
 
 void Packages::findIgnoredPackageNames() {
@@ -262,6 +266,9 @@ void Packages::moveInstallationPackageFilesToSeparateDirForDeletion() {
     std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
     for (const auto& installedPackage: this->installedPackages) {
+        // TODO differentiate between installer package files for nonignored packages
+        //  and ignored packages - move duplicate ignored packages to a separate directory
+        //  'PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED_FOR_IGNORED_PACKAGES'
         installedPackage->movePackageFilesForDifferentVersionsToSeparateDir(pathToDuplicateFilesDirectoryAsText);
     }
 
