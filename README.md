@@ -57,6 +57,10 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
         ls -1 /var/cache/pacman/pkg | less
 
+### Debugging with Valgrind
+
+    ./valgrind_check_debug.sh
+
 ## Result
 
     PACKAGE FILENAME                                                              PACKAGE NAME                              DOWNLOADED PACKAGE VERSION   INSTALLED PACKAGE VERSION   ARE VERSIONS MATCHING?   KEEP THE PACKAGE?
@@ -299,7 +303,6 @@ The version of the algorithm with a tokenization
     - https://en.cppreference.com/w/cpp/filesystem/remove
       - https://techoverflow.net/2019/04/21/how-to-recursively-delete-directory-using-c17-filesystem-library/
     - https://duckduckgo.com/?q=c%2B%2B+filesystem+dereference+soft+links&t=ffab&ia=web
-    - 
 - C++ specific, OOP, operators
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
