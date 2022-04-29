@@ -19,7 +19,7 @@ public:
 private:
     std::string PACMAN_CACHE_DIR_PATH = "/var/cache/pacman/pkg";
 
-    std::vector<std::string> ignoredPackageNamesInTextFormat;
+    std::vector<std::unique_ptr<PackageName>> ignoredPackageNames;
     std::set<std::unique_ptr<Package>> installedPackages;
     std::set<std::unique_ptr<PackageFile>> partlyDownloadedPackageFiles;
     std::set<std::unique_ptr<PackageFile>> packageFilesRelatedToMissingPackages;

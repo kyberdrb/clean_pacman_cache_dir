@@ -13,9 +13,7 @@ public:
     Package(std::string name, std::string locallyInstalledVersion, std::string architecture, bool isIgnored);
 
     explicit Package(std::string inferredPackageNameAsText);
-    void addPackageVersion(std::string packageVersionAsText);
 
-    const PackageVersion& getVersion() const;
     std::unique_ptr<PackageName> moveNameHere();
 
     void getNextInferredPackageNameCandidate();

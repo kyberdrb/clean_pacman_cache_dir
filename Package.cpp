@@ -18,14 +18,6 @@ Package::Package(std::string inferredPackageName) :
     name(std::make_unique<PackageName>(std::move(inferredPackageName) ) )
 {}
 
-void Package::addPackageVersion(std::string packageVersionAsText) {
-    this->locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(packageVersionAsText));
-}
-
-const PackageVersion& Package::getVersion() const {
-    return *(this->locallyInstalledVersion);
-}
-
 void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
     bool isPackageNamesMatching = *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
     bool isPackageVersionDifferent = *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <ostream>
 
 class PackageName {
@@ -32,3 +33,13 @@ public:
 private:
     std::string name;
 };
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+namespace std {
+    template<>
+    struct less<unique_ptr<PackageName>> {
+    bool operator() (const unique_ptr<PackageName>& lhs, const unique_ptr<PackageName>& rhs) const {
+        return *lhs < *rhs;
+    }
+};
+}

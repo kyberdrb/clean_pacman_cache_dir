@@ -5,6 +5,7 @@
 #include "Packages.h"
 
 #include "Package.h"
+#include "PackageNamesEqualityComparator.h"
 
 #include "alpm.h"
 
@@ -56,7 +57,7 @@ void Packages::findIgnoredPackageNames() {
     char delimiterForIgnoredPakcages = ' ';
 
     while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPakcages)) {
-        this->ignoredPackageNamesInTextFormat.push_back(ignoredPackageNameAsText);
+        this->ignoredPackageNames.push_back(std::make_unique<PackageName>(ignoredPackageNameAsText) );
     }
 }
 
@@ -65,10 +66,10 @@ void Packages::printIgnoredPackageNames() const {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF IGNORED PACKAGES\n\n";
 
-    std::cout << "Found " << this->ignoredPackageNamesInTextFormat.size() << " ignored packages\n\n";
+    std::cout << "Found " << this->ignoredPackageNames.size() << " ignored packages\n\n";
 
-    for (const auto& ignoredPackageName : this->ignoredPackageNamesInTextFormat) {
-        std::cout << ignoredPackageName  << "\n";
+    for (const auto& ignoredPackageName : this->ignoredPackageNames) {
+        std::cout << *ignoredPackageName  << "\n";
     }
 }
 
@@ -82,21 +83,27 @@ void Packages::findLocallyInstalledPackages() {
         alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
-        std::string packageName = alpm_pkg_get_name(alpm_pkg);
+        std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
         std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
+        // For debugging purposes
+//        if (packageNameAsText == "clion") {
+//            std::cout << "Here we go..." << "\n";
+//        }
+
+        auto packageName = std::make_unique<PackageName>(packageNameAsText);
         bool isIgnored = false;
 
-        if(std::find(
-                this->ignoredPackageNamesInTextFormat.begin(),
-                this->ignoredPackageNamesInTextFormat.end(),
-                packageName) != this->ignoredPackageNamesInTextFormat.end())
+        if(std::find_if(
+                this->ignoredPackageNames.begin(),
+                this->ignoredPackageNames.end(),
+                PackageNamesEqualityComparator(packageName)) != this->ignoredPackageNames.end())
         {
             isIgnored = true;
         }
 
-        auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture, isIgnored);
+        auto pkg = std::make_unique<Package>(packageNameAsText, locallyInstalledVersion, architecture, isIgnored);
 
         this->installedPackages.emplace(std::move(pkg));
     }
@@ -273,7 +280,8 @@ void Packages::moveInstallationPackageFilesToSeparateDirForDeletion() {
 void Packages::deleteAllCachedFilesForPikaur() {
     std::vector<std::filesystem::directory_entry> pikaurNestedDirs;
 
-    std::filesystem::path pikaurCacheDirPath("/var/cache/pikaur");
+    std::string pikaurCacheDir = "/var/cache/pikaur";
+    std::filesystem::path pikaurCacheDirPath(pikaurCacheDir);
 
     for (auto& pikaurCacheEntry : std::filesystem::directory_iterator(pikaurCacheDirPath)) {
         if (pikaurCacheEntry.is_directory()) {
