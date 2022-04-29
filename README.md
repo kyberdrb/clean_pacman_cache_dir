@@ -298,6 +298,8 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
     - https://en.cppreference.com/w/cpp/filesystem/remove
       - https://techoverflow.net/2019/04/21/how-to-recursively-delete-directory-using-c17-filesystem-library/
+    - https://duckduckgo.com/?q=c%2B%2B+filesystem+dereference+soft+links&t=ffab&ia=web
+    - 
 - C++ specific, OOP, operators
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
@@ -307,6 +309,10 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+overload+operator+not+equals&ia=web
     - https://stackoverflow.com/questions/26208519/overloading-operators
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+overloading+operators+inline+friend+member&ia=web
+    - https://duckduckgo.com/?q=acyclic+graph&t=ffab&iar=images&iax=images&ia=images
+    - https://www.internalpointers.com/post/move-smart-pointers-and-out-functions-modern-c
+    - https://duckduckgo.com/?q=c%2B%2B+return+unique_ptr+from+function+call+to+deleted+constructor+copy+move&t=ffab&ia=web
+    - https://stackoverflow.com/questions/4316727/returning-unique-ptr-from-functions
 - own projects
       - duplicate_finder - TODO add Github link
       - EmployeeManagementSystem - TODO add Github link
@@ -347,6 +353,27 @@ The version of the algorithm with a tokenization
     - https://stackoverflow.com/questions/63178407/cmake-compile-in-linux-execute-in-windows
         - it appears that I need to use a `mingw-w64` for cross-compiling a binary for Windows on a system with Linux/UNIX
     - [clion cmake compile in linux execute in windows exe cross compile - Google search](https://www.google.com/search?q=clion+cmake+compile+in+linux+execute+in+windows+exe+cross+compile&ei=TqlpYuzFOJKB9u8P8dGlqAs&ved=0ahUKEwjspMKdjLX3AhWSgP0HHfFoCbUQ4dUDCA4&uact=5&oq=clion+cmake+compile+in+linux+execute+in+windows+exe+cross+compile&gs_lcp=Cgdnd3Mtd2l6EAM6BwgAEEcQsANKBAhBGABKBAhGGABQph1Y0Vlg3WVoAXABeACAAa8BiAGeIJIBBDcuMjmYAQCgAQHIAQjAAQE&sclient=gws-wiz)
+    - https://stackoverflow.com/questions/10286850/using-llvm-linker-when-using-clang-cmake
+    - https://duckduckgo.com/?q=cmake+lld+lld-link&t=ffab&ia=web
+    - https://stackoverflow.com/questions/35464535/cmake-linker-does-not-recognized-the-header-file
+    - https://cmake.org/cmake/help/latest/search.html?q=LINKER
+    - https://duckduckgo.com/?t=ffab&q=change+cmake+linker&ia=web
+    - https://cmake.org/pipermail/cmake/2014-August/058271.html
+    - [change cmake linker - Google search](https://www.google.com/search?q=change+cmake+linker&source=hp&ei=c0pqYq2qM7CTlwTR9ZrACA&iflsig=AJiK0e8AAAAAYmpYg_dLr0jCisnUiqvPoEl6BC7r3kxV&ved=0ahUKEwjtr7j0pbb3AhWwyYUKHdG6BogQ4dUDCAY&uact=5&oq=change+cmake+linker&gs_lcp=Cgdnd3Mtd2l6EAMyBggAEBYQHjIGCAAQFhAeMgYIABAWEB4yBggAEBYQHlAAWABglAJoAHAAeACAAWiIAWiSAQMwLjGYAQCgAQKgAQE&sclient=gws-wiz)
+    - https://gitlab.kitware.com/cmake/cmake/-/issues/21137
+    - https://stackoverflow.com/questions/1867745/cmake-use-a-custom-linker
+    - https://stackoverflow.com/questions/1867745/cmake-use-a-custom-linker/64174822#64174822
+        - **only this solution worked for `clang` to change the linker from the default `ld` to the LLVM linker `lld`, more specifically, to the UNIX driver of the LLVM linker in `ld` - `ld.lld`** although the produced warning at compilation `clang-13: warning: argument unused during compilation: '-fuse-ld=lld' [-Wunused-command-line-argument]` - although the arguent isn't used during compilation, the compiler still uses it after compilation to forward the compiled object files to the linker - to our custom defined linker - the LLVM linker
+    - https://cmake.org/cmake/help/latest/variable/CMAKE_EXE_LINKER_FLAGS.html
+    - https://duckduckgo.com/?t=ffab&q=CMAKE_CXX_LINK_EXECUTABLE&ia=web
+    - https://stackoverflow.com/questions/37368434/cmake-custom-link-executable-command-how-to-extract-linker-options
+    - https://duckduckgo.com/?t=ffab&q=clang-13%3A+warning%3A+argument+unused+during+compilation%3A+%27-fuse-ld%3Dlld%27+%5B-Wunused-command-line-argument%5D&ia=web
+    - https://stackoom.com/en/question/4MQAu
+    - https://cmake.org/cmake/help/latest/prop_tgt/LINKER_LANGUAGE.html
+    - https://cmake.org/cmake/help/latest/search.html?q=language
+    - https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html?highlight=language#genex:COMPILE_LANGUAGE
+    - https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_COMPILE_FEATURES.html?highlight=cmake_cxx_compile#variable:CMAKE_CXX_COMPILE_FEATURES
+    - https://stackoverflow.com/questions/11801186/cmake-unable-to-determine-linker-language-with-c
 - Linux/UNIX
     - https://duckduckgo.com/?t=ffab&q=extract+single+file+from+tar&ia=web
     - https://www.cyberciti.biz/faq/linux-unix-extracting-specific-files/
