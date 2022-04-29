@@ -66,7 +66,6 @@ private:
     bool isIgnored;
 
     std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
-//    std::vector<std::unique_ptr<PackageWithInferredNameAndVersion>> packageFilesForDeletion;
 };
 
 // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key

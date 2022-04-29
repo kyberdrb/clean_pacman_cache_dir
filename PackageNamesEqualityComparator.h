@@ -13,7 +13,7 @@
 //    }
 //};
 
-// ...using Predicate instead
+// ...using Predicate instead (pre C++11 solution)
 struct PackageNamesEqualityComparator {
     const std::unique_ptr<PackageName>& firstPackageName;
 

@@ -31,7 +31,7 @@ void Packages::findIgnoredPackageNames() {
     std::ifstream pacmanConfigFile;
 
     //  'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
-    //  alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
+    //    alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
 
     // TODO parametrize with argument (maybe use getopt?) - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists; otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages in order to exclude them from deletion
     pacmanConfigFile.open("/etc/pacman.conf");
@@ -95,10 +95,35 @@ void Packages::findLocallyInstalledPackages() {
         auto packageName = std::make_unique<PackageName>(packageNameAsText);
         bool isIgnored = false;
 
-        if(std::find_if(
-                this->ignoredPackageNames.begin(),
-                this->ignoredPackageNames.end(),
-                PackageNamesEqualityComparator(packageName)) != this->ignoredPackageNames.end())
+        // Lookup with 'find' in a vector of unique poinert doesn't work
+        //  even with overloaded operator '==' for 'std::unique_ptr<PackageName>&'
+        //  so the 'find' works accurately only when the 'vector' is filled with values,
+        //  e.g. with 'PackageName'
+        //  not with 'std::unique_ptr<PackageName>'
+        bool isPackageNameCandidateMatchingToExistingPackageName =
+                std::find(
+                    this->ignoredPackageNames.begin(),
+                    this->ignoredPackageNames.end(),
+                    packageName
+                ) != this->ignoredPackageNames.end();
+
+//        bool isPackageNameCandidateMatchingToExistingPackageName =
+//            std::find_if(
+//                this->ignoredPackageNames.begin(),
+//                this->ignoredPackageNames.end(),
+//                PackageNamesEqualityComparator(packageName)
+//            ) != this->ignoredPackageNames.end();
+
+//        bool isPackageNameCandidateMatchingToExistingPackageName =
+//            std::find_if(
+//                this->ignoredPackageNames.begin(),
+//                this->ignoredPackageNames.end(),
+//                [&packageName](const std::unique_ptr<PackageName>& packageNameCandidate) {
+//                    return *packageName == *packageNameCandidate;
+//                }
+//            ) != this->ignoredPackageNames.end();
+
+        if (isPackageNameCandidateMatchingToExistingPackageName)
         {
             isIgnored = true;
         }
@@ -166,7 +191,7 @@ void Packages::relateInstallationPackageFilesToLocallyInstalledPackages() {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 auto matchingPackage = this->installedPackages.find(packageWithInferredName);
 
-                // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
+                // if key was NOT found, generate a new key candidate and perform lookup again
                 bool packageWithInferredNameIsMissing = matchingPackage == this->installedPackages.end();
                 if (packageWithInferredNameIsMissing) {
                     packageWithInferredName->getNextInferredPackageNameCandidate();
@@ -196,8 +221,8 @@ void Packages::relateInstallationPackageFilesToLocallyInstalledPackages() {
                 break;
             }
 
-            // handle package files for missing reference to locally installed package
-            //  i.e. add the package files to another container 'packageFilesForDeletion'
+            // If the lookup didn't find matching package name for all of the package filename candidates
+            //  the package file is likely to be referring to a missing or uninstalled package
             if (wasInferredPackageRefferingToMissingPackage) {
                 auto packageFileForMissingPackage = std::make_unique<PackageFile>(packageAbsolutePathAsText);
                 this->packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));

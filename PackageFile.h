@@ -12,7 +12,6 @@ class PackageFile {
 public:
     PackageFile(std::string absolutePath);
 
-//    PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion);
     PackageFile(std::string filename, std::string absolutePath, std::unique_ptr<PackageWithInferredNameAndVersion> packageWithInferredNameAndVersion);
 
     std::string getFilename() const;
@@ -22,7 +21,6 @@ public:
     const PackageName& getRelatedPackageName() const;
 
     const PackageVersion& getRelatedPackageVersion() const;
-//    const std::string& getRelatedPackageVersion() const;
 
     bool operator<(const PackageFile& packageFilename) const {
         return this->getFilename() < packageFilename.getFilename();

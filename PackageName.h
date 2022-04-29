@@ -26,6 +26,10 @@ public:
         return PackageName::name == otherPackageName.name;
     }
 
+    bool operator==(const std::unique_ptr<PackageName>& otherPackageName) const {
+        return PackageName::name == otherPackageName->name;
+    }
+
     bool operator<(const PackageName& otherPakcageName) const {
         return PackageName::name < otherPakcageName.name;
     }

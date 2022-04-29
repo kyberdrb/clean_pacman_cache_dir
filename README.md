@@ -271,6 +271,7 @@ The version of the algorithm with a tokenization
 - `std::set`
     - https://www.cplusplus.com/reference/set/set/
     - https://www.cplusplus.com/reference/set/set/find/
+    - https://duckduckgo.com/?q=c%2B%2B+set+smart+pointer+find&t=ffab&ia=web
 - `regex`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
@@ -295,9 +296,28 @@ The version of the algorithm with a tokenization
     - https://www.educba.com/c-plus-plus-substring/
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substr&ia=web
     - https://www.cplusplus.com/reference/string/string/substr/
-- vector
+- `vector`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+contains&ia=web&iax=qa
     - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+find+unique+pointer&ia=web
+    - https://stackoverflow.com/questions/29972563/how-to-construct-a-vector-with-unique-pointers
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector&ia=web
+    - https://www.cplusplus.com/reference/vector/vector/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+smart+pointer+find+lookup&ia=web
+    - https://stackoverflow.com/questions/28733385/c11-vector-of-smart-pointer
+    - https://stackoverflow.com/questions/35490173/stdfind-on-a-vector-of-pointers
+    - https://stackoverflow.com/questions/35490173/stdfind-on-a-vector-of-pointers/35490321#35490321
+        - **finding an element in `vector` with `find_if` with a `Predicate` for custom comparison defined in a separate class**
+    - https://stackoverflow.com/questions/35490173/stdfind-on-a-vector-of-pointers/35490263#35490263
+        - **finding an element in `vector` with `find_if` with a `Predicate` defined as a lambda for custom comparison**
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+smart+unique+ptr+pointer+find_if&ia=web
+    - https://stackoverflow.com/questions/40455882/compilation-error-when-trying-to-find-if-an-unique-ptr-in-a-vector
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+find+if+predicate+capture+lambda&ia=web
+    - https://stackoverflow.com/questions/42933943/how-to-use-lambda-for-stdfind-if
+    - https://stackoverflow.com/questions/42933943/how-to-use-lambda-for-stdfind-if/42934022#42934022
+        - **using 'find_if' with lambda with capture list with captured searched value by reference for custom comparison**
+    - https://stackoverflow.com/questions/42933943/how-to-use-lambda-for-stdfind-if/42934019#42934019
+        - **using 'auto' keyword in lambda for a parameter in argument list**
 - `std::filesystem`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
     - https://en.cppreference.com/w/cpp/filesystem/remove
@@ -377,6 +397,7 @@ The version of the algorithm with a tokenization
     - https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html?highlight=language#genex:COMPILE_LANGUAGE
     - https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_COMPILE_FEATURES.html?highlight=cmake_cxx_compile#variable:CMAKE_CXX_COMPILE_FEATURES
     - https://stackoverflow.com/questions/11801186/cmake-unable-to-determine-linker-language-with-c
+    - https://docs.microsoft.com/en-us/cpp/build/reference/za-ze-disable-language-extensions?redirectedfrom=MSDN&view=msvc-170
 - Linux/UNIX
     - https://duckduckgo.com/?t=ffab&q=extract+single+file+from+tar&ia=web
     - https://www.cyberciti.biz/faq/linux-unix-extracting-specific-files/
