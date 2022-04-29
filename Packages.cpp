@@ -5,7 +5,6 @@
 #include "Packages.h"
 
 #include "Package.h"
-#include "PackageNamesEqualityComparator.h"
 
 #include "alpm.h"
 
@@ -99,17 +98,10 @@ void Packages::findLocallyInstalledPackages() {
             std::find_if(
                 this->ignoredPackageNames.begin(),
                 this->ignoredPackageNames.end(),
-                PackageNamesEqualityComparator(packageName)
+                [&packageName](const std::unique_ptr<PackageName>& packageNameCandidate) {
+                    return *packageName == *packageNameCandidate;
+                }
             ) != this->ignoredPackageNames.end();
-
-//        bool isPackageNameCandidateMatchingToExistingPackageName =
-//            std::find_if(
-//                this->ignoredPackageNames.begin(),
-//                this->ignoredPackageNames.end(),
-//                [&packageName](const std::unique_ptr<PackageName>& packageNameCandidate) {
-//                    return *packageName == *packageNameCandidate;
-//                }
-//            ) != this->ignoredPackageNames.end();
 
         if (isPackageNameCandidateMatchingToExistingPackageName)
         {
