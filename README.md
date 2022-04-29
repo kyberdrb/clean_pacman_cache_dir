@@ -220,6 +220,55 @@ The version of the algorithm with a tokenization
 
 - lookup and handle packages within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
 
+# Notes
+
+- Lookup with 'find' in a vector of unique poinert doesn't work even with overloaded operator '==' for 'std::unique_ptr<PackageName>&' so the 'find' works accurately only when the 'vector' is filled with values, e.g. with 'PackageName' not with 'std::unique_ptr<PackageName>'
+
+        bool isPackageNameCandidateMatchingToExistingPackageName =
+            std::find(
+                this->ignoredPackageNames.begin(),
+                this->ignoredPackageNames.end(),
+                packageName
+            ) != this->ignoredPackageNames.end();
+
+    What does work however is to use `find_if` with custom `Predicate` as a separate functor (pre C++11) or as a lambda
+
+        // Functor Comparator
+
+        // Definition
+        struct PackageNamesEqualityComparator {
+            const std::unique_ptr<PackageName>& firstPackageName;
+
+            explicit PackageNamesEqualityComparator(const std::unique_ptr<PackageName>& packageName) :
+                firstPackageName(packageName)
+            {}
+
+            bool operator()(const std::unique_ptr<PackageName>& otherPackageName) const {
+                return (*firstPackageName == *otherPackageName);
+            }
+        };
+
+        // Usage of Functor Comparator in 'find_if'
+        bool isPackageNameCandidateMatchingToExistingPackageName =
+            std::find_if(
+                this->ignoredPackageNames.begin(),
+                this->ignoredPackageNames.end(),
+                PackageNamesEqualityComparator(packageName)
+            ) != this->ignoredPackageNames.end();
+
+        === === === === === === === === === === === === === === ====
+        // Lambda
+
+        // Definition and Usage of lambda expression in 'find_if' to perform custom comparison of e.g. two smart pointers
+        bool isPackageNameCandidateMatchingToExistingPackageName =
+            std::find_if(
+                this->ignoredPackageNames.begin(),
+                this->ignoredPackageNames.end(),
+                [&packageName](const std::unique_ptr<PackageName>& packageNameCandidate) {
+                    return *packageName == *packageNameCandidate;
+                }
+            ) != this->ignoredPackageNames.end();
+
 ## Sources
 
 - `libalpm` - library of the Arch Linux Package Manager - the `pacman`

@@ -18,7 +18,7 @@ struct PackageNamesEqualityComparator {
     const std::unique_ptr<PackageName>& firstPackageName;
 
     explicit PackageNamesEqualityComparator(const std::unique_ptr<PackageName>& packageName) :
-            firstPackageName(packageName)
+        firstPackageName(packageName)
     {}
 
     bool operator()(const std::unique_ptr<PackageName>& otherPackageName) const {

@@ -95,24 +95,12 @@ void Packages::findLocallyInstalledPackages() {
         auto packageName = std::make_unique<PackageName>(packageNameAsText);
         bool isIgnored = false;
 
-        // Lookup with 'find' in a vector of unique poinert doesn't work
-        //  even with overloaded operator '==' for 'std::unique_ptr<PackageName>&'
-        //  so the 'find' works accurately only when the 'vector' is filled with values,
-        //  e.g. with 'PackageName'
-        //  not with 'std::unique_ptr<PackageName>'
         bool isPackageNameCandidateMatchingToExistingPackageName =
-                std::find(
-                    this->ignoredPackageNames.begin(),
-                    this->ignoredPackageNames.end(),
-                    packageName
-                ) != this->ignoredPackageNames.end();
-
-//        bool isPackageNameCandidateMatchingToExistingPackageName =
-//            std::find_if(
-//                this->ignoredPackageNames.begin(),
-//                this->ignoredPackageNames.end(),
-//                PackageNamesEqualityComparator(packageName)
-//            ) != this->ignoredPackageNames.end();
+            std::find_if(
+                this->ignoredPackageNames.begin(),
+                this->ignoredPackageNames.end(),
+                PackageNamesEqualityComparator(packageName)
+            ) != this->ignoredPackageNames.end();
 
 //        bool isPackageNameCandidateMatchingToExistingPackageName =
 //            std::find_if(
