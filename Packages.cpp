@@ -14,20 +14,30 @@
 #include <regex>
 
 void Packages::cleanCachedFilesOfPackageManagers() {
+    //auto ignoredPackageNames = std::make_unique<IgnoredPackageNames>();   // TODO Populate ignoredPackageNames collection immediately in constructor - constructor parameter for PacmanConfigurationFilePath will be optional; when ommitted, the default path will be "/etc/pacman.conf"
     this->findIgnoredPackageNames();
+
+    //ignoredPackageNames->generateReport(); // overload stream output operator
     this->printIgnoredPackageNames();
 
+    //auto locallyInstalledPackages = std::make_unique<LocallyInstalledPackages>(ignoredPackageNames); // TODO Populate locally installed packages collection immediately in constructor
     this->findLocallyInstalledPackages();
 
+    // TODO 'installationPackageFilesRelatedToLocallyInstalledPackages' is the preferred variable name
+    // TODO Find relations between locally installed packages and installation package files immediately in constructor; TODO Maybe add a second argument to constructor: a vector of paths on the filesystem to look up the related packages in? Include the pikaur dirs as well
+    //auto finderOfInstallationPackageFilesForPackages = std::make_unique<FinderOfInstallationPackageFilesForPackages>(locallyInstalledPackages);
+    //auto installationPackageFilesRelatedToLocallyInstalledPackages = std::make_unique<InstallationPackageFilesRelatedToLocallyInstalledPackages>(locallyInstalledPackages);
     this->relateInstallationPackageFilesToLocallyInstalledPackages();
 
+    //installationPackageFilesRelatedToLocallyInstalledPackages->generateReport(); // overload stream output operator
     this->printInstalledPackages();
     this->printPartiallyDownloadedInstallationPackageFiles();
     this->printInstallationPackageFilesRelatedToMissingLocallyInstalledPackages();
 
+    //auto installationPackageFilesMover = std::make_unique<InstallationPackageFilesMover>(finderOfInstallationPackageFilesForPackages); // TODO Move installation packages files to separate dir immediately in constructor
     this->moveInstallationPackageFilesToSeparateDirForDeletion();
 
-    this->deleteAllCachedFilesForPikaur();  // TODO or run the algorithm again for pikaur cache subdirs?
+    this->deleteAllCachedFilesForPikaur();  // TODO or run the algorithm again for pikaur cache subdirs? Maybe see TODOs for 'installationPackageFilesRelatedToLocallyInstalledPackages' in order to make the pikaur cache subdirs cleanup more considerate by keeping the files and dirs related to packages with matching name and version to locally installed package
 }
 
 void Packages::findIgnoredPackageNames() {
@@ -292,7 +302,7 @@ void Packages::moveInstallationPackageFilesToSeparateDirForDeletion() {
 void Packages::deleteAllCachedFilesForPikaur() {
     std::vector<std::filesystem::directory_entry> pikaurNestedDirs;
 
-    std::string pikaurCacheDir = "/var/cache/pikaur";
+    std::string pikaurCacheDir = "/var/cache/pikaur"; // TODO and also in '/home/laptop/.cache/pikaur' or '${HOME}/.cache/pikaur'
     std::filesystem::path pikaurCacheDirPath(pikaurCacheDir);
 
     for (auto& pikaurCacheEntry : std::filesystem::directory_iterator(pikaurCacheDirPath)) {
