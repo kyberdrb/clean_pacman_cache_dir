@@ -6,6 +6,8 @@
 
 #include "Package.h"
 
+#include "IgnoredPackageNames.h"
+
 #include "alpm.h"
 
 #include <filesystem>
@@ -14,13 +16,15 @@
 #include <regex>
 
 void Packages::cleanCachedFilesOfPackageManagers() {
-    //auto ignoredPackageNames = std::make_unique<IgnoredPackageNames>();   // TODO Populate ignoredPackageNames collection immediately in constructor - constructor parameter for PacmanConfigurationFilePath will be optional; when ommitted, the default path will be "/etc/pacman.conf"
+    // TODO parse options for 'ignoredPackageNames' - maybe with 'getopt' when custom pacman's configuration file is entered?
+
+    auto ignoredPackageNames = std::make_unique<IgnoredPackageNames>();
     this->findIgnoredPackageNames();
 
-    //ignoredPackageNames->generateReport(); // overload stream output operator
+    std::cout << ignoredPackageNames->generateReport(); // overload stream output operator
     this->printIgnoredPackageNames();
 
-    //auto locallyInstalledPackages = std::make_unique<LocallyInstalledPackages>(ignoredPackageNames); // TODO Populate locally installed packages collection immediately in constructor
+    //auto locallyInstalledPackages = std::make_unique<LocallyInstalledPackages>(ignoredPackageNames); // TODO Populate locally installed packages list immediately in the constructor
     this->findLocallyInstalledPackages();
 
     // TODO 'installationPackageFilesRelatedToLocallyInstalledPackages' is the preferred variable name
