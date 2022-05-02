@@ -7,6 +7,11 @@
 #include <fstream>
 #include <regex>
 
+// TODO How can I use only one constructor and only initializer list to make the string parameter optional
+//  and to initialize the field with a default parameter when the argument is empty string? Maybe with 'std::optional'?
+//  encapsulated in a separate instance that will hold user inputted options'?
+//  - https://www.cppstories.com/2018/05/using-optional/#examples-of-stdoptional
+//  - http://coliru.stacked-crooked.com/a/f02d37fc4319bcd8
 // Populate ignoredPackageNames collection immediately in constructor - constructor parameter for PacmanConfigurationFilePath will be optional; when ommitted, the default path will be "/etc/pacman.conf"
 IgnoredPackageNames::IgnoredPackageNames(std::string pacmanConfigurationFilePath) :
         pacmanConfigurationFilePath(std::move(pacmanConfigurationFilePath))

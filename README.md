@@ -345,6 +345,7 @@ The version of the algorithm with a tokenization
     - https://www.educba.com/c-plus-plus-substring/
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substr&ia=web
     - https://www.cplusplus.com/reference/string/string/substr/
+    - https://stackoverflow.com/questions/2749471/default-string-arguments
 - `vector`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+contains&ia=web&iax=qa
     - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906
@@ -385,9 +386,20 @@ The version of the algorithm with a tokenization
     - https://www.internalpointers.com/post/move-smart-pointers-and-out-functions-modern-c
     - https://duckduckgo.com/?q=c%2B%2B+return+unique_ptr+from+function+call+to+deleted+constructor+copy+move&t=ffab&ia=web
     - https://stackoverflow.com/questions/4316727/returning-unique-ptr-from-functions
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+initialize+member+initializer+list+function&ia=web
+    - https://en.cppreference.com/w/cpp/language/constructor
+    - https://docs.microsoft.com/en-us/cpp/cpp/initializers?view=msvc-170
+    - https://stackoverflow.com/questions/40389492/c-initializer-list-capabilities-call-functions-without-initializing-member
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+member+variable+initializer+list+with+function&ia=web&iax=qa
+- declaring optional parameters with `std::optional` (C++17)
+    - https://duckduckgo.com/?q=c%2B%2B+optional+string+parameter+constructor&t=ffab&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+constructor+optional+example&t=ffab&ia=web
+    - https://www.cppstories.com/2018/05/using-optional/#examples-of-stdoptional
+    - [Code for `std::optional` usage from _https://www.cppstories.com/2018/05/using-optional/#examples-of-stdoptional_](http://coliru.stacked-crooked.com/a/f02d37fc4319bcd8)
+    - https://en.cppreference.com/w/cpp/utility/optional/optional
 - own projects
-      - duplicate_finder - TODO add Github link
-      - EmployeeManagementSystem - TODO add Github link
+    - [kyberdrb - duplicate_finder](https://github.com/kyberdrb/duplicate_finder)
+    - {kyberdrb - EmployeeManagementSystem](https://github.com/kyberdrb/EmployeeManagementSystem)
 - `libarchive`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
 - CMake, LLVM toolchain, `clang`, cross-compiling
@@ -395,6 +407,13 @@ The version of the algorithm with a tokenization
     - ---
     - https://duckduckgo.com/?t=ffab&q=cmake+options+o2+optimize&ia=web&iax=qa
     - https://stackoverflow.com/questions/41264827/setting-optimization-settings-in-visual-studio-through-cmake
+    - ---
+    - https://duckduckgo.com/?q=c%2B%2B++field+is+uninitialized+when+in+here&t=ffab&ia=web
+    - https://www.google.com/search?q=c%2B%2B+clang+tidy+std+move+on+const+variable+has+no+effect&source=hp&ei=A7JuYo-iMMP2sAfVxYvQDw&iflsig=AJiK0e8AAAAAYm7AExDuEi7T22bfigH1dfE2B5go_eRy&ved=0ahUKEwjPr6me2b73AhVDO-wKHdXiAvoQ4dUDCAY&uact=5&oq=c%2B%2B+clang+tidy+std+move+on+const+variable+has+no+effect&gs_lcp=Cgdnd3Mtd2l6EANQAFgAYOMCaABwAHgAgAGVAYgBlQGSAQMwLjGYAQCgAQKgAQE&sclient=gws-wiz
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+move+on+const+variable+has+no+effect&ia=web
+    - https://stackoverflow.com/questions/60372691/is-there-a-compile-warning-about-this-use-of-stdmove
+    - https://clang.llvm.org/extra/clang-tidy/checks/bugprone-use-after-move.html
+    - https://clang.llvm.org/extra/clang-tidy/checks/performance-move-const-arg.html
     - ---
     - https://duckduckgo.com/?t=ffab&q=clang+undfined+reference+to&ia=web
     - https://duckduckgo.com/?t=ffab&q=undefined+reference+to+%60std%3A%3Abasic_ifstream%3Cchar%2C+std%3A%3Achar_traits%3Cchar%3E+%3E%3A%3Abasic_ifstream()%27&ia=web

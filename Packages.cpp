@@ -16,7 +16,9 @@
 #include <regex>
 
 void Packages::cleanCachedFilesOfPackageManagers() {
-    // TODO parse options for 'ignoredPackageNames' - maybe with 'getopt' when custom pacman's configuration file is entered?
+    // TODO parse options for 'ignoredPackageNames'
+    //  - maybe with 'getopt' when custom pacman's configuration file is entered?
+    //  - encapsulate the options in a separate class e.g. 'UserArguments' or 'Options'?
 
     auto ignoredPackageNames = std::make_unique<IgnoredPackageNames>();
     this->findIgnoredPackageNames();
