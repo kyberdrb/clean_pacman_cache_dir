@@ -4,9 +4,7 @@
 
 #include "Packages.h"
 
-#include "Package.h"
-
-#include "IgnoredPackageNames.h"
+#include "LocallyInstalledPackages.h"
 
 #include "alpm.h"
 
@@ -26,8 +24,10 @@ void Packages::cleanCachedFilesOfPackageManagers() {
     std::cout << ignoredPackageNames->generateReport(); // overload stream output operator
     this->printIgnoredPackageNames();
 
-    //auto locallyInstalledPackages = std::make_unique<LocallyInstalledPackages>(ignoredPackageNames); // TODO Populate locally installed packages list immediately in the constructor
+    auto locallyInstalledPackages = std::make_unique<LocallyInstalledPackages>(ignoredPackageNames);
+    std::cout << locallyInstalledPackages->printInstalledPackages();
     this->findLocallyInstalledPackages();
+    this->printInstalledPackages();
 
     // TODO 'installationPackageFilesRelatedToLocallyInstalledPackages' is the preferred variable name
     // TODO Find relations between locally installed packages and installation package files immediately in constructor; TODO Maybe add a second argument to constructor: a vector of paths on the filesystem to look up the related packages in? Include the pikaur dirs as well

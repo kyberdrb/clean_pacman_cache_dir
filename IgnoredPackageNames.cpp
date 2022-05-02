@@ -30,7 +30,10 @@ void IgnoredPackageNames::findIgnoredPackageNames() {
     //  'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
     //    alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
 
-    // TODO parametrize with argument (maybe use getopt?) - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists; otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages in order to exclude them from deletion
+    // TODO parametrize with argument (maybe use getopt?)
+    //  - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists;
+    //    otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages
+    //    in order to exclude them from deletion
     pacmanConfigFile.open(this->pacmanConfigurationFilePath);
 
     std::string lineWithIgnoredPackages;
@@ -56,6 +59,18 @@ void IgnoredPackageNames::findIgnoredPackageNames() {
     while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPakcages)) {
         this->ignoredPackageNames.push_back(std::make_unique<PackageName>(ignoredPackageNameAsText) );
     }
+}
+
+bool IgnoredPackageNames::contains(const PackageName& packageName) const {
+    bool containsElement =
+            std::find_if(
+                    this->ignoredPackageNames.begin(),
+                    this->ignoredPackageNames.end(),
+                    [&packageName](const std::unique_ptr<PackageName>& packageNameCandidate) {
+                        return packageName == *packageNameCandidate;
+                    }
+            ) != this->ignoredPackageNames.end();
+    return containsElement;
 }
 
 std::string IgnoredPackageNames::generateReport() const {

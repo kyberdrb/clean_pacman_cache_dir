@@ -38,8 +38,8 @@ private:
 namespace std {
     template<>
     struct less<unique_ptr<PackageName>> {
-    bool operator() (const unique_ptr<PackageName>& lhs, const unique_ptr<PackageName>& rhs) const {
-        return *lhs < *rhs;
+    bool operator() (const unique_ptr<PackageName>& onePackageName, const unique_ptr<PackageName>& otherPackageName) const {
+        return *onePackageName < *otherPackageName;
     }
 };
 }

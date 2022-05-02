@@ -14,6 +14,8 @@ public:
     IgnoredPackageNames();
     explicit IgnoredPackageNames(std::string pacmanConfigurationFilePath);
 
+    bool contains(const PackageName& packageName) const;
+
     std::string generateReport() const;
 
 private:
