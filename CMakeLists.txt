@@ -28,4 +28,4 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message("using Visual Studio C++ compiler")
 endif()
 
-add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h PackageWithInferredNameAndVersion.cpp PackageWithInferredNameAndVersion.h Packages.cpp Packages.h PackageNamesEqualityComparator.h)
+add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h PackageWithInferredNameAndVersion.cpp PackageWithInferredNameAndVersion.h Packages.cpp Packages.h)
