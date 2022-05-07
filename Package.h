@@ -57,6 +57,7 @@ public:
     }
 
     bool operator<(const Package& package) const {
+        // TODO maybe replace the 'getName()' function with only fields?
         return this->getName() < package.getName();
 //        return this->name < package.getName();
 //        return Package::name < package.getName();
