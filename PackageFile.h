@@ -27,6 +27,12 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {
+        // Print 'PackageFile' that had been constructed with the single argument constructor - for partially downloaded files
+        if (packageFilename.filename.empty()) {
+            os << packageFilename.absolutePath;
+            return os;
+        }
+
         os <<
             packageFilename.filename << "\t" <<
             packageFilename.relatedPackage->getName() << "\t" <<
