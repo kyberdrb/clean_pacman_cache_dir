@@ -49,7 +49,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
           $ sudo move /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
           $ gio trash ~/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
         
-    - More destructive - delete all files for other pakcage version immediately
+    - More destructive - delete all files for other package version immediately
 
           $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
@@ -222,8 +222,9 @@ The version of the algorithm with a tokenization
 
 - regex for main.cpp to search for variables to encapsulate in classes: `[std::|\.]find`
     - lines 83 and 153
-    - for line 83: introduce 'PackageName' class
-    - for line 153: integrate the 'PackageName' class to the 'Package' class by composition
+        - for line 83: introduce 'IgnorePackageName' class
+            - try out all possible combinations how to search in a vector of unique pointers: `std::find` (with overloaded equality operator) and `std::find_if` (with comparator in separate struct as predicate; with lambda as predicate)
+        - for line 153: integrate the 'PackageName' class to the 'Package' class by composition (maybe)
 
 ## Sources
 
