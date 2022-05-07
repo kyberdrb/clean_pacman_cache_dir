@@ -58,6 +58,9 @@ public:
 
     bool operator<(const Package& package) const {
         return this->getName() < package.getName();
+//        return this->name < package.getName();
+//        return Package::name < package.getName();
+//        return Package::name < package.name;
     }
 
 private:
