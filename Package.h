@@ -56,7 +56,12 @@ public:
 
     bool operator<(const Package& package) const {
         return this->name < package.name;
+        //return this->name < package.getName();
     }
+
+//    bool operator<(const std::unique_ptr<Package>& package) const {
+//        return this->name < package->name;
+//    }
 
 private:
     std::unique_ptr<PackageName> name;
