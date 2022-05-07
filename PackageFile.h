@@ -21,6 +21,11 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {
+        if (packageFilename.filename.empty()) {
+            os << packageFilename.absolutePath;
+            return os;
+        }
+
         os << packageFilename.filename << "\t" << packageFilename.relatedPackageName << "\t" << packageFilename.relatedPackageVersion << "\t" << packageFilename.absolutePath;
         return os;
     }
