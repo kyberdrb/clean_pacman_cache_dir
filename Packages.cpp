@@ -13,6 +13,10 @@
 #include <iostream>
 #include <regex>
 
+//Packages::Packages() {
+//    this->installedPackages(PackageComparatorForSet);
+//}
+
 void Packages::cleanCachedFilesOfPackageManagers() {
     // TODO parse options for 'ignoredPackageNames'
     //  - maybe with 'getopt' when custom pacman's configuration file is entered?
@@ -190,6 +194,9 @@ void Packages::relateInstallationPackageFilesToLocallyInstalledPackages() {
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 auto matchingPackage = this->installedPackages.find(packageWithInferredName);
+
+                // For debugging purposes
+                std::cout << *packageWithInferredName << "\n";
 
                 // if key was NOT found, generate a new key candidate and perform lookup again
                 bool packageWithInferredNameIsMissing = matchingPackage == this->installedPackages.end();

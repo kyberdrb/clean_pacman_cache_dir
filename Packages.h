@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Package.h"
+#include "PackageComparatorForSet.h"
 
 #include <set>
 #include <string>
@@ -12,7 +13,7 @@
 
 class Packages {
 public:
-    Packages() = default;
+//    Packages();
 
     void cleanCachedFilesOfPackageManagers();
 
@@ -20,7 +21,11 @@ private:
     std::string PACMAN_CACHE_DIR_PATH = "/var/cache/pacman/pkg";
 
     std::vector<std::unique_ptr<PackageName>> ignoredPackageNames;
+
     std::set<std::unique_ptr<Package>> installedPackages;
+//    std::set<std::unique_ptr<Package>, PackageComparatorForSet> installedPackages;
+//    PackageComparatorForSet packageComparatorForSet;
+
     std::set<std::unique_ptr<PackageFile>> partlyDownloadedPackageFiles;
     std::set<std::unique_ptr<PackageFile>> packageFilesRelatedToMissingPackages;
 
