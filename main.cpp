@@ -1,8 +1,10 @@
 #include "Package.h"
+#include "IgnoredPackageName.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
 
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -38,12 +40,16 @@ int main() {
     auto lineWithIgnoredPackagesWithoutOptionPrefix = regex_replace(lineWithIgnoredPackages, regexForIgnoredPackagesInPacmanConfigFile, "");
     std::stringstream ignoredPackagesAsStream{lineWithIgnoredPackagesWithoutOptionPrefix};
     std::string ignoredPackageNameAsText{};
-    char delimiterForIgnoredPakcages = ' ';
+    char delimiterForIgnoredPackages = ' ';
 
     std::vector<std::string> ignoredPackageNamesInTextFormat{};
+    std::vector<std::unique_ptr<IgnoredPackageName>> ignoredPackageNames;
 
-    while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPakcages)) {
+    while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPackages)) {
         ignoredPackageNamesInTextFormat.push_back(ignoredPackageNameAsText);
+
+        auto ignoredPackageName = std::make_unique<IgnoredPackageName>(std::move(ignoredPackageNameAsText));
+        ignoredPackageNames.emplace_back(std::move(ignoredPackageName));
     }
 
     std::cout << "\n";
@@ -54,6 +60,16 @@ int main() {
 
     for (const auto& ignoredPackageName : ignoredPackageNamesInTextFormat) {
         std::cout << ignoredPackageName  << "\n";
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF IGNORED PACKAGES AS INSTANCES\n\n";
+
+    std::cout << "Found " << ignoredPackageNames.size() << " ignored packages\n\n";
+
+    for (const auto& ignoredPackageName : ignoredPackageNames) {
+        std::cout << *ignoredPackageName  << "\n";
     }
 
     // BUILD LIST OF LOCALLY INSTALLED PACKAGES
@@ -83,6 +99,15 @@ int main() {
         if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
             isIgnored = true;
         }
+
+        bool isIgnoredInAnotherList = false;
+        auto packageNameCopy = packageName;
+        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
+        if(std::find(ignoredPackageNames.begin(), ignoredPackageNames.end(), ignoredPackageNameCandidate) != ignoredPackageNames.end()) {
+            isIgnoredInAnotherList = true;
+        }
+
+        assert(isIgnored == isIgnoredInAnotherList);
 
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture, isIgnored);
 
