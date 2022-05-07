@@ -152,6 +152,11 @@ int main() {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 auto matchingPackage = installedPackages.find(packageWithInferredName);
 
+                // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
+                //  trying to show the values for STL containers and smartpointer instances.
+                //  Instead it shows an error message saying "Cannot instantiate printer for default visualizer"
+//                std::cout << *packageWithInferredName << "\n";
+
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
                 bool packageWithInferredNameIsMissing = matchingPackage == installedPackages.end();
                 if (packageWithInferredNameIsMissing) {
