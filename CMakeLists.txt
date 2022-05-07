@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 #  in order to fix a warning message "clang-13: warning: -lalpm: 'linker' input unused [-Wunused-command-line-argument]"
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message("Using GNU C++ compiler")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lalpm")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lalpm -lstdc++")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message("using UNIX/Apple Clang C++ compiler")
     # Adding '-fuse-ld=lld' in 'CMAKE_CXX_FLAGS' invokes the LLVM linker
@@ -28,4 +28,4 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message("using Visual Studio C++ compiler")
 endif()
 
-add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h PackageWithInferredNameAndVersion.cpp PackageWithInferredNameAndVersion.h Packages.cpp Packages.h IgnoredPackageNames.cpp IgnoredPackageNames.h LocallyInstalledPackages.cpp LocallyInstalledPackages.h PackageComparatorForSet.h)
+add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h PackageWithInferredNameAndVersion.cpp PackageWithInferredNameAndVersion.h Packages.cpp Packages.h IgnoredPackageNames.cpp IgnoredPackageNames.h LocallyInstalledPackages.cpp LocallyInstalledPackages.h PackageComparatorForSet.h FinderOfInstallationPackageFilesForPackages.cpp FinderOfInstallationPackageFilesForPackages.h)

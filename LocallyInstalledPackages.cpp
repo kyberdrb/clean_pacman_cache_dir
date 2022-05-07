@@ -36,7 +36,7 @@ void LocallyInstalledPackages::findLocallyInstalledPackages() {
         auto packageName = std::make_unique<PackageName>(packageNameAsText);
         bool isIgnored = this->ignoredPackageNames->contains(*packageName);
         auto package = std::make_unique<Package>(packageNameAsText, locallyInstalledVersion, architecture, isIgnored);
-        this->installedPackages.emplace(std::move(package));
+        this->locallyInstalledPackages.emplace(std::move(package));
     }
 
     free(err);
@@ -51,13 +51,21 @@ std::ostream& operator<<(std::ostream& out, const LocallyInstalledPackages& loca
     out << "===============================================\n\n";
     out << "LIST OF INSTALLED PACKAGES WITH/WITHOUT RELATED PACKAGE FILES FOR DIFFERENT VERSIONS\n\n";
 
-    out << "Found " << locallyInstalledPackages.installedPackages.size() << " installed packages\n\n";
+    out << "Found " << locallyInstalledPackages.locallyInstalledPackages.size() << " installed packages\n\n";
 
-    for (const auto& package : locallyInstalledPackages.installedPackages) {
+    for (const auto& package : locallyInstalledPackages.locallyInstalledPackages) {
         out << *package << "\n";
     }
 
     return out;
+}
+
+std::set<std::unique_ptr<Package>>::iterator LocallyInstalledPackages::find(std::unique_ptr<Package>& packageWithInferredName) const {
+    return this->locallyInstalledPackages.find(packageWithInferredName);
+}
+
+std::set<std::unique_ptr<Package>>::iterator LocallyInstalledPackages::end() const {
+    return this->locallyInstalledPackages.end();
 }
 
 std::string LocallyInstalledPackages::printInstalledPackages() const {

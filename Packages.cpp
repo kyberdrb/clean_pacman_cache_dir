@@ -4,7 +4,7 @@
 
 #include "Packages.h"
 
-#include "LocallyInstalledPackages.h"
+#include "FinderOfInstallationPackageFilesForPackages.h"
 
 #include "alpm.h"
 
@@ -35,11 +35,12 @@ void Packages::cleanCachedFilesOfPackageManagers() {
 
     // TODO 'installationPackageFilesRelatedToLocallyInstalledPackages' is the preferred variable name
     // TODO Find relations between locally installed packages and installation package files immediately in constructor; TODO Maybe add a second argument to constructor: a vector of paths on the filesystem to look up the related packages in? Include the pikaur dirs as well
-    //auto finderOfInstallationPackageFilesForPackages = std::make_unique<FinderOfInstallationPackageFilesForPackages>(locallyInstalledPackages);
+//    auto finderOfInstallationPackageFilesForPackages = std::make_unique<FinderOfInstallationPackageFilesForPackages>(locallyInstalledPackages);
     //auto installationPackageFilesRelatedToLocallyInstalledPackages = std::make_unique<InstallationPackageFilesRelatedToLocallyInstalledPackages>(locallyInstalledPackages);
     this->relateInstallationPackageFilesToLocallyInstalledPackages();
 
     //installationPackageFilesRelatedToLocallyInstalledPackages->generateReport(); // overload stream output operator
+//    std::cout << finderOfInstallationPackageFilesForPackages->generateReport(); // overload stream output operator
     this->printInstalledPackages();
     this->printPartiallyDownloadedInstallationPackageFiles();
     this->printInstallationPackageFilesRelatedToMissingLocallyInstalledPackages();
@@ -192,7 +193,7 @@ void Packages::relateInstallationPackageFilesToLocallyInstalledPackages() {
             bool wasInferredPackageRefferingToMissingPackage = false;
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
-                // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
+                // search for the matching package element in the 'locallyInstalledPackages' by 'packageWithInferredName'
                 auto matchingPackage = this->installedPackages.find(packageWithInferredName);
 
                 // For debugging purposes

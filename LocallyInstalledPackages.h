@@ -13,13 +13,18 @@
 class LocallyInstalledPackages {
 public:
     explicit LocallyInstalledPackages(const std::unique_ptr<IgnoredPackageNames>& ignoredPackageNames);
-    //&LocallyInstalledPackages(const IgnoredPackageNames& ignoredPackageNames);
+    //explicit LocallyInstalledPackages(const IgnoredPackageNames& ignoredPackageNames);
+
+    std::set<std::unique_ptr<Package>>::iterator find(std::unique_ptr<Package>& packageWithInferredName) const;
+    std::set<std::unique_ptr<Package>>::iterator end() const;
 
     std::string printInstalledPackages() const;
 
 private:
     const std::unique_ptr<IgnoredPackageNames>& ignoredPackageNames;
-    std::set<std::unique_ptr<Package>> installedPackages;
+    //const IgnoredPackageNames& ignoredPackageNames;
+
+    std::set<std::unique_ptr<Package>> locallyInstalledPackages;
 
     void findLocallyInstalledPackages();
 

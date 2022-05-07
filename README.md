@@ -90,11 +90,11 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 Internal structural representation - a coarse draft
 
-Iterate all localy installed packages from the local DB and save each entry into a hashmap `installedPackages` in an instance of class `InstalledPackages`
+Iterate all localy installed packages from the local DB and save each entry into a hashmap `locallyInstalledPackages` in an instance of class `InstalledPackages`
 
     class PackagesAndTheirFiles
 
-    installedPackages
+    locallyInstalledPackages
     |-key: "accounts-qml-module"             ('std::string'/class 'PackageName'/std::unique_ptr<PackageName>)
       |-value:                                 (std::unique_ptr<Package>)
         |-locallyInstalledVersion: 0.7-4         (std::string/Version/std::unique_ptr<Version>)
@@ -124,7 +124,7 @@ Iterate all localy installed packages from the local DB and save each entry into
       |-value:                   
         |-...
 
-- class `PackageName` will use overloaded less-than-operator i.e. `operator<`, because the class is only used as a key in a `installedPackages` map, in order to indicate that the class is used as a key
+- class `PackageName` will use overloaded less-than-operator i.e. `operator<`, because the class is only used as a key in a `locallyInstalledPackages` map, in order to indicate that the class is used as a key
 - class `Version` will use custom comparator functor class `VersionComparator`, because its used as a key in a map `packageVersionsWithTheirRelatedDownloadedFiles` and as a field in the `PackagesAndTheirFiles` to indicate variability of usage of the class
   - I'll use `operator<` from standard string, because the `alpm_pkg_vercmp` function from `alpm.h` ignores package release versions, and I want to do a complete comparison of Versions
 - `ignoredPackageNames` - keep package files that are listed next to `IgnorePkg` option in the pacman's configuration file
@@ -186,12 +186,12 @@ Iterate all localy installed packages from the local DB and save each entry into
                    continue
                append the token to the inferredPackageVersion
    9. remove the dash `-` at the end of `inferredPackageName` and `inferredPackageVersion`
-   10. Use the `inferredPackageName` to find the matching key in the `installedPackages` collection
+   10. Use the `inferredPackageName` to find the matching key in the `locallyInstalledPackages` collection
 When the key is found (and thus the package is locally installed on the system), add a new entry to `packageVersionsWithTheirRelatedDownloadedFiles` using the `downloadedPackageVersion` a key
    11. When the key is missing (`nullptr`) (and thus the package had been uninstalled from the system), add the `filename` to the collection `packageFilesDesignatedForDeletion`
 6. Iterate all entries in `packageFilesDesignatedForDeletion`
    1. Move all entries into a separate directory `PACKAGE_CEMETERY` inside the pacman's cache directory
-7. Iterate all entries in `installedPackages`  
+7. Iterate all entries in `locallyInstalledPackages`  
    1. For each `installedPackage`
       1. if the package is in the list of `IgnoredPkgs` in the pacman's configuration file - likely in `/etc/pacman.conf` (parse or read with `libalpm`?)
          1. continue (skip the deletion of the package - the packages are ignored for good reasons - either they have a strong systemic effect on the system and may cause malfunction of the system, or they are licensed with other than open-source license which may after update stop functioning)

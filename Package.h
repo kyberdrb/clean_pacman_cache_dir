@@ -31,6 +31,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
         out << *(package.name) << "\t";
 
+        // Print the rest of fully constructed package
         if (package.locallyInstalledVersion.get() != nullptr) {
             out
                     << *(package.locallyInstalledVersion) << "\t"
