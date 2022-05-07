@@ -27,20 +27,29 @@ public:
     void movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles);
 
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
-        out << package.name << "\t" << package.locallyInstalledVersion << "\t" << package.architecture << "\t" << "isPackageIgnored: " << package.isIgnored << "\t" << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
+        out << package.name << "\t";
 
-        if ( ! package.name.empty() && std::isdigit(package.name.at(0) ) ) {
-            out << "\t" << "PACKAGE NAME BEGINNS WITH A NUMBER";
-        }
+        // Print the rest of fully constructed package
+        if ( ! package.locallyInstalledVersion.empty() ) {
+            out
+                    << package.locallyInstalledVersion << "\t"
+                    << package.architecture << "\t"
+                    << "isPackageIgnored: " << package.isIgnored << "\t"
+                    << package.name << "-" << package.locallyInstalledVersion << "-" << package.architecture;
 
-        if ( ! package.locallyInstalledVersion.empty() && ! std::isdigit(package.locallyInstalledVersion.at(0) ) ) {
-            out << "\t" << "PACKAGE VERSION BEGINNS WITH A LETTER";
-        }
+            if (!package.name.empty() && std::isdigit(package.name.at(0))) {
+                out << "\t" << "PACKAGE NAME BEGINNS WITH A NUMBER";
+            }
 
-        if ( ! package.packageFilesForDeletion.empty() ) {
-            for (const auto& packageRelatedFile: package.packageFilesForDeletion) {
-                out << "\n";
-                out << "  - " << *packageRelatedFile;
+            if (!package.locallyInstalledVersion.empty() && !std::isdigit(package.locallyInstalledVersion.at(0))) {
+                out << "\t" << "PACKAGE VERSION BEGINNS WITH A LETTER";
+            }
+
+            if (!package.packageFilesForDeletion.empty()) {
+                for (const auto& packageRelatedFile: package.packageFilesForDeletion) {
+                    out << "\n";
+                    out << "  - " << *packageRelatedFile;
+                }
             }
         }
 
