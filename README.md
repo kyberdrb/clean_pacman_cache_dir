@@ -443,7 +443,7 @@ struct IgnoredPackageNamesEqualityComparator {
 };
 ```
 - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906 - **search vector of objects or unique pointers with `find_if` and a custom predicate:**
-    - **either a comparator as functor encapsulated in a separate class/file - encapsulated - the class the objects of the vector are elements of is left as-is - useful when the class file is read-only, reusable, easier to understand; increases number of files in a project...**
+    - **either a comparator as functor encapsulated in a separate class/file - encapsulated - the class the objects of the vector are elements of is left as-is - useful when the class file is read-only, reusable, simpler client (caller) code; increases number of files in a project...**
 - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939290#6939290
     - **...or a lambda function - disposable function - fewer lines of code; maybe more complicated to understand...**
     - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/6bb11e5fb9ba9d3f39a7084a3033bc805b89c829/Packages.cpp#L122
