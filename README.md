@@ -288,7 +288,7 @@ The version of the algorithm with a tokenization
     - https://regex101.com/
     - https://duckduckgo.com/?t=ffab&q=regex+match+from+backwards&ia=web
     - https://stackoverflow.com/questions/1103149/non-greedy-reluctant-regex-matching-in-sed
-- `string`
+- `std::string`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+tokenize+string&ia=web
     - https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
     - https://duckduckgo.com/?q=c%2B%2B+check+if+number&t=ffab&ia=web
@@ -301,9 +301,16 @@ The version of the algorithm with a tokenization
     - https://www.educba.com/c-plus-plus-substring/
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substr&ia=web
     - https://www.cplusplus.com/reference/string/string/substr/
-- vector
+- `std::vector`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+contains&ia=web&iax=qa
-    - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906
+    - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906 - **search vector of objects or unique pointers with `find_if` and a custom predicate:**
+        - **either a comparator as functor encapsulated in a separate class/file - encapsulated - the class the objects of the vector are elements of is left as-is - useful when the class file is read-only, reusable, easier to understand; increases number of files in a project...**
+    - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939290#6939290
+        - **...or a lambda function - disposable function - fewer lines of code; maybe more complicated to understand...**
+        - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/6bb11e5fb9ba9d3f39a7084a3033bc805b89c829/Packages.cpp#L122
+    - https://duckduckgo.com/?t=ffab&q=find+custom+object+vector&ia=web
+    - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects
+    - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939278#6939278 - **...or search a vector of objects or of unique pointers with `find` and by overloading the equality operator as a public friend function for the type of elements the vector holds - uses only the class features, `vector` featres and C++ features only - all encapsulated in one class with only internal comparing mechanism - no external comparator mechanisms**
 - `std::filesystem`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
     - https://en.cppreference.com/w/cpp/filesystem/remove
@@ -317,6 +324,8 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?q=c%2B%2B+string+compare+longest+match+prefix&t=ffab&ia=web&iax=qa
     - https://stackoverflow.com/questions/22615838/string-matching-computing-the-longest-prefix-suffix-array-in-kmp-algorithm#22616474
     - https://docs.microsoft.com/en-us/cpp/cpp/delegating-constructors?view=msvc-170
+    - https://duckduckgo.com/?q=c%2B%2B+member+non+member+friend+function&t=ffab&ia=web
+    - https://www.geeksforgeeks.org/difference-between-friend-function-and-member-function-in-cpp/
 - `libarchive`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
 - CMake, LLVM toolchain, `clang`, cross-compiling
