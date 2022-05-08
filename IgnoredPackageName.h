@@ -16,6 +16,8 @@ public:
         return out;
     }
 
+// FOR DIRECT COMPARISON OF SMART POINTERS
+
     // Fails to find an element in a vector of unique pointers, because the parameters are not constant
     //  because the third parameter in 'std::find' takes a reference to a constant type 'const _Tp& __val'
     //  and in this function are defined parameters as references to the type of element the vector holds
@@ -36,13 +38,6 @@ public:
 //        return this->name == otherIgnoredPackageName->name;
 //    }
 
-    // Fails to find an element in a vector of unique pointers, because the parameters are of different type than the
-    //  type of elements in the vector, even though they are both constant:
-    //   'const IgnoredPackageName&' vs 'const std::unique_ptr<IgnoredPackageName>&'
-//    friend bool operator==(const IgnoredPackageName& oneIgnoredPackageName, const IgnoredPackageName& anotherIgnoredPackageName) {
-//        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
-//    }
-
     // Successfully finds an element in a vector of unique pointers because
     //  1. the 'std::find' function has access to the internal structure of the elements that it compares
     //     for equality with the equality operator 'operator=='
@@ -52,6 +47,38 @@ public:
     friend bool operator==(const std::unique_ptr<IgnoredPackageName>& oneIgnoredPackageName, const std::unique_ptr<IgnoredPackageName>& anotherIgnoredPackageName) {
         return oneIgnoredPackageName->name == anotherIgnoredPackageName->name;
     }
+
+// FOR COMPARISON OF DEREFERENCED (SMART) POINTERS (I. E. COMPARING OBJECTS not pointers to objects nor pointers to pointers)
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    friend bool operator==(IgnoredPackageName& oneIgnoredPackageName, IgnoredPackageName& anotherIgnoredPackageName) {
+//        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    friend bool operator==(const IgnoredPackageName& oneIgnoredPackageName, const IgnoredPackageName& anotherIgnoredPackageName) {
+//        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) const {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(IgnoredPackageName& otherIgnoredPackageName) const {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(IgnoredPackageName& otherIgnoredPackageName) {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
 
 private:
     std::string name;
