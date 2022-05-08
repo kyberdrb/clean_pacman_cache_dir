@@ -44,16 +44,16 @@ public:
     //  2. and the types for parameters for the equality operator in the class
     //     and the type of the third parameter in the 'std::find'
     //     are matching in their constant modifiers for the type of elements the vector holds
-    friend bool operator==(const std::unique_ptr<IgnoredPackageName>& oneIgnoredPackageName, const std::unique_ptr<IgnoredPackageName>& anotherIgnoredPackageName) {
-        return oneIgnoredPackageName->name == anotherIgnoredPackageName->name;
-    }
+//    friend bool operator==(const std::unique_ptr<IgnoredPackageName>& oneIgnoredPackageName, const std::unique_ptr<IgnoredPackageName>& anotherIgnoredPackageName) {
+//        return oneIgnoredPackageName->name == anotherIgnoredPackageName->name;
+//    }
 
 // FOR COMPARISON OF DEREFERENCED (SMART) POINTERS (I. E. COMPARING OBJECTS not pointers to objects nor pointers to pointers)
 
     // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
-//    friend bool operator==(IgnoredPackageName& oneIgnoredPackageName, IgnoredPackageName& anotherIgnoredPackageName) {
-//        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
-//    }
+    friend bool operator==(IgnoredPackageName& oneIgnoredPackageName, IgnoredPackageName& anotherIgnoredPackageName) {
+        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
+    }
 
     // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
 //    friend bool operator==(const IgnoredPackageName& oneIgnoredPackageName, const IgnoredPackageName& anotherIgnoredPackageName) {

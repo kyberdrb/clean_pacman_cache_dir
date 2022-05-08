@@ -1,5 +1,6 @@
 #include "Package.h"
-#include "IgnoredPackageNamesEqualityComparator.h"
+#include "IgnoredPackageName.h"
+//#include "IgnoredPackageNamesEqualityComparator.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -103,15 +104,15 @@ int main() {
         bool isIgnoredInAnotherList = false;
         auto packageNameCopy = packageName;
         auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
-//        bool isPackageNameIgnored =
-//                std::find_if(
-//                        ignoredPackageNames.begin(),
-//                        ignoredPackageNames.end(),
-//                        [&ignoredPackageNameCandidate](const std::unique_ptr<IgnoredPackageName>& ignoredPackageName) {
+        bool isPackageNameIgnored =
+                std::find_if(
+                        ignoredPackageNames.begin(),
+                        ignoredPackageNames.end(),
+                        [&ignoredPackageNameCandidate](const std::unique_ptr<IgnoredPackageName>& ignoredPackageName) {
 //                            return ignoredPackageNameCandidate == ignoredPackageName;
-////                            return *ignoredPackageNameCandidate == *ignoredPackageName;
-//                        }
-//                ) != ignoredPackageNames.end();
+                            return *ignoredPackageNameCandidate == *ignoredPackageName;
+                        }
+                ) != ignoredPackageNames.end();
 
 //        bool isPackageNameIgnored =
 //                std::any_of(
@@ -130,12 +131,12 @@ int main() {
 //                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
 //                ) != ignoredPackageNames.end();
 
-        bool isPackageNameIgnored =
-                std::any_of(
-                        ignoredPackageNames.begin(),
-                        ignoredPackageNames.end(),
-                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
-                );
+//        bool isPackageNameIgnored =
+//                std::any_of(
+//                        ignoredPackageNames.begin(),
+//                        ignoredPackageNames.end(),
+//                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
+//                );
 
         if (isPackageNameIgnored) {
             isIgnoredInAnotherList = true;
