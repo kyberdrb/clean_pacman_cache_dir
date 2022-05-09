@@ -246,29 +246,29 @@ only the public equality operator friend function is used
                 - public friend function const const
             - dereferenced comparison in comparator
                 - public friend function - const const
-                - public friend function - no const
+                - public friend function - non-const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
-                - public member function - no const
+                - public member function - non-const
     - dereferenced comparison
         - lambda
-            - public friend function - no const
+            - public friend function - non-const
             - public friend function - const const
             - public member function - const const
             - public member function - only parameter const
             - public member function - only function const
-            - public member function - no const
+            - public member function - non-const
         - comparator
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - no const
+                - public friend function - non-const
                 - public friend function - const const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
-                - public member function - no const
+                - public member function - non-const
 - std::any_of
     - direct comparison in main
         - lambda
@@ -277,30 +277,30 @@ only the public equality operator friend function is used
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - no const
+                - public friend function - non-const
                 - public friend function - const const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
-                - public member function - no const
+                - public member function - non-const
     - dereferenced comparison
         - lambda
-            - public friend function - no const
+            - public friend function - non-const
             - public friend function - const const
             - public member function - const const
             - public member function - only parameter const
             - public member function - only function const
-            - public member function - no const
+            - public member function - non-const
         - comparator
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - no const
+                - public friend function - non-const
                 - public friend function - const const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
-                - public member function - no const
+                - public member function - non-const
 
 Example code
 
