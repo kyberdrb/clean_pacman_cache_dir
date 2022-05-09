@@ -236,35 +236,26 @@ only the public equality operator friend function is used
 - looks like defining any operator as a `public` `friend` (i. e. non-member) function with `const` parameters is the most compatible option: trading of compatibility and stable functionality in multiple context on the one hand with encapsulation on the other.
 
 - std::find
-    - public friend function const const (the only one that worked for me for smart pointers)
+    - public friend function - all params const (the only one that worked for me for smart pointers)
 - std::find_if
     - direct comparison in main
         - lambda
-            - public friend function const const (the only one that works)
+            - public friend function - all params const (the only one that works)
         - comparator
             - direct comparison in comparator
-                - public friend function const const
-            - dereferenced comparison in comparator
-                - public friend function - const const
-                - public friend function - non-const
-                - public member const function - const parameter
-                - public member non-const function - const parameter
-                - public member const function - non-const parameter
-                - public member non-const function - non-const param
+                - public friend function - all params const
     - dereferenced comparison
         - lambda
-            - public friend function - non-const
-            - public friend function - const const
+            - public friend function - all params non-const
+            - public friend function - all params const
             - public member const function - const parameter
             - public member non-const function - const parameter
             - public member const function - non-const parameter
             - public member non-const function - non-const param
         - comparator
-            - direct comparison in comparator
-                - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - non-const
-                - public friend function - const const
+                - public friend function - all params non-const
+                - public friend function - all params const
                 - public member const function - const parameter
                 - public member non-const function - const parameter
                 - public member const function - non-const parameter
@@ -272,31 +263,21 @@ only the public equality operator friend function is used
 - std::any_of
     - direct comparison in main
         - lambda
-            - public friend function const const (the only one that works)
+            - public friend function - all params const (the only one that works)
         - comparator
             - direct comparison in comparator
-                - public friend function const const
-            - dereferenced comparison in comparator
-                - public friend function - non-const
-                - public friend function - const const
-                - public member const function - const parameter
-                - public member non-const function - const parameter
-                - public member const function - non-const parameter
-                - public member non-const function - non-const param
     - dereferenced comparison
         - lambda
-            - public friend function - non-const
-            - public friend function - const const
+            - public friend function - all params non-const
+            - public friend function - all params const
             - public member const function - const parameter
             - public member non-const function - const parameter
             - public member const function - non-const parameter
             - public member non-const function - non-const param
         - comparator
-            - direct comparison in comparator
-                - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - non-const
-                - public friend function - const const
+                - public friend function - all params non-const
+                - public friend function - all params const
                 - public member const function - const parameter
                 - public member non-const function - const parameter
                 - public member const function - non-const parameter

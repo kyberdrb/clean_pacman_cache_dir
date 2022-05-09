@@ -1,6 +1,6 @@
 #include "Package.h"
-#include "IgnoredPackageName.h"
-//#include "IgnoredPackageNamesEqualityComparator.h"
+//#include "IgnoredPackageName.h"
+#include "IgnoredPackageNamesEqualityComparator.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -114,22 +114,22 @@ int main() {
 //                        }
 //                ) != ignoredPackageNames.end();
 
-        bool isPackageNameIgnored =
-                std::any_of(
-                        ignoredPackageNames.begin(),
-                        ignoredPackageNames.end(),
-                        [&ignoredPackageNameCandidate](const std::unique_ptr<IgnoredPackageName>& ignoredPackageName) {
-//                            return ignoredPackageNameCandidate == ignoredPackageName;
-                            return *ignoredPackageNameCandidate == *ignoredPackageName;
-                        }
-                );
-
 //        bool isPackageNameIgnored =
-//                std::find_if(
+//                std::any_of(
 //                        ignoredPackageNames.begin(),
 //                        ignoredPackageNames.end(),
-//                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
-//                ) != ignoredPackageNames.end();
+//                        [&ignoredPackageNameCandidate](const std::unique_ptr<IgnoredPackageName>& ignoredPackageName) {
+////                            return ignoredPackageNameCandidate == ignoredPackageName;
+//                            return *ignoredPackageNameCandidate == *ignoredPackageName;
+//                        }
+//                );
+
+        bool isPackageNameIgnored =
+                std::find_if(
+                        ignoredPackageNames.begin(),
+                        ignoredPackageNames.end(),
+                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
+                ) != ignoredPackageNames.end();
 
 //        bool isPackageNameIgnored =
 //                std::any_of(
