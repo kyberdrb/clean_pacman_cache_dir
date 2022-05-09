@@ -61,14 +61,14 @@ public:
 //    }
 
     // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
-    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) const {
-        return this->name == otherIgnoredPackageName.name;
-    }
-
-    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
-//    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) {
+//    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) const {
 //        return this->name == otherIgnoredPackageName.name;
 //    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) {
+        return this->name == otherIgnoredPackageName.name;
+    }
 
     // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
 //    bool operator==(IgnoredPackageName& otherIgnoredPackageName) const {
