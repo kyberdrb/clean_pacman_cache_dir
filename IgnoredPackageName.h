@@ -51,14 +51,14 @@ public:
 // FOR COMPARISON OF DEREFERENCED (SMART) POINTERS (I. E. COMPARING OBJECTS not pointers to objects nor pointers to pointers)
 
     // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
-    friend bool operator==(IgnoredPackageName& oneIgnoredPackageName, IgnoredPackageName& anotherIgnoredPackageName) {
-        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
-    }
-
-    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
-//    friend bool operator==(const IgnoredPackageName& oneIgnoredPackageName, const IgnoredPackageName& anotherIgnoredPackageName) {
+//    friend bool operator==(IgnoredPackageName& oneIgnoredPackageName, IgnoredPackageName& anotherIgnoredPackageName) {
 //        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
 //    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+    friend bool operator==(const IgnoredPackageName& oneIgnoredPackageName, const IgnoredPackageName& anotherIgnoredPackageName) {
+        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
+    }
 
     // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
 //    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) const {

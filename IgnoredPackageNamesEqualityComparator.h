@@ -21,7 +21,9 @@ struct IgnoredPackageNamesEqualityComparator {
 
     bool operator()(const std::unique_ptr<IgnoredPackageName>& otherPackageName) const {
 //        return (ignoredPackageName == otherPackageName);
-        return *ignoredPackageName == *otherPackageName;
+
+//        return *ignoredPackageName == *otherPackageName;
+        return *(this->ignoredPackageName) == *otherPackageName;
     }
 
 private:
