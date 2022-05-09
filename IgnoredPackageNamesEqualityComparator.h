@@ -22,9 +22,9 @@ struct IgnoredPackageNamesEqualityComparator {
     bool operator()(const std::unique_ptr<IgnoredPackageName>& otherPackageName) const {
 //        return (ignoredPackageName == otherPackageName);
 
-//        return *ignoredPackageName == *otherPackageName;
+        return *ignoredPackageName == *otherPackageName;
 //        return *(this->ignoredPackageName) == *otherPackageName;
-        return *(IgnoredPackageNamesEqualityComparator::ignoredPackageName) == *otherPackageName;
+//        return *(IgnoredPackageNamesEqualityComparator::ignoredPackageName) == *otherPackageName;
     }
 
 private:

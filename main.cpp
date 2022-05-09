@@ -124,19 +124,19 @@ int main() {
 //                        }
 //                );
 
-        bool isPackageNameIgnored =
-                std::find_if(
-                        ignoredPackageNames.begin(),
-                        ignoredPackageNames.end(),
-                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
-                ) != ignoredPackageNames.end();
-
 //        bool isPackageNameIgnored =
-//                std::any_of(
+//                std::find_if(
 //                        ignoredPackageNames.begin(),
 //                        ignoredPackageNames.end(),
 //                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
-//                );
+//                ) != ignoredPackageNames.end();
+
+        bool isPackageNameIgnored =
+                std::any_of(
+                        ignoredPackageNames.begin(),
+                        ignoredPackageNames.end(),
+                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
+                );
 
         if (isPackageNameIgnored) {
             isIgnoredInAnotherList = true;
