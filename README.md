@@ -253,8 +253,8 @@ only the public equality operator friend function is used
                 - public member function - no const
     - dereferenced comparison
         - lambda
-            - public friend function - const const
             - public friend function - no const
+            - public friend function - const const
             - public member function - const const
             - public member function - only parameter const
             - public member function - only function const
@@ -263,8 +263,8 @@ only the public equality operator friend function is used
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - const const
                 - public friend function - no const
+                - public friend function - const const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
@@ -277,16 +277,16 @@ only the public equality operator friend function is used
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - const const
                 - public friend function - no const
+                - public friend function - const const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
                 - public member function - no const
     - dereferenced comparison
         - lambda
-            - public friend function - const const
             - public friend function - no const
+            - public friend function - const const
             - public member function - const const
             - public member function - only parameter const
             - public member function - only function const
@@ -295,8 +295,8 @@ only the public equality operator friend function is used
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
-                - public friend function - const const
                 - public friend function - no const
+                - public friend function - const const
                 - public member function - const const
                 - public member function - only parameter const
                 - public member function - only function const
