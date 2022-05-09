@@ -247,28 +247,28 @@ only the public equality operator friend function is used
             - dereferenced comparison in comparator
                 - public friend function - const const
                 - public friend function - non-const
-                - public member function - const const
-                - public member function - only parameter const
-                - public member function - only function const
-                - public member function - non-const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
     - dereferenced comparison
         - lambda
             - public friend function - non-const
             - public friend function - const const
-            - public member function - const const
-            - public member function - only parameter const
-            - public member function - only function const
-            - public member function - non-const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
         - comparator
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
                 - public friend function - non-const
                 - public friend function - const const
-                - public member function - const const
-                - public member function - only parameter const
-                - public member function - only function const
-                - public member function - non-const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
 - std::any_of
     - direct comparison in main
         - lambda
@@ -279,28 +279,28 @@ only the public equality operator friend function is used
             - dereferenced comparison in comparator
                 - public friend function - non-const
                 - public friend function - const const
-                - public member function - const const
-                - public member function - only parameter const
-                - public member function - only function const
-                - public member function - non-const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
     - dereferenced comparison
         - lambda
             - public friend function - non-const
             - public friend function - const const
-            - public member function - const const
-            - public member function - only parameter const
-            - public member function - only function const
-            - public member function - non-const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
         - comparator
             - direct comparison in comparator
                 - public friend function const const
             - dereferenced comparison in comparator
                 - public friend function - non-const
                 - public friend function - const const
-                - public member function - const const
-                - public member function - only parameter const
-                - public member function - only function const
-                - public member function - non-const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
 
 Example code
 
