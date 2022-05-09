@@ -23,7 +23,8 @@ struct IgnoredPackageNamesEqualityComparator {
 //        return (ignoredPackageName == otherPackageName);
 
 //        return *ignoredPackageName == *otherPackageName;
-        return *(this->ignoredPackageName) == *otherPackageName;
+//        return *(this->ignoredPackageName) == *otherPackageName;
+        return *(IgnoredPackageNamesEqualityComparator::ignoredPackageName) == *otherPackageName;
     }
 
 private:
