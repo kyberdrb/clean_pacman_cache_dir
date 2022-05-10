@@ -429,6 +429,77 @@ struct IgnoredPackageNamesEqualityComparator {
 };
 ```
 
+### Ways of finding an element of custom type in a `std::set`
+
+- find
+- find_if
+- any_of
+
+
+- std::find
+    - public friend function - all params const (the only one that worked for me for smart pointers)
+- std::find_if
+    - direct comparison in main
+        - lambda
+            - public friend function - all params const (the only one that works)
+        - comparator
+            - direct comparison in comparator
+                - public friend function - all params const
+    - dereferenced comparison
+        - lambda
+            - public friend function - all params non-const
+            - public friend function - all params const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
+        - comparator
+            - dereferenced comparison in comparator
+                - public friend function - all params non-const
+                - public friend function - all params const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
+- std::any_of
+    - direct comparison in main
+        - lambda
+            - public friend function - all params const (the only one that works)
+        - comparator
+            - direct comparison in comparator
+    - dereferenced comparison
+        - lambda
+            - public friend function - all params non-const
+            - public friend function - all params const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
+        - comparator
+            - dereferenced comparison in comparator
+                - public friend function - all params non-const
+                - public friend function - all params const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
+
+- Direct comparison
+    - public friend operator< with all const params with overloaded 'std::less'
+    - public friend operator< with all const params without overloaded 'std::less'
+    - (public friend operator< with all non-const params doesn't work)
+
+- Dereferenced comparison
+    - public member operator< + overloaded 'std::less'
+    - overloaded 'std::less' only with dereferencing by '*' - with overloaded public member/friend operator
+    - overloaded 'std::less' only with dereferencing by '->' and calling an accessor method for compared field - without
+
+- Overloading default 'key_compare' function with custom comparator as lambda in template parameter and perhaps as argument in constructor of 'std::set'
+
+- Overloading default 'key_compare' function with custom comparator as functor in template parameter and perhaps as argument in constructor of 'std::set'
+- std::set<std::unique_ptr<Package>, PackageNameComparator>
+
+
 ## Sources
 
 - `libalpm` - library of the Arch Linux Package Manager - the `pacman`

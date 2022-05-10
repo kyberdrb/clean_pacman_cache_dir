@@ -56,6 +56,9 @@ public:
         return out;
     }
 
+// FOR DEREFERENCED (SMART) POINTER COMPARISON
+
+    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
     bool operator<(const Package& package) const {
         // TODO maybe replace the 'getName()' function with only fields?
         return this->getName() < package.getName();
@@ -63,6 +66,28 @@ public:
 //        return Package::name < package.getName();
 //        return Package::name < package.name;
     }
+
+
+// FOR DIRECT (SMART) POINTER COMPARISON
+
+    // Doesn't work
+//    bool operator<(const std::unique_ptr<Package>& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//        return this->getName() < package->getName();
+////        return this->name < package.getName();
+////        return Package::name < package.getName();
+////        return Package::name < package.name;
+//    }
+
+//    // WORKS for direct comparison without overloading 'std::less' funcion
+//    friend bool operator<(const std::unique_ptr<Package>& lhs, const std::unique_ptr<Package>& rhs) {
+//        return lhs->name < rhs->name;
+//    }
+
+    // Doesn't work
+//    friend bool operator<(std::unique_ptr<Package>& lhs, std::unique_ptr<Package>& rhs) {
+//        return lhs->name < rhs->name;
+//    }
 
 private:
     std::string name;
@@ -82,3 +107,13 @@ namespace std {
         }
     };
 }
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+//namespace std {
+//    template<>
+//    struct less<unique_ptr<Package>> {
+//        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
+//            return lhs->getName() < rhs->getName();
+//        }
+//    };
+//}
