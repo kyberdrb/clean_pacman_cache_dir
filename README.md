@@ -221,10 +221,213 @@ The version of the algorithm with a tokenization
 - '2.0.1' is the last working version - but without the fix for printing partially downloaded files
 
 - regex for main.cpp to search for variables to encapsulate in classes: `[std::|\.]find`
-    - lines 83 and 153
-        - for line 83: introduce 'IgnorePackageName' class
-            - try out all possible combinations how to search in a vector of unique pointers: `std::find` (with overloaded equality operator) and `std::find_if` (with comparator in separate struct as predicate; with lambda as predicate)
-        - for line 153: integrate the 'PackageName' class to the 'Package' class by composition (maybe)
+    - for 'Package' class at line with
+      
+          auto matchingPackage = installedPackages.find(packageWithInferredName);
+          
+        - try out all possible combinations how to search in a `std::set` of unique pointers:
+            - `std::find` (with overloaded equality operator - direct and dereferenced unique pointer comparison)
+            - `std::find_if` (with comparator in separate struct as predicate; with lambda as predicate - direct and dereferenced unique pointer comparison)
+            - `std::any_of` (with comparator in separate struct as predicate; with lambda as predicate - direct and dereferenced unique pointer comparison)
+    - for line 153 (on upstream branch `main`): integrate the 'PackageName' class to the 'Package' class by composition (maybe)
+
+### Ways of finding an element of custom type in a `std::vector`
+
+- when comparing two unique pointers without dereferencing, i. e. comparing unique pointers directly without '*' or '->',
+  only the public equality operator friend function is used
+
+- seems like the public member equality operator (or any operator defined as a member function) is used only when the unique pointer objects (or any other pointer to object) are dereferenced on the both sides of the comparison
+
+- looks like defining any operator as a `public` `friend` (i. e. non-member) function with `const` parameters is the most compatible option: trading of compatibility and stable functionality in multiple context on the one hand with encapsulation on the other.
+
+- std::find
+    - public friend function - all params const (the only one that worked for me for smart pointers)
+- std::find_if
+    - direct comparison in main
+        - lambda
+            - public friend function - all params const (the only one that works)
+        - comparator
+            - direct comparison in comparator
+                - public friend function - all params const
+    - dereferenced comparison
+        - lambda
+            - public friend function - all params non-const
+            - public friend function - all params const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
+        - comparator
+            - dereferenced comparison in comparator
+                - public friend function - all params non-const
+                - public friend function - all params const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
+- std::any_of
+    - direct comparison in main
+        - lambda
+            - public friend function - all params const (the only one that works)
+        - comparator
+            - direct comparison in comparator
+    - dereferenced comparison
+        - lambda
+            - public friend function - all params non-const
+            - public friend function - all params const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
+        - comparator
+            - dereferenced comparison in comparator
+                - public friend function - all params non-const
+                - public friend function - all params const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
+
+Example code
+
+```
+IgnoredPackageName.h
+
+// FOR DIRECT COMPARISON OF SMART POINTERS
+
+    // Fails to find an element in a vector of unique pointers, because the parameters are not constant
+    //  because the third parameter in 'std::find' takes a reference to a constant type 'const _Tp& __val'
+    //  and in this function are defined parameters as references to the type of element the vector holds
+    //  not as reference to the constant element type that the vector holds,
+    //  therefore the types for parameters for the equality operator in the class
+    //  and the type of the third parameter in the 'std::find'
+    //  need to match in their constant modifiers in order to accurately find an element in the vector,
+    //  even though the type of elements the vector holds are NOT constant
+//    friend bool operator==(std::unique_ptr<IgnoredPackageName>& oneIgnoredPackageName, std::unique_ptr<IgnoredPackageName>& anotherIgnoredPackageName) {
+//        return oneIgnoredPackageName->name == anotherIgnoredPackageName->name;
+//    }
+
+    // Fails to find an element in a vector of unique pointers, because the 'std::find' needs to have access to the
+    //  internal structure for the type of elements it compares
+    //  therefore the equality operator needs to be declared as public 'friend' i.e. nonmember function
+    //  even though it is defined in the namespace of this class
+//    bool operator==(const std::unique_ptr<IgnoredPackageName>& otherIgnoredPackageName) const {
+//        return this->name == otherIgnoredPackageName->name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers because
+    //  1. the 'std::find' function has access to the internal structure of the elements that it compares
+    //     for equality with the equality operator 'operator=='
+    //  2. and the types for parameters for the equality operator in the class
+    //     and the type of the third parameter in the 'std::find'
+    //     are matching in their constant modifiers for the type of elements the vector holds
+    friend bool operator==(const std::unique_ptr<IgnoredPackageName>& oneIgnoredPackageName, const std::unique_ptr<IgnoredPackageName>& anotherIgnoredPackageName) {
+        return oneIgnoredPackageName->name == anotherIgnoredPackageName->name;
+    }
+
+// FOR COMPARISON OF DEREFERENCED (SMART) POINTERS (I. E. COMPARING OBJECTS not pointers to objects nor pointers to pointers)
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    friend bool operator==(IgnoredPackageName& oneIgnoredPackageName, IgnoredPackageName& anotherIgnoredPackageName) {
+//        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    friend bool operator==(const IgnoredPackageName& oneIgnoredPackageName, const IgnoredPackageName& anotherIgnoredPackageName) {
+//        return oneIgnoredPackageName.name == anotherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) const {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(IgnoredPackageName& otherIgnoredPackageName) const {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(const IgnoredPackageName& otherIgnoredPackageName) {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+
+    // Successfully finds an element in a vector of unique pointers for dereferenced unique_ptrs
+//    bool operator==(IgnoredPackageName& otherIgnoredPackageName) {
+//        return this->name == otherIgnoredPackageName.name;
+//    }
+```
+
+```
+main.cpp
+
+// FOR LAMBDA PREDICATE
+
+        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
+        bool isPackageNameIgnored =
+                std::find_if(
+                        ignoredPackageNames.begin(),
+                        ignoredPackageNames.end(),
+                        [&ignoredPackageNameCandidate](const std::unique_ptr<IgnoredPackageName>& ignoredPackageName) {
+                            return ignoredPackageNameCandidate == ignoredPackageName;
+//                            return *ignoredPackageNameCandidate == *ignoredPackageName;
+                        }
+                ) != ignoredPackageNames.end();
+
+//        bool isPackageNameIgnored =
+//                std::any_of(
+//                        ignoredPackageNames.begin(),
+//                        ignoredPackageNames.end(),
+//                        [&ignoredPackageNameCandidate](const std::unique_ptr<IgnoredPackageName>& ignoredPackageName) {
+//                            return ignoredPackageNameCandidate == ignoredPackageName;
+////                            return *ignoredPackageNameCandidate == *ignoredPackageName;
+//                        }
+//                );
+
+// FOR COMAPRATOR PREDICATE...
+
+        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
+        bool isPackageNameIgnored =
+                std::find_if(
+                        ignoredPackageNames.begin(),
+                        ignoredPackageNames.end(),
+                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
+                ) != ignoredPackageNames.end();
+
+//        bool isPackageNameIgnored =
+//                std::any_of(
+//                        ignoredPackageNames.begin(),
+//                        ignoredPackageNames.end(),
+//                        IgnoredPackageNamesEqualityComparator(ignoredPackageNameCandidate)
+//                );
+
+// ...AND THE COMPARATOR
+
+#pragma once
+
+#include "IgnoredPackageName.h"
+
+// Comparator for std::map with unique_ptr keys didn't work for std::vector with unique_ptr elements...
+//struct IgnoredPackageNamesEqualityComparator {
+//    bool operator()(const PackageName& firstPackageName, const PackageName& secondPackageName) const {
+//        return firstPackageName == secondPackageName;
+//    }
+//};
+
+// ...using Predicate instead (pre C++11 solution)
+struct IgnoredPackageNamesEqualityComparator {
+    const std::unique_ptr<IgnoredPackageName>& ignoredPackageName;
+
+    explicit IgnoredPackageNamesEqualityComparator(const std::unique_ptr<IgnoredPackageName>& packageName) :
+        ignoredPackageName(packageName)
+    {}
+
+    bool operator()(const std::unique_ptr<IgnoredPackageName>& otherPackageName) const {
+//        return (ignoredPackageName == otherPackageName);
+        return (*ignoredPackageName == *otherPackageName);
+    }
+};
+```
 
 ## Sources
 
@@ -311,6 +514,28 @@ The version of the algorithm with a tokenization
     - https://duckduckgo.com/?t=ffab&q=find+custom+object+vector&ia=web
     - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects
     - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939278#6939278 - **...or search a vector of objects or of unique pointers with `find` and by overloading the equality operator as a public friend function for the type of elements the vector holds - uses only the class features, `vector` featres and C++ features only - all encapsulated in one class with only internal comparing mechanism - no external comparator mechanisms**
+- https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906 - **search vector of objects or unique pointers with `find_if` and a custom predicate:**
+    - **either a comparator as functor encapsulated in a separate class/file - encapsulated - the class the objects of the vector are elements of is left as-is - useful when the class file is read-only, reusable, simpler client (caller) code; increases number of files in a project...**
+- https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939290#6939290
+    - **...or a lambda function - disposable function - fewer lines of code; maybe more complicated to understand...**
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/6bb11e5fb9ba9d3f39a7084a3033bc805b89c829/Packages.cpp#L122
+    - https://duckduckgo.com/?t=ffab&q=find+custom+object+vector&ia=web
+    - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects
+    - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939278#6939278 - **...or search a vector of objects or of unique pointers with `find` and by overloading the equality operator as a public friend function for the type of elements the vector holds - uses only the class features, `vector` featres and C++ features only - all encapsulated in one class with only internal comparing mechanism - no external comparator mechanisms**
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+find+if+predicate&ia=web
+    - https://stackoverflow.com/questions/14437825/using-stdfind-with-a-predicate
+    - https://stackoverflow.com/questions/14437825/using-stdfind-with-a-predicate/34709047#34709047 - **`any_of` with lambda predicate**
+    - https://stackoverflow.com/questions/14437825/using-stdfind-with-a-predicate/14437961#14437961 - **`find_if` with lambda predicate**
+    - https://stackoverflow.com/questions/22660448/using-predicate-in-find-if
+    - https://stackoverflow.com/questions/22660448/using-predicate-in-find-if/22660600#22660600 - **`find_if` with comparator functor**
+    - https://stackoverflow.com/questions/22660448/using-predicate-in-find-if/22660643#22660643 - **`find_if` with either lambda or comparator functor**
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+find_if+predicate+struct&ia=web
+    - https://stackoverflow.com/questions/14225932/search-for-a-struct-item-in-a-vector-by-member-data - **_read entire thread for finding and removing elements in a vector with lambdas, comparator functors, and templated comparator functors_**
+    - https://stackoverflow.com/questions/14225932/search-for-a-struct-item-in-a-vector-by-member-data/14226007#14226007 - **`find_if` with templated comparator functor**
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/6bb11e5fb9ba9d3f39a7084a3033bc805b89c829/Packages.cpp#L123
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/commit/d0515a7c532c5a667e2d7b87a59d19c509569958
+      https://github.com/kyberdrb/clean_pacman_cache_dir/blob/d0515a7c532c5a667e2d7b87a59d19c509569958/Packages.cpp#L99
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/d0515a7c532c5a667e2d7b87a59d19c509569958/PackageNamesEqualityComparator.h
 - `std::filesystem`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
     - https://en.cppreference.com/w/cpp/filesystem/remove
