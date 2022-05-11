@@ -1,5 +1,6 @@
 #include "Package.h"
 #include "IgnoredPackageName.h"
+#include "PackageComparator.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -80,7 +81,19 @@ int main() {
     //    - not a 'multiset' [only one package name with multiple possible versions of it],
     //    - not a 'map' [the values are related and contained in the key itself] and
     //    - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-    std::set<std::unique_ptr<Package>> installedPackages{};
+//    std::set<std::unique_ptr<Package>> installedPackages{};
+
+//    std::set<std::unique_ptr<Package, PackageComparator>> installedPackages; // doesn't work - using PackageComparator as a second template argument for 'unique_ptr' as default deleter instead of using it as a second template argument for 'set' as a comparator
+    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS
+
+    auto packageComparator = std::make_unique<PackageComparator>();
+//    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
+
+//    auto packageComparator = std::make_unique<PackageComparator>();
+//    std::set<std::unique_ptr<Package>> installedPackages(packageComparator); // still doesn't work
+
+//      std::set<int,compare> s; //use the comparator like this
+//      std::set<std::unique_ptr<Package>, PackageComparator> s; //use the comparator like this - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
 
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);

@@ -59,13 +59,20 @@ public:
 // FOR DEREFERENCED (SMART) POINTER COMPARISON
 
     // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
-    bool operator<(const Package& package) const {
-        // TODO maybe replace the 'getName()' function with only fields?
-        return this->getName() < package.getName();
-//        return this->name < package.getName();
-//        return Package::name < package.getName();
-//        return Package::name < package.name;
-    }
+    //  or with custom comparator without 'std::less' overload
+//    bool operator<(const Package& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//        return this->getName() < package.getName();
+////        return this->name < package.getName();
+////        return Package::name < package.getName();
+////        return Package::name < package.name;
+//    }
+
+    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+    //  or with custom comparator without 'std::less' overload
+//    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
 
 
 // FOR DIRECT (SMART) POINTER COMPARISON
@@ -99,14 +106,14 @@ private:
 };
 
 // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
-namespace std {
-    template<>
-    struct less<unique_ptr<Package>> {
-        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
-            return *lhs < *rhs;
-        }
-    };
-}
+//namespace std {
+//    template<>
+//    struct less<unique_ptr<Package>> {
+//        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
+//            return *lhs < *rhs;
+//        }
+//    };
+//}
 
 // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
 //namespace std {
