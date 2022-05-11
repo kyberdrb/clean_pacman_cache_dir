@@ -431,74 +431,215 @@ struct IgnoredPackageNamesEqualityComparator {
 
 ### Ways of finding an element of custom type in a `std::set`
 
-- find
-- find_if
-- any_of
+- Client: `main.cpp`
+- Comparator: lambda/`PackageComparator.h`/internal comparison logic in overloaded `operator<` or specialized `std::less` function (the default function/functor that `std::set` uses to compare elements)
+- Element of custom type in `std::set`: Package (`Package.h`)
 
+DIRECT COMPARISON
 
-- std::find
-    - public friend function - all params const (the only one that worked for me for smart pointers)
+- set::find - passing unique ptr ref
+    - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+    - public friend operator< with specialized 'std::less' with direct comparison (unnecessary to specialize 'std::less' - the public friend operator< is enough to sort elements at insertion in the 'std::set')
+    - comparator functor added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+    - comparator lambda added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+- std::find - passing unique ptr ref
+    - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+    - public friend operator< with specialized 'std::less' with direct comparison (unnecessary to specialize 'std::less' - the public friend operator< is enough to sort elements at insertion in the 'std::set')
+    - comparator functor added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+    - comparator lambda added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
 - std::find_if
     - direct comparison in main
         - lambda
             - public friend function - all params const (the only one that works)
+            - public friend function - all params const (the only one that works) - 'std::set' encapsulated in class
         - comparator
             - direct comparison in comparator
                 - public friend function - all params const
-    - dereferenced comparison
-        - lambda
-            - public friend function - all params non-const
-            - public friend function - all params const
-            - public member const function - const parameter
-            - public member non-const function - const parameter
-            - public member const function - non-const parameter
-            - public member non-const function - non-const param
-        - comparator
-            - dereferenced comparison in comparator
-                - public friend function - all params non-const
-                - public friend function - all params const
-                - public member const function - const parameter
-                - public member non-const function - const parameter
-                - public member const function - non-const parameter
-                - public member non-const function - non-const param
+                - public friend function - all params const - 'std::set' encapsulated in class
+
 - std::any_of
     - direct comparison in main
         - lambda
             - public friend function - all params const (the only one that works)
+            - public friend function - all params const (the only one that works) - 'std::set' encapsulated in class
         - comparator
             - direct comparison in comparator
-    - dereferenced comparison
-        - lambda
+                - public friend function - all params const
+                - public friend function - all params const - 'std::set' encapsulated in class
+
+DEREFERENCED COMPARISON
+
+- set::find - passing unique ptr ref
+    - specialized 'std::less' with dereferenced comparison by '->' without public friend operator< (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
+    - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (encapsulation conforming)
+    - public friend/member operator< with specialized 'std::less' with dereferenced comparison by '->' (encapsulation violating - putting implementation details into generic function)
+
+- std::find - passing unique ptr ref
+    - specialized 'std::less' with dereferenced comparison by '->' without public friend operator< (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
+    - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (encapsulation conforming)
+    - public friend/member operator< with specialized 'std::less' with dereferenced comparison by '->' (encapsulation violating - putting implementation details into generic function)
+
+- find_if
+    - lambda
+        - public friend function - all params non-const
+        - public friend function - all params const
+        - public member const function - const parameter
+        - public member non-const function - const parameter
+        - public member const function - non-const parameter
+        - public member non-const function - non-const param
+    - comparator
+        - dereferenced comparison in comparator
             - public friend function - all params non-const
             - public friend function - all params const
             - public member const function - const parameter
             - public member non-const function - const parameter
             - public member const function - non-const parameter
             - public member non-const function - non-const param
-        - comparator
-            - dereferenced comparison in comparator
-                - public friend function - all params non-const
-                - public friend function - all params const
-                - public member const function - const parameter
-                - public member non-const function - const parameter
-                - public member const function - non-const parameter
-                - public member non-const function - non-const param
 
-- Direct comparison
-    - public friend operator< with all const params with overloaded 'std::less'
-    - public friend operator< with all const params without overloaded 'std::less'
-    - (public friend operator< with all non-const params doesn't work)
+- any_of
+    - lambda
+        - public friend function - all params non-const
+        - public friend function - all params const
+        - public member const function - const parameter
+        - public member non-const function - const parameter
+        - public member const function - non-const parameter
+        - public member non-const function - non-const param
+    - comparator
+        - dereferenced comparison in comparator
+            - public friend function - all params non-const
+            - public friend function - all params const
+            - public member const function - const parameter
+            - public member non-const function - const parameter
+            - public member const function - non-const parameter
+            - public member non-const function - non-const param
 
-- Dereferenced comparison
-    - public member operator< + overloaded 'std::less'
-    - overloaded 'std::less' only with dereferencing by '*' - with overloaded public member/friend operator
-    - overloaded 'std::less' only with dereferencing by '->' and calling an accessor method for compared field - without
+```
+main.cpp ('std::set' creation with optional comparator initialization excerpts)
 
-- Overloading default 'key_compare' function with custom comparator as lambda in template parameter and perhaps as argument in constructor of 'std::set'
+<~~~ snip ~~~>
 
-- Overloading default 'key_compare' function with custom comparator as functor in template parameter and perhaps as argument in constructor of 'std::set'
-- std::set<std::unique_ptr<Package>, PackageNameComparator>
+    std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
 
+    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+
+    auto packageComparator = std::make_unique<PackageComparator>();
+    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
+
+<~~~ snip ~~~>
+
+```
+
+```
+PackageComparator.h
+
+//
+// Created by laptop on 5/11/22.
+//
+
+#pragma once
+
+#include "Package.h"
+
+struct PackageComparator {
+// DIRECT COMPARISON
+//    bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+//        return onePackage < anotherPackage;
+//    }
+
+// DEREFERENCED COMPARISON without accessor method
+//    bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+//        return *onePackage < *anotherPackage;
+//    }
+
+// DEREFERENCED COMPARISON with accessor method - delegating comparison from 'Package' element to compared field in 'Package' element
+//  which has 'operator<' implemented, leaving the 'Package' class intact and without overloading 'std::less' in 'Package' class
+    bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+        return onePackage->getName() < anotherPackage->getName();
+    }
+};
+
+```
+
+```
+Package.h ('operator<' and 'std::less' specialization excerpts)
+
+<~~~ snip ~~~>
+
+// FOR DEREFERENCED (SMART) POINTER COMPARISON
+
+    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+    //  or with custom comparator without 'std::less' overload
+    bool operator<(const Package& package) const {
+        // TODO maybe replace the 'getName()' function with only fields?
+        return this->getName() < package.getName();
+//        return this->name < package.getName();
+//        return Package::name < package.getName();
+//        return Package::name < package.name;
+    }
+
+    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+    //  or with custom comparator without 'std::less' overload
+    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+        return onePackage.name < anotherPackage.name;
+    }
+
+
+// FOR DIRECT (SMART) POINTER COMPARISON
+
+    // Doesn't work
+    bool operator<(const std::unique_ptr<Package>& package) const {
+        // TODO maybe replace the 'getName()' function with only fields?
+        return this->getName() < package->getName();
+//        return this->name < package.getName();
+//        return Package::name < package.getName();
+//        return Package::name < package.name;
+    }
+
+//    // WORKS for direct comparison without overloading 'std::less' funcion
+    friend bool operator<(const std::unique_ptr<Package>& lhs, const std::unique_ptr<Package>& rhs) {
+        return lhs->name < rhs->name;
+    }
+
+    // Doesn't work
+    friend bool operator<(std::unique_ptr<Package>& lhs, std::unique_ptr<Package>& rhs) {
+        return lhs->name < rhs->name;
+    }
+
+
+<~~~ snip ~~~>
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+namespace std {
+    template<>
+    struct less<unique_ptr<Package>> {
+        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
+            return lhs < rhs;
+        }
+    };
+}
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+namespace std {
+    template<>
+    struct less<unique_ptr<Package>> {
+        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
+            return *lhs < *rhs;
+        }
+    };
+}
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+namespace std {
+    template<>
+    struct less<unique_ptr<Package>> {
+        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
+            return lhs->getName() < rhs->getName();
+        }
+    };
+}
+```
 
 ## Sources
 
