@@ -467,13 +467,14 @@ DIRECT COMPARISON
                 - public friend function - all params const - 'std::set' encapsulated in class
 
 - std::binary_search
-
+        - directly passing unique pointer to comparator
+- 
 DEREFERENCED COMPARISON
 
 - set::find - passing unique ptr ref
-    - specialized 'std::less' with dereferenced comparison by '->' without public friend operator< (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
-    - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (encapsulation conforming)
-    - public friend/member operator< with specialized 'std::less' with dereferenced comparison by '->' (encapsulation violating - putting implementation details into generic function)
+    - specialized 'std::less' with dereferenced comparison within by `->` - **without** public friend `operator<`
+    - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
+    - public friend/member operator< only - **without** specialized 'std::less' with dereferenced comparison by '->'
 
 - std::find - passing dereferenced unique ptr - the underlying instance
     - public friend operator== with all const params
@@ -517,10 +518,18 @@ DEREFERENCED COMPARISON
             - public member non-const function - non-const param
 
 - std::binary_search
+  - passing dereferenced unique pointer to comparator
 
 - main - Package.h
+    - public friend `operator<` function with both parameters of reference type to `const unique_ptr<Package>`
+    - specialized `std::less` for two arguments of reference type to `const unique_ptr<Package>` that compares the two arguments by dereferencing with `->` or - if the member variable is of another custom type - by delegating to the `operator<` of the custom type of the member variable by dereferencing with `*`
 - main - PackageComparator.h - Package.h
+    - Overloading default 'key_compare' function with custom comparator as lambda in template parameter and perhaps as argument in constructor of 'std::set'
+    - Overloading default 'key_compare' function with custom comparator as functor in template parameter and perhaps as argument in constructor of 'std::set'
+- std::set<std::unique_ptr<Package>, PackageNameComparator>
 - main - PackageComparatorPredicate.h - Package.h
+
+
 - main - Packages - Package.h
 - main - Packages - PackageComparator.h - Package.h
 - main - Packages - PackageComparatorPredicate.h - Package.h

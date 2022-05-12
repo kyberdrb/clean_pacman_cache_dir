@@ -63,6 +63,7 @@ public:
 //        // TODO maybe replace the 'getName()' function with only fields?
 //        return this->getName() < package->getName();
 ////        return this->name < package.getName();
+////        return this->name < package.name;
 ////        return Package::name < package.getName();
 ////        return Package::name < package.name;
 //    }
@@ -94,9 +95,14 @@ public:
 //        // TODO maybe replace the 'getName()' function with only fields?
 //        return this->getName() == package->getName();
 ////        return this->name == package.getName();
+////        return this->name < package.name;
 ////        return Package::name == package.getName();
 ////        return Package::name == package.name;
 //    }
+
+// ------------------------------------------------------------------------------------------------
+// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'SET::FIND'
 
@@ -106,15 +112,27 @@ public:
 //        // TODO maybe replace the 'getName()' function with only fields?
 //        return this->getName() < package.getName();
 ////        return this->name < package.getName();
+////        return this->name < package.name;
 ////        return Package::name < package.getName();
 ////        return Package::name < package.name;
 //    }
 
     // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
     //  or with custom comparator without 'std::less' overload
-//    friend bool operator<(Package& onePackage, Package& anotherPackage) {
-//        return onePackage.name < anotherPackage.name;
+//    bool operator<(Package& package) {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//        return this->getName() < package.getName();
+////        return this->name < package.getName();
+////        return this->name < package.name;
+////        return Package::name < package.getName();
+////        return Package::name < package.name;
 //    }
+
+    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+    //  or with custom comparator without 'std::less' overload
+    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+        return onePackage.name < anotherPackage.name;
+    }
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'STD::FIND'
 

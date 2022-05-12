@@ -202,28 +202,45 @@ int main() {
 //                        }
 //                );
 
-                // 'std::find_if' with comparator predicate (directly pass to comparator predicate direct and dereferenced comparison in comparator predicate)
+                // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(
 //                        installedPackages.begin(),
 //                        installedPackages.end(),
 //                        PackageComparatorPredicate(packageWithInferredName));
 
-                // 'std::find_if' with comparator predicate (pass dereferenced to comparator predicate direct and dereferenced comparison in comparator predicate)
+                // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(
 //                        installedPackages.begin(),
 //                        installedPackages.end(),
 //                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
+//                bool packageWithInferredNameIsMissingAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+//                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+////                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                        }
+//                );
 
-                // 'std::any_of' with comparator predicate (direct and dereferenced comparison in comparator predicate)
+                // 'std::any_of' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
+//                bool packageWithInferredNameIsMissingAsTest = std::any_of(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::any_of' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
+//                bool packageWithInferredNameIsMissingAsTest = std::any_of(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::binary_search'
-//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
-//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+//                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+//                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
 
-//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
-//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator());
+//                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+//                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator());
 
                 // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
                 //  trying to show the values for STL containers and smartpointer instances.
@@ -233,6 +250,9 @@ int main() {
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
                 // comment out for 'std::any_of' and 'std::binary_search'
                 bool packageWithInferredNameIsMissing = matchingPackage == installedPackages.end();
+
+//                assert(packageWithInferredNameIsMissing == packageWithInferredNameIsMissingAsTest);
+
                 if (packageWithInferredNameIsMissing) {
                     packageWithInferredName->getNextInferredPackageNameCandidate();
                     continue;
