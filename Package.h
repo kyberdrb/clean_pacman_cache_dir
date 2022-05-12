@@ -69,9 +69,9 @@ public:
 //    }
 
 //    // WORKS for direct comparison without overloading 'std::less' funcion
-//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-//        return onePackage->name < anotherPackage->name;
-//    }
+    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->name < anotherPackage->name;
+    }
 
     // Doesn't work
 //    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
@@ -130,9 +130,9 @@ public:
 
     // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
     //  or with custom comparator without 'std::less' overload
-    friend bool operator<(Package& onePackage, Package& anotherPackage) {
-        return onePackage.name < anotherPackage.name;
-    }
+//    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'STD::FIND'
 
@@ -249,3 +249,9 @@ private:
 //        }
 //    };
 //}
+
+// LAMBDA COMPARATOR FOR SECOND TEMPLATE PARAMETER
+
+inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+    return onePackage < anotherPackage;
+}

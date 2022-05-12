@@ -435,14 +435,142 @@ struct IgnoredPackageNamesEqualityComparator {
 - Comparator: lambda/`PackageComparator.h`/internal comparison logic in overloaded `operator<` or specialized `std::less` function (the default function/functor that `std::set` uses to compare elements)
 - Element of custom type in `std::set`: Package (`Package.h`)
 
+PACKAGE TO FIND
+
+    // main.cpp
+
+    #include "Package.h"
+
+    <~snip~>
+
+    std::string inferredPackageNameAsText = packageNameAndVersion;
+    auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText));
+
 DIRECT COMPARISON
 
 - set::find - passing unique ptr ref
-    - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+        // main.cpp
+
+        std::set<std::unique_ptr<Package>> installedPackages{};
+
+        <~snip~>
+  
+        auto matchingPackage = installedPackages.find(packageWithInferredName);
+
+    - public friend `operator<` with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+
     - public friend operator< with specialized 'std::less' with direct comparison (unnecessary to specialize 'std::less' - the public friend operator< is enough to sort elements at insertion in the 'std::set')
+
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+
+        And then specialize the `std::less` function outside of the class as a non-member function, e. g. under the class block in the header file
+
+            // Package.h
+
+            // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+            namespace std {
+                template<>
+                struct less<unique_ptr<Package>> {
+                    bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+                        return onePackage < anotherPackage;
+                    }
+                };
+            }
+
     - comparator functor added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+            // main.cpp - changing only 'std::set' declaration leaving 'set::find' as is
+
+            #include "PackageComparator.h"
+
+            <~snip~>
+
+            std::set<std::unique_ptr<Package>, PackageComparator> installedPackages;
+
+            <~snip~>
+
+            auto matchingPackage = installedPackages.find(packageWithInferredName);
+
+            // PackageComparator.h
+
+            #pragma once
+
+            #include "Package.h"
+
+            struct PackageComparator {
+                bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+                    // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+                    return onePackage < anotherPackage;
+                }
+            };
+
+
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+
     - comparator lambda added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
 
+            // main.cpp - changing 'std::set' declaration
+
+            auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) { 
+                return onePackage < anotherPackage;
+            };
+            std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda);
+
+        Define public friend `operator<` for the comparison of directly passed unique pointers
+
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+
+    - comparator function added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+          // main.cpp - changing 'std::set' declaration
+
+          std::set<std::unique_ptr<Package>, decltype(PackageComparatorFunction)*> installedPackages(comparePackages);
+          //std::set<std::unique_ptr<Package>, decltype(PackageComparatorFunction)*> installedPackages; // C++20 and newer
+
+        or
+
+          std::set<std::unique_ptr<Package>, decltype(&PackageComparatorFunction)> installedPackages(&comparePackages);
+          //std::set<std::unique_ptr<Package>, decltype(&PackageComparatorFunction)> installedPackages;  // C++20 and newer
+
+        leaving 'set::find' as is
+
+          auto matchingPackage = installedPackages.find(packageWithInferredName);
+
+        Define comparator function outside of the class block, e. g. underneath as a non-member function at the end of the header file
+
+          // Package.h
+
+          inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+              return onePackage < anotherPackage;
+          }
+
+        Then define public friend `operator<` for the direct unique pointer comparison
+
+          // Package.h
+
+          friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+              return onePackage->name < anotherPackage->name;
+          }        
+    
 - std::find - passing unique ptr ref (allegedly slower that the specialized 'find' function 'std::set::find' - O(log(n)) vs O(n) - intuitively takes longer)
     - public friend operator== with all const params
 
