@@ -1,6 +1,7 @@
 #include "Package.h"
 #include "IgnoredPackageName.h"
 #include "PackageComparator.h"
+#include "PackageComparatorPredicate.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -81,10 +82,10 @@ int main() {
     //    - not a 'multiset' [only one package name with multiple possible versions of it],
     //    - not a 'map' [the values are related and contained in the key itself] and
     //    - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-//    std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
+    std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
 
 //    std::set<std::unique_ptr<Package, PackageComparator>> installedPackages; // doesn't work - using PackageComparator as a second template argument for 'unique_ptr' as default deleter instead of using it as a second template argument for 'set' as a comparator
-    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+//    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
 
 //    auto packageComparator = std::make_unique<PackageComparator>();
 //    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
@@ -185,7 +186,44 @@ int main() {
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
+                // 'set::find'
                 auto matchingPackage = installedPackages.find(packageWithInferredName);
+
+                // 'std::find' (direct and dereferenced comparison in 'operator==' in class for custom element type)
+//                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+//                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), *packageWithInferredName); // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage)' in 'Package.h'
+
+                // 'std::find_if' with lambda (direct and dereferenced comparison in lambda)
+//                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+//                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+////                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                        }
+//                );
+
+                // 'std::find_if' with comparator predicate (directly pass to comparator predicate direct and dereferenced comparison in comparator predicate)
+//                auto matchingPackage = std::find_if(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::find_if' with comparator predicate (pass dereferenced to comparator predicate direct and dereferenced comparison in comparator predicate)
+//                auto matchingPackage = std::find_if(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(*packageWithInferredName));
+
+                // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
+
+                // 'std::any_of' with comparator predicate (direct and dereferenced comparison in comparator predicate)
+
+                // 'std::binary_search'
+//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+
+//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+//                bool packageWithInferredNameIsMissing = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator());
 
                 // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
                 //  trying to show the values for STL containers and smartpointer instances.
@@ -193,6 +231,7 @@ int main() {
 //                std::cout << *packageWithInferredName << "\n";
 
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
+                // comment out for 'std::any_of' and 'std::binary_search'
                 bool packageWithInferredNameIsMissing = matchingPackage == installedPackages.end();
                 if (packageWithInferredNameIsMissing) {
                     packageWithInferredName->getNextInferredPackageNameCandidate();

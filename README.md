@@ -443,18 +443,15 @@ DIRECT COMPARISON
     - comparator functor added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
     - comparator lambda added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
 
-- std::find - passing unique ptr ref
-    - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
-    - public friend operator< with specialized 'std::less' with direct comparison (unnecessary to specialize 'std::less' - the public friend operator< is enough to sort elements at insertion in the 'std::set')
-    - comparator functor added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
-    - comparator lambda added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+- std::find - passing unique ptr ref (allegedly slower that the specialized 'find' function 'std::set::find' - O(log(n)) vs O(n) - intuitively takes longer)
+    - public friend operator== with all const params
 
 - std::find_if
     - direct comparison in main
         - lambda
             - public friend function - all params const (the only one that works)
             - public friend function - all params const (the only one that works) - 'std::set' encapsulated in class
-        - comparator
+        - comparator predicate
             - direct comparison in comparator
                 - public friend function - all params const
                 - public friend function - all params const - 'std::set' encapsulated in class
@@ -464,10 +461,12 @@ DIRECT COMPARISON
         - lambda
             - public friend function - all params const (the only one that works)
             - public friend function - all params const (the only one that works) - 'std::set' encapsulated in class
-        - comparator
+        - comparator predicate
             - direct comparison in comparator
                 - public friend function - all params const
                 - public friend function - all params const - 'std::set' encapsulated in class
+
+- std::binary_search
 
 DEREFERENCED COMPARISON
 
@@ -476,10 +475,8 @@ DEREFERENCED COMPARISON
     - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (encapsulation conforming)
     - public friend/member operator< with specialized 'std::less' with dereferenced comparison by '->' (encapsulation violating - putting implementation details into generic function)
 
-- std::find - passing unique ptr ref
-    - specialized 'std::less' with dereferenced comparison by '->' without public friend operator< (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
-    - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (encapsulation conforming)
-    - public friend/member operator< with specialized 'std::less' with dereferenced comparison by '->' (encapsulation violating - putting implementation details into generic function)
+- std::find - passing dereferenced unique ptr - the underlying instance
+    - public friend operator== with all const params
 
 - find_if
     - lambda
@@ -489,14 +486,18 @@ DEREFERENCED COMPARISON
         - public member non-const function - const parameter
         - public member const function - non-const parameter
         - public member non-const function - non-const param
-    - comparator
-        - dereferenced comparison in comparator
-            - public friend function - all params non-const
+    - comparator predicate
+        - passing searched element as smart pointer directly
+            - dereferenced comparison in comparator
+                - public friend function - all params non-const
+                - public friend function - all params const
+                - public member const function - const parameter
+                - public member non-const function - const parameter
+                - public member const function - non-const parameter
+                - public member non-const function - non-const param
+        - passing searched element as dereferenced smart pointer
             - public friend function - all params const
             - public member const function - const parameter
-            - public member non-const function - const parameter
-            - public member const function - non-const parameter
-            - public member non-const function - non-const param
 
 - any_of
     - lambda
@@ -506,7 +507,7 @@ DEREFERENCED COMPARISON
         - public member non-const function - const parameter
         - public member const function - non-const parameter
         - public member non-const function - non-const param
-    - comparator
+    - comparator predicate
         - dereferenced comparison in comparator
             - public friend function - all params non-const
             - public friend function - all params const
@@ -514,6 +515,15 @@ DEREFERENCED COMPARISON
             - public member non-const function - const parameter
             - public member const function - non-const parameter
             - public member non-const function - non-const param
+
+- std::binary_search
+
+- main - Package.h
+- main - PackageComparator.h - Package.h
+- main - PackageComparatorPredicate.h - Package.h
+- main - Packages - Package.h
+- main - Packages - PackageComparator.h - Package.h
+- main - Packages - PackageComparatorPredicate.h - Package.h
 
 ```
 main.cpp ('std::set' creation with optional comparator initialization excerpts)

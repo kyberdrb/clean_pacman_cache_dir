@@ -33,6 +33,6 @@ public:
 private:
     std::string filename;
     std::string absolutePath;
-    std::string relatedPackageVersion;
     std::string relatedPackageName;
+    std::string relatedPackageVersion;
 };
