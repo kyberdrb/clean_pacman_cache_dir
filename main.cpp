@@ -82,7 +82,7 @@ int main() {
     //    - not a 'multiset' [only one package name with multiple possible versions of it],
     //    - not a 'map' [the values are related and contained in the key itself] and
     //    - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-//    std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
+    std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
 
 //    std::set<std::unique_ptr<Package, PackageComparator>> installedPackages; // doesn't work - using PackageComparator as a second template argument for 'unique_ptr' as default deleter instead of using it as a second template argument for 'set' as a comparator
 //    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
@@ -90,10 +90,10 @@ int main() {
 //    auto packageComparator = std::make_unique<PackageComparator>();
 //    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
 
-    auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-        return onePackage < anotherPackage;
-    };
-    std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda); // WORKS
+//    auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage < anotherPackage;
+//    };
+//    std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda); // WORKS
 
 //    std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages(comparePackages); // WORKS
 //    std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer

@@ -596,10 +596,28 @@ DIRECT COMPARISON
 
 - std::binary_search
         - directly passing unique pointer to comparator
-- 
+
+            // main.cpp
+
+            std::set<std::unique_ptr<Package>> installedPackages{};
+
+            <~snip~>
+
+            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+
 DEREFERENCED COMPARISON
 
 - set::find - passing unique ptr ref
+
+        // main.cpp
+
+        std::set<std::unique_ptr<Package>> installedPackages{};
+
+        <~snip~>
+
+        auto matchingPackage = installedPackages.find(packageWithInferredName);
+
     - specialized 'std::less' with dereferenced comparison within by `->` - **without** public friend `operator<`
     - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
     - public friend/member operator< only - **without** specialized 'std::less' with dereferenced comparison by '->'
@@ -650,7 +668,16 @@ DEREFERENCED COMPARISON
             - public member non-const function - non-const param
 
 - std::binary_search
-  - passing dereferenced unique pointer to comparator
+    - passing dereferenced unique pointer to comparator
+
+            // main.cpp
+
+            std::set<std::unique_ptr<Package>> installedPackages{};
+
+            <~snip~>
+
+            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator())
 
 - main - Package.h
     - public friend `operator<` function with both parameters of reference type to `const unique_ptr<Package>`
