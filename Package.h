@@ -2,9 +2,10 @@
 
 #include "PackageFile.h"
 
+#include <cassert>
+#include <ostream>
 #include <string>
 #include <vector>
-#include <ostream>
 
 class Package {
 public:
@@ -57,25 +58,35 @@ public:
     }
 
 // FOR DIRECT (SMART) POINTER COMPARISON FOR 'SET::FIND'
+//  Functions in this section work for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+//  or with custom comparator without 'std::less' overload
+//  except the
+//  'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+//  which works with and without 'std::less' overload
 
-    // Doesn't work
-//    bool operator<(const std::unique_ptr<Package>& package) const {
-//        // TODO maybe replace the 'getName()' function with only fields?
-//        return this->getName() < package->getName();
-////        return this->name < package.getName();
-////        return this->name < package.name;
-////        return Package::name < package.getName();
-////        return Package::name < package.name;
-//    }
-
-//    // WORKS for direct comparison without overloading 'std::less' funcion
+//    // WORKS for direct comparison with and without overloading 'std::less' funcion
     friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
         return onePackage->name < anotherPackage->name;
     }
 
-    // Doesn't work
+    // Doesn't work - compiles but fails to find the searched for element at runtime when used as a standalone function
 //    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
 //        return onePackage->name < anotherPackage->name;
+//    }
+
+    // Doesn't work - compiles but fails to find the searched for element at runtime
+//    bool operator<(const std::unique_ptr<Package>& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+//        return this->getName() < package->getName();
+//        //        return this->name < package->getName();
+//        //        return Package::name < package->getName();
+//        //        return this->name < package->name;
+//        //        return Package::name < package->name;
 //    }
 
 // FOR DIRECT (SMART) POINTER COMPARISON FOR 'STD::FIND', 'STD::FIND_IF' (lambda or predicate comparator), 'STD::ANY_OF' (lambda or predicate comparator)
@@ -105,32 +116,79 @@ public:
 // ------------------------------------------------------------------------------------------------
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'SET::FIND'
+//  Functions in this section work for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+//  or with custom comparator without 'std::less' overload
 
-    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
-    //  or with custom comparator without 'std::less' overload
 //    bool operator<(const Package& package) const {
 //        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
 //        return this->getName() < package.getName();
 ////        return this->name < package.getName();
-////        return this->name < package.name;
 ////        return Package::name < package.getName();
+////        return this->name < package.name;
 ////        return Package::name < package.name;
 //    }
 
-    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
-    //  or with custom comparator without 'std::less' overload
+//    bool operator<(const Package& package) {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+////        return this->getName() < package.getName();
+//        return this->name < package.getName();
+////        return Package::name < package.getName();
+////        return this->name < package.name;
+////        return Package::name < package.name;
+//    }
+
+//    bool operator<(Package& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+////        return this->getName() < package.getName();
+////        return this->name < package.getName();
+////        return Package::name < package.getName();
+//        return this->name < package.name;
+////        return Package::name < package.name;
+//    }
+
+
 //    bool operator<(Package& package) {
 //        // TODO maybe replace the 'getName()' function with only fields?
-//        return this->getName() < package.getName();
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+////        return this->getName() < package.getName();
 ////        return this->name < package.getName();
-////        return this->name < package.name;
 ////        return Package::name < package.getName();
-////        return Package::name < package.name;
+////        return this->name < package.name;
+//        return Package::name < package.name;
 //    }
 
-    // Works for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
-    //  or with custom comparator without 'std::less' overload
 //    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+//    friend bool operator<(const Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+//    friend bool operator<(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+//    friend bool operator<(Package& onePackage, const Package& anotherPackage) {
 //        return onePackage.name < anotherPackage.name;
 //    }
 
@@ -159,7 +217,7 @@ public:
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR LAMBDA COMPARATOR OR PREDICATE COMPARATOR FOR 'STD::FIND_IF', 'STD::ANY_OF' WITH SEARCHED ELEMENT PASSED DIRECTLY
 
     // WORKS
-    // Doesn't work for 'std::find'  - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+    // ... but doesn't work for 'std::find'  - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
 //    friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
 //        return onePackage.name == anotherPackage.name;
 //    }
@@ -218,7 +276,7 @@ private:
     std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
 };
 
-// SPECIALIZED 'STD::LESS' FUNCTOR FOR 'SET::FIND'
+// DIRECT COMPARISON WITH SPECIALIZED 'STD::LESS' FUNCTOR FOR 'SET::FIND'
 
 // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
 //namespace std {
@@ -226,6 +284,18 @@ private:
 //    struct less<unique_ptr<Package>> {
 //        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
 //            return onePackage < anotherPackage;
+//        }
+//    };
+//}
+
+// DEREFERENCED COMPARISON WITH SPECIALIZED 'STD::LESS' FUNCTOR FOR 'SET::FIND'
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+//namespace std {
+//    template<>
+//    struct less<unique_ptr<Package>> {
+//        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+//            return onePackage->getName() < anotherPackage->getName();
 //        }
 //    };
 //}
@@ -240,18 +310,8 @@ private:
 //    };
 //}
 
-// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
-//namespace std {
-//    template<>
-//    struct less<unique_ptr<Package>> {
-//        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
-//            return onePackage->getName() < anotherPackage->getName();
-//        }
-//    };
-//}
-
 // LAMBDA COMPARATOR FOR SECOND TEMPLATE PARAMETER
 
-inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-    return onePackage < anotherPackage;
-}
+//inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//    return onePackage < anotherPackage;
+//}
