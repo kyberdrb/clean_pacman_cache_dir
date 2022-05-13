@@ -603,6 +603,10 @@ DEREFERENCED COMPARISON
     - specialized 'std::less' with dereferenced comparison within by `->` - **without** public friend `operator<`
     - specialized 'std::less' with dereferenced comparison by '\*' with public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*' (unnecessary to overload 'operator<' for custom type - the specialized 'std::less' struct functor will have the same comparison logic as the operator< itself, therefore the specialized 'std::less' for custom element type is enough to sort elements at insertion in the 'std::set')
     - public friend/member operator< only - **without** specialized 'std::less' with dereferenced comparison by '->'
+    - comparator lambda - comparison of dereferenced unique pointers by `*` + public friend/member `operator<`
+    - comparator lambda - comparison of dereferenced unique pointers by `->`
+    - comparator function - comparison of dereferenced unique pointers by `*` + public friend/member `operator<`
+    - comparator function - comparison of dereferenced unique pointers by `->`
 
 - std::find - passing dereferenced unique ptr - the underlying instance
     - public friend operator== with all const params
