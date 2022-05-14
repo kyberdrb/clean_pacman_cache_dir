@@ -1,6 +1,6 @@
 #include "Package.h"
 #include "IgnoredPackageName.h"
-#include "PackageComparator.h"
+//#include "PackageComparator.h"
 #include "PackageComparatorPredicate.h"
 
 #include "alpm.h"
@@ -197,26 +197,26 @@ int main() {
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 // 'set::find'
-                auto matchingPackage = installedPackages.find(packageWithInferredName);
+//                auto matchingPackage = installedPackages.find(packageWithInferredName);
 
                 // 'std::find' (direct and dereferenced comparison in 'operator==' in class for custom element type)
 //                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
 //                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), *packageWithInferredName); // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage)' in 'Package.h'
 
-                // 'std::find_if' with lambda (direct and dereferenced comparison in lambda)
+                // 'std::find_if' with lambda (passing directly) - (direct and dereferenced comparison in lambda)
 //                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
 //                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
-//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
 ////                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
-////                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
 //                        }
 //                );
 
                 // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
-//                auto matchingPackage = std::find_if(
-//                        installedPackages.begin(),
-//                        installedPackages.end(),
-//                        PackageComparatorPredicate(packageWithInferredName));
+                auto matchingPackage = std::find_if(
+                        installedPackages.begin(),
+                        installedPackages.end(),
+                        PackageComparatorPredicate(packageWithInferredName));
 
                 // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(
@@ -246,7 +246,7 @@ int main() {
 //                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::binary_search'
-//                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+//                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // Doesn't work even with overloaded operators '<' '==' and '!=' all at once that are used in the standard library functions
 //                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
 
 //                bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);

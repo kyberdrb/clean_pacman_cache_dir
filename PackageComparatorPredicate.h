@@ -19,7 +19,7 @@ struct PackageComparatorPredicate {
 
     bool operator()(const std::unique_ptr<Package>& otherPackage) const {
         // DIRECT COMPARISON - works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
-//        return (this->package == otherPackage);
+        return (this->package == otherPackage);
 
         // DEREFERENCED COMPARISON without accessor method - works with
         //  - 'friend bool operator==(Package& onePackage, Package& anotherPackage)' (with/without const for parameters)

@@ -64,10 +64,11 @@ public:
 //  'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
 //  which works with and without 'std::less' overload
 
-//    // WORKS for direct comparison with and without overloading 'std::less' funcion
-    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-        return onePackage->name < anotherPackage->name;
-    }
+    // WORKS for direct comparison with and without overloading 'std::less' funcion
+    // Doesn't work for 'std::binary_search'
+//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name < anotherPackage->name;
+//    }
 
     // Doesn't work - compiles but fails to find the searched for element at runtime when used as a standalone function
 //    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
@@ -92,9 +93,9 @@ public:
 // FOR DIRECT (SMART) POINTER COMPARISON FOR 'STD::FIND', 'STD::FIND_IF' (lambda or predicate comparator), 'STD::ANY_OF' (lambda or predicate comparator)
 
 //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
-//    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-//        return onePackage->name == anotherPackage->name;
-//    }
+    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->name == anotherPackage->name;
+    }
 
     // Doesn't work
 //    friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
@@ -234,6 +235,16 @@ public:
 //        return this->name == otherPackage.name;
 //    }
 
+    // WORKS
+//    bool operator==(const Package& otherPackage) {
+//        return this->name == otherPackage.name;
+//    }
+
+    // WORKS
+//    bool operator==(Package& otherPackage) const {
+//        return this->name == otherPackage.name;
+//    }
+
     // WORKS for directly passing searched element to the comparator predicate as smart pointer reference
     // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
     //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
@@ -314,4 +325,11 @@ private:
 
 //inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
 //    return onePackage < anotherPackage;
+//}
+
+// Doesn't work for 'std::binary_search'
+//namespace std {
+//    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->getName() < anotherPackage->getName();
+//    }
 //}
