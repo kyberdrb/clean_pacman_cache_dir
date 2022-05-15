@@ -213,16 +213,16 @@ int main() {
 //                );
 
                 // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
-                auto matchingPackage = std::find_if(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(packageWithInferredName));
-
-                // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(
 //                        installedPackages.begin(),
 //                        installedPackages.end(),
-//                        PackageComparatorPredicate(*packageWithInferredName));
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
+                auto matchingPackage = std::find_if(
+                        installedPackages.begin(),
+                        installedPackages.end(),
+                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
 //                bool packageWithInferredNameIsMissingAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),

@@ -93,9 +93,9 @@ public:
 // FOR DIRECT (SMART) POINTER COMPARISON FOR 'STD::FIND', 'STD::FIND_IF' (lambda or predicate comparator), 'STD::ANY_OF' (lambda or predicate comparator)
 
 //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
-    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-        return onePackage->name == anotherPackage->name;
-    }
+//    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name == anotherPackage->name;
+//    }
 
     // Doesn't work
 //    friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
@@ -223,7 +223,16 @@ public:
 //        return onePackage.name == anotherPackage.name;
 //    }
 
-    // WORKS for directly passing searched element to the comparator predicate as smart pointer reference
+    // WORKS - the exact candidate function for comparison with comparator predicate with dereferenced comparison with '*'
+//    friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name == anotherPackage.name;
+//    }
+
+    // Doesn't work - 'error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers'
+//    friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.name == anotherPackage.name;
+//    }
+
     // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
     //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
 //    friend bool operator==(Package& onePackage, Package& anotherPackage) {
@@ -235,7 +244,7 @@ public:
 //        return this->name == otherPackage.name;
 //    }
 
-    // WORKS
+//    // Doesn't work - 'error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]'
 //    bool operator==(const Package& otherPackage) {
 //        return this->name == otherPackage.name;
 //    }
@@ -245,7 +254,6 @@ public:
 //        return this->name == otherPackage.name;
 //    }
 
-    // WORKS for directly passing searched element to the comparator predicate as smart pointer reference
     // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
     //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
 //    bool operator==(Package& otherPackage) {
