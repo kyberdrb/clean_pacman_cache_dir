@@ -274,8 +274,28 @@ public:
 //        return onePackage->name == anotherPackage.name;
 //    }
 
+//    friend bool operator==(const Package& anotherPackage, std::unique_ptr<Package>& onePackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+//    friend bool operator==(Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
     // WORKS for comparing dereferenced smart pointer (i.e. the instance) with directly passed smart pointer in the comparator predicate
 //    bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+//        return this->name == otherPackage->name;
+//    }
+
+    // Doesn't work - ‘const Package’ is not derived from ‘const std::pair<_T1, _T2>’
+    //  the function needs to be 'const'
+//    bool operator==(const std::unique_ptr<Package>& otherPackage) {
+//        return this->name == otherPackage->name;
+//    }
+
+    // Doesn't work - ‘const Package’ is not derived from ‘const std::pair<_T1, _T2>’
+    //  the operand needs to be 'const'
+//    bool operator==(std::unique_ptr<Package>& otherPackage) const {
 //        return this->name == otherPackage->name;
 //    }
 

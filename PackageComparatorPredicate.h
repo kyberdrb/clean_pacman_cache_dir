@@ -41,16 +41,16 @@ struct PackageComparatorPredicate {
     {}
 
     bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-        // DIRECT DEREFERENCED COMPARISON - works with
-        //  - 'friend bool operator==(Package& onePackage, Package& anotherPackage)' (with/without const for parameters)
-        //  - and member function 'bool operator==(Package& otherPackage)' (with/without const for function/parameters)
-        return (this->package == *otherPackage);
-
-        // DEREFERENCED WITH SMART POINTER COMPARISON
+        // COMPARISON OF SEARCHED DEREFERENCED MEMBER VARIABLE WITH SMART POINTER
         //  - works with 'friend bool operator==(Package& onePackage, std::unique_ptr<Package>& anotherPackage)'
 //        return this->package == otherPackage;
 
+        // COMPARISON OF MEMBER VARIABLE REFERENCE WITH DEREFERENCED SMART POINTER
+        //  - 'friend bool operator==(Package& onePackage, Package& anotherPackage)' (with/without const for parameters)
+        //  - and member function 'bool operator==(Package& otherPackage)' (with/without const for function/parameters)
+//        return (this->package == *otherPackage);
+
         // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'Package' element to compared field within the 'Package' element
-//        return (this->package.getName() == otherPackage->getName());
+        return (this->package.getName() == otherPackage->getName());
     }
 };

@@ -929,7 +929,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
                     ```
 
-              For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
+                    For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
 
                     ```
                     // Package.h
@@ -993,7 +993,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                         PackageComparatorPredicate(*packageWithInferredName));
                 ```
 
-                - comparator predicate with direct comparison with unique pointer
+                - comparator predicate with comparison of dereferenced member variable (instance with features to search by) with smart pointer
 
                     ```
                     // PackageComparatorPredicate.h
@@ -1013,10 +1013,23 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                             return this->package == otherPackage;
                         }
                     };
-
                     ```
 
-                - comparator predicate with dereferenced comparison by `*`
+                    The overloaded `operator==` needs to be implemented as `const` function with all `const` operands (parameters) 
+
+                    ```
+                    // Package.h
+                  
+                    friend bool operator==(const Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+                        return onePackage->name == anotherPackage.name;
+                    }
+
+                    bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+                        return this->name == otherPackage->name;
+                    }
+                    ```
+
+                - comparator predicate with comparison of member variable of reference type (instance with features to search by) with dereferenced smart pointer
 
                     ```
                     // PackageComparatorPredicate.h
@@ -1034,17 +1047,14 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
                         bool operator()(const std::unique_ptr<Package>& otherPackage) const {
                             return (this->package == *otherPackage);
-                            return (this->package.getName() == otherPackage->getName());
                         }
                     };
-
                     ```
 
-                  The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems at compilation occure, when we try to ommit the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
+                    The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems occured during compilation, when I ommitted the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
 
                     ```
                     // Package.h
-
 
                     friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
                         return onePackage.name == anotherPackage.name;
@@ -1063,7 +1073,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                     }
                     ```
 
-                - comparator predicate with dereferenced comparison by `->` for unique pointer or with `.` for reference - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+                - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
 
                     ```
                     // PackageComparatorPredicate.h
