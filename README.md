@@ -495,7 +495,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
               //        //        return Package::name < package->name;
               //    }
 
-      And then specialize the `std::less` function outside of the class as a non-member function, e. g. under the class block in the header file
+        And then specialize the `std::less` function outside of the class as a non-member function, e. g. under the class block in the header file
 
             // Package.h
 
@@ -896,7 +896,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
                     ```
 
-                  For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
+                    For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
 
                     ```
                     // Package.h
@@ -1096,30 +1096,78 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                     ```
 
 - `std::any_of`
-    - passing unique pointer to `std::any_of` directly
-        - lambda
-            - public friend function - all params const (the only one that works)
-            - public friend function - all params const (the only one that works) - 'std::set' encapsulated in class
-        - comparator predicate
-            - direct comparison in comparator
-                - public friend function - all params const
-                - public friend function - all params const - 'std::set' encapsulated in class
-    - passing unique pointer to `std::any_of` directly
-        - lambda
-            - public friend function - all params non-const
-            - public friend function - all params const
-            - public member const function - const parameter
-            - public member non-const function - const parameter
-            - public member const function - non-const parameter
-            - public member non-const function - non-const param
-        - comparator predicate
-            - dereferenced comparison in comparator
-                - public friend function - all params non-const
-                - public friend function - all params const
-                - public member const function - const parameter
-                - public member non-const function - const parameter
-                - public member const function - non-const parameter
-                - public member non-const function - non-const param
+
+        // main.cpp
+
+        std::set<std::unique_ptr<Package>> installedPackages{};
+
+    - `std::any_of` with lambda comparator
+        - lambda with direct comparison
+
+            ```
+            // main.cpp
+          
+            auto matchingPackage = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return packageWithInferredName == currentInstalledPackage;
+                    }
+            );
+            ```
+
+            Works only with `friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)` in 'Package.h'
+
+            ```
+            // Package.h
+          
+            //   WORKS for direct comparison in 'std::find', 'std::any_of', 'std::any_of'
+            friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name == anotherPackage->name;
+            }
+            ```
+
+        - lambda with dereferenced comparison by `*`
+
+            ```
+            // main.cpp
+
+            auto matchingPackage = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return *packageWithInferredName == *currentInstalledPackage;
+                    }
+            );
+            ```
+
+            Works only with any of the `operator==` mentioned below
+
+            ```
+            // Package.h
+
+            friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            bool operator==(const Package& otherPackage) const {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(const Package& otherPackage) {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(Package& otherPackage) const {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(Package& otherPackage) {
+                return this->name == otherPackage.name;
+            }
+            ```
+
+      - lambda with dereferenced comparison by `->` - delegating comparison
 
 - `std::binary_search` - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
     - directly passing unique pointer to binary search
