@@ -206,8 +206,8 @@ int main() {
                 // 'std::find_if' with lambda (passing directly) - (direct and dereferenced comparison in lambda)
                 auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
                         [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
-                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
-//                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
 //                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
                         }
                 );
@@ -227,8 +227,8 @@ int main() {
                 // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
                 bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
                                                                         [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
-                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
-//                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
 //                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
                         }
                 );

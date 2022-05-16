@@ -1145,6 +1145,14 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
                 return onePackage.name == anotherPackage.name;
             }
+          
+            friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+          
+            friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
 
             friend bool operator==(Package& onePackage, Package& anotherPackage) {
                 return onePackage.name == anotherPackage.name;
