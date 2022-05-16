@@ -1186,6 +1186,23 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                     }
             );
             ```
+        - passing dereferenced unique pointer to lambda in `std::any_of` - **NOT WORKING**
+      
+            ```
+            // main.cpp
+          
+            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+                        [&packageWithInferredName](const Package& currentInstalledPackage) {
+                            return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+            }
+            ```
+
+            - `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers` when a value from first function is declared as `const` and this value is passed through a parameter to another function which take the same parameter type without const
+            - when forgetting to add `const`ness of the second parameter of public friend `operator==` function or of first parameer of public member `operator==` function
+            - or
+            - `error: no match for call to ‘(main()::<lambda(const Package&)>) (const std::unique_ptr<Package>&)’`
+            - `note:   no known conversion for argument 1 from ‘const std::unique_ptr<Package>’ to ‘const Package&’`
+            - Possible solution would be to define an implicit?/(explicit? casted to `Package&` with `static_cast?`) conversion constructor `Package::Package(const std::unique_ptr<Package> uniquePtr)` but that would only slow things down and make the code less readable and expressive. Let's keep it simple ;)
 
 - `std::binary_search` - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
     - directly passing unique pointer to binary search
