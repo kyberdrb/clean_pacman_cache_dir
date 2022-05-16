@@ -1175,7 +1175,17 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             }
             ```
 
-      - lambda with dereferenced comparison by `->` - delegating comparison
+        - lambda with dereferenced comparison by `->` - delegating comparison with `operator`to the class of the return type, in which it's defined
+
+            ```
+            // main.cpp
+          
+            auto matchingPackage = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
+            ```
 
 - `std::binary_search` - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
     - directly passing unique pointer to binary search
