@@ -1204,6 +1204,51 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             - `note:   no known conversion for argument 1 from ‘const std::unique_ptr<Package>’ to ‘const Package&’`
             - Possible solution would be to define an implicit?/(explicit? casted to `Package&` with `static_cast?`) conversion constructor `Package::Package(const std::unique_ptr<Package> uniquePtr)` but that would only slow things down and make the code less readable and expressive. Let's keep it simple ;)
 
+    - `std::any_of` with comparator predicate
+
+        ```
+        // main.cpp
+
+        auto matchingPackage = std::any_of(
+                installedPackages.begin(),
+                installedPackages.end(),
+                PackageComparatorPredicate(packageWithInferredName));
+        ```
+
+        - passing unique pointer to comparator predicate directly
+            - comparator predicate with direct comparison
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == otherPackage);
+                    }
+                };
+
+                ```
+
+                For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
+
+                ```
+                // Package.h
+
+                friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name == anotherPackage->name;
+                }
+                ```
+
 - `std::binary_search` - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
     - directly passing unique pointer to binary search
 

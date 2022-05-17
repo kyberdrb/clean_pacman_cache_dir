@@ -93,9 +93,9 @@ public:
 // FOR DIRECT (SMART) POINTER COMPARISON FOR 'STD::FIND', 'STD::FIND_IF' (lambda or predicate comparator), 'STD::ANY_OF' (lambda or predicate comparator)
 
 //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
-//    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-//        return onePackage->name == anotherPackage->name;
-//    }
+    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->name == anotherPackage->name;
+    }
 
     // Doesn't work
 //    friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
