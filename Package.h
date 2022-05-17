@@ -250,9 +250,9 @@ public:
 //    }
 
     // WORKS
-//    bool operator==(Package& otherPackage) const {
-//        return this->name == otherPackage.name;
-//    }
+    bool operator==(Package& otherPackage) const {
+        return this->name == otherPackage.name;
+    }
 
     // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
     //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
@@ -287,9 +287,9 @@ public:
 //    }
 
     // WORKS for comparing dereferenced smart pointer (i.e. the instance) with directly passed smart pointer in the comparator predicate
-    bool operator==(const std::unique_ptr<Package>& otherPackage) const {
-        return this->name == otherPackage->name;
-    }
+//    bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+//        return this->name == otherPackage->name;
+//    }
 
     // Doesn't work - ‘const Package’ is not derived from ‘const std::pair<_T1, _T2>’
     //  the function needs to be 'const'

@@ -1414,6 +1414,50 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 }
                 ```
 
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with dereferenced smart pointer
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == *otherPackage);
+                    }
+                };
+                ```
+
+                The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems occured during compilation, when I ommitted the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
 - `std::binary_search` - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
     - directly passing unique pointer to binary search
 
