@@ -812,12 +812,20 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             );
             ```
 
-          Works only with any of the `operator==` mentioned below
+            Works only with any of the `operator==` mentioned below
 
             ```
             // Package.h
-          
+
             friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(Package& onePackage, const Package& anotherPackage) {
                 return onePackage.name == anotherPackage.name;
             }
 
@@ -871,229 +879,235 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 PackageComparatorPredicate(packageWithInferredName));
         ```
 
-        - comparator predicate
-            - passing unique pointer to comparator predicate directly
-                - comparator predicate with direct comparison
-
-                    ```
-                    // PackageComparatorPredicate.h
-
-                    #pragma once
-
-                    #include "Package.h"
-
-                    struct PackageComparatorPredicate {
-                        const std::unique_ptr<Package>& package;
-
-                        explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
-                                package(packageToFind)
-                        {}
-
-                        bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-                            return (this->package == otherPackage);
-                        }
-                    };
-
-                    ```
-
-                    For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
-
-                    ```
-                    // Package.h
-
-                    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-                        return onePackage->name == anotherPackage->name;
-                    }
-                    ```
-
-                - comparator predicate with dereferenced comparison by `*`
-
-                    ```
-                    // PackageComparatorPredicate.h
-
-                    #pragma once
-
-                    #include "Package.h"
-
-                    struct PackageComparatorPredicate {
-                        const std::unique_ptr<Package>& package;
-
-                        explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
-                                package(packageToFind)
-                        {}
-
-                        bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-                            return (*(this->package) == *otherPackage);
-                        }
-                    };
-
-                    ```
-
-                    For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
-
-                    ```
-                    // Package.h
-
-                    
-                    friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
-                        return onePackage.name == anotherPackage.name;
-                    }
-
-                    friend bool operator==(Package& onePackage, Package& anotherPackage) {
-                        return onePackage.name == anotherPackage.name;
-                    }
-
-                    bool operator==(const Package& otherPackage) const {
-                        return this->name == otherPackage.name;
-                    }
-
-                    bool operator==(const Package& otherPackage) {
-                        return this->name == otherPackage.name;
-                    }
-
-                    bool operator==(Package& otherPackage) const {
-                        return this->name == otherPackage.name;
-                    }
-
-                    bool operator==(Package& otherPackage) {
-                        return this->name == otherPackage.name;
-                    }
-                    ```
-
-                - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
-
-                    ```
-                    // PackageComparatorPredicate.h
-
-                    #pragma once
-
-                    #include "Package.h"
-
-                    struct PackageComparatorPredicate {
-                        const std::unique_ptr<Package>& package;
-
-                        explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
-                                package(packageToFind)
-                        {}
-
-                        bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-                            return (this->package->getName() == otherPackage->getName());
-                        }
-                    };
-
-                    ```
-
-            - passing dereferenced unique pointer to comparator predicate
+        - passing unique pointer to comparator predicate directly
+            - comparator predicate with direct comparison
 
                 ```
-                // main.cpp
-                auto matchingPackage = std::find_if(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(*packageWithInferredName));
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == otherPackage);
+                    }
+                };
+
                 ```
 
-                - comparator predicate with comparison of dereferenced member variable (instance with features to search by) with smart pointer
+                For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
 
-                    ```
-                    // PackageComparatorPredicate.h
+                ```
+                // Package.h
 
-                    #pragma once
+                friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name == anotherPackage->name;
+                }
+                ```
 
-                    #include "Package.h"
+            - comparator predicate with dereferenced comparison by `*`
 
-                    struct PackageComparatorPredicate {
-                        const Package& package;
+                ```
+                // PackageComparatorPredicate.h
 
-                        explicit PackageComparatorPredicate(const Package& packageToFind) :
-                                package(packageToFind)
-                        {}
+                #pragma once
 
-                        bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-                            return this->package == otherPackage;
-                        }
-                    };
-                    ```
+                #include "Package.h"
 
-                    The overloaded `operator==` needs to be implemented as `const` function with all `const` operands (parameters) 
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
 
-                    ```
-                    // Package.h
-                  
-                    friend bool operator==(const Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
-                        return onePackage->name == anotherPackage.name;
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (*(this->package) == *otherPackage);
                     }
+                };
 
-                    bool operator==(const std::unique_ptr<Package>& otherPackage) const {
-                        return this->name == otherPackage->name;
+                ```
+
+                For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package->getName() == otherPackage->getName());
                     }
-                    ```
+                };
 
-                - comparator predicate with comparison of member variable of reference type (instance with features to search by) with dereferenced smart pointer
+                ```
 
-                    ```
-                    // PackageComparatorPredicate.h
+        - passing dereferenced unique pointer to comparator predicate
 
-                    #pragma once
+            ```
+            // main.cpp
+            auto matchingPackage = std::find_if(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(*packageWithInferredName));
+            ```
 
-                    #include "Package.h"
+            - comparator predicate with comparison of dereferenced member variable (instance with features to search by) with smart pointer
 
-                    struct PackageComparatorPredicate {
-                        const Package& package;
+                ```
+                // PackageComparatorPredicate.h
 
-                        explicit PackageComparatorPredicate(const Package& packageToFind) :
-                                package(packageToFind)
-                        {}
+                #pragma once
 
-                        bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-                            return (this->package == *otherPackage);
-                        }
-                    };
-                    ```
+                #include "Package.h"
 
-                    The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems occured during compilation, when I ommitted the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
+                struct PackageComparatorPredicate {
+                    const Package& package;
 
-                    ```
-                    // Package.h
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
 
-                    friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
-                        return onePackage.name == anotherPackage.name;
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return this->package == otherPackage;
                     }
+                };
+                ```
 
-                    friend bool operator==(const Package& onePackage, Package& anotherPackage) {
-                        return onePackage.name == anotherPackage.name;
+                The overloaded `operator==` needs to be implemented as `const` function with all `const` operands (parameters) 
+
+                ```
+                // Package.h
+              
+                friend bool operator==(const Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+                    return onePackage->name == anotherPackage.name;
+                }
+
+                bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+                    return this->name == otherPackage->name;
+                }
+                ```
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with dereferenced smart pointer
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == *otherPackage);
                     }
+                };
+                ```
 
-                    bool operator==(const Package& otherPackage) const {
-                        return this->name == otherPackage.name;
+                The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems occured during compilation, when I ommitted the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package.getName() == otherPackage->getName());
                     }
-
-                    bool operator==(Package& otherPackage) const {
-                        return this->name == otherPackage.name;
-                    }
-                    ```
-
-                - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
-
-                    ```
-                    // PackageComparatorPredicate.h
-
-                    #pragma once
-
-                    #include "Package.h"
-
-                    struct PackageComparatorPredicate {
-                        const Package& package;
-
-                        explicit PackageComparatorPredicate(const Package& packageToFind) :
-                                package(packageToFind)
-                        {}
-
-                        bool operator()(const std::unique_ptr<Package>& otherPackage) const {
-                            return (this->package.getName() == otherPackage->getName());
-                        }
-                    };
-                    ```
+                };
+                ```
 
 - `std::any_of`
 
@@ -1246,6 +1260,66 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
                 friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
                     return onePackage->name == anotherPackage->name;
+                }
+                ```
+            - comparator predicate with dereferenced comparison by `*`
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (*(this->package) == *otherPackage);
+                    }
+                };
+
+                ```
+
+                For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) {
+                    return this->name == otherPackage.name;
                 }
                 ```
 
