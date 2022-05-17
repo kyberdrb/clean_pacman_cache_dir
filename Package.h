@@ -256,9 +256,9 @@ public:
 
     // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
     //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
-    bool operator==(Package& otherPackage) {
-        return this->name == otherPackage.name;
-    }
+//    bool operator==(Package& otherPackage) {
+//        return this->name == otherPackage.name;
+//    }
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR LAMBDA COMPARATOR OR PREDICATE COMPARATOR FOR 'STD::FIND_IF', 'STD::ANY_OF' WITH SEARCHED ELEMENT PASSED AS ALREADY DEREFERENCED
 
