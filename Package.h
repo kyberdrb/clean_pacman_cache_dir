@@ -250,9 +250,9 @@ public:
 //    }
 
     // WORKS
-    bool operator==(Package& otherPackage) const {
-        return this->name == otherPackage.name;
-    }
+//    bool operator==(Package& otherPackage) const {
+//        return this->name == otherPackage.name;
+//    }
 
     // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
     //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
