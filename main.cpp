@@ -221,16 +221,16 @@ int main() {
 //);
 
                 // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
-                auto matchingPackage = std::find_if(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(packageWithInferredName));
-
-                // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(
 //                        installedPackages.begin(),
 //                        installedPackages.end(),
-//                        PackageComparatorPredicate(*packageWithInferredName));
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
+                auto matchingPackage = std::find_if(
+                        installedPackages.begin(),
+                        installedPackages.end(),
+                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
 //                bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
@@ -242,16 +242,16 @@ int main() {
 //                );
 
                 // 'std::any_of' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
-                bool isPackageWithInferredNameFoundAsTest = std::any_of(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(packageWithInferredName));
-
-                // 'std::any_of' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                bool isPackageWithInferredNameFoundAsTest = std::any_of(
 //                        installedPackages.begin(),
 //                        installedPackages.end(),
-//                        PackageComparatorPredicate(*packageWithInferredName));
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::any_of' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
+                bool isPackageWithInferredNameFoundAsTest = std::any_of(
+                        installedPackages.begin(),
+                        installedPackages.end(),
+                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::binary_search'
 //                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // Doesn't work even with overloaded operators '<' '==' and '!=' all at once that are used in the standard library functions
