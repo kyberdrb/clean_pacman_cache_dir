@@ -1480,53 +1480,78 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 };
                 ```
 
-- `std::binary_search` - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
+- `std::binary_search`
+    - `std::binary_search` with `std::set` inicialized without custom comparator as a second template parameter - using the default `std::less` and `operator<` for comparing and sorting elements of custom type
+
+    ```
+    // main.cpp
+
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    ```
+
     - directly passing unique pointer to binary search
 
-            // main.cpp
+        ```
+        // main.cpp
 
-            std::set<std::unique_ptr<Package>> installedPackages{};
+        bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+        ```
 
-            <~snip~>
+        Works only with overloaded public friend `operator<` with all const args and even with `installedPackages` set initialized as `std::set<std::unique_ptr<Package>> installedPackages{};` with only default comparator. Binary search works only on ordered datastructures. The order is attained by the overloaded `operator<` as a public friend function with all const params, which gets called at insertion to the `std::set` - `emplace()`/`push_back()`. That`s why the lookup actually finds a matching element of custom type in `std::set`
 
-            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // Doesn't work even with overloaded operators '<' '==' and '!=' all at once that are used in the standard library functions
+        ```
+        // Package.h
 
-        **NOT WORKING AS INTENDED BY C++ REFERENCE DOCS!** - because the three-parameter binary search comparison function uses `operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)` which uses paramters of type `std::pair` instead of single templated valuesTherefore even the overloaded `operator<` as public friend function, nor the overloaded `operator<` from `std` namespace like this (none of them work)
+        friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+            return onePackage->name < anotherPackage->name;
+        }
+        ```
+            
+    - directly passing unique pointer to binary search with custom comparator
 
-            // works for direct comparison with and without overloading 'std::less' funcion
-            // DOESN'T work for 'std::binary_search'
-            //    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-            //        return onePackage->name < anotherPackage->name;
-            //    }
+        ```
+        // main.cpp
 
-            // Doesn't work for 'std::binary_search'
-            namespace std {
-                inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-                    return onePackage->getName() < anotherPackage->getName();
-                }
-            }
+        bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+        ```
 
-            // Not even overloading operators `<` `!=`, `==` at once as public friend functions.
-            friend bool operator!=(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-                return onePackage->name != anotherPackage->name;
-            }
+    - passing dereferenced unique pointer to binary search
 
-        The possible solution would be to convert `std::unique<Package>` into `std::pair<std::unique_ptr<Package>, bool>` for example and then overload the `operator<` function. But that would be so indirect and unintuitive which would interfere with my values for readability, foreseenability, simplicity, expressivness, understandability.
+        ```
+        // main.cpp
 
-    - directly passing unique pointer to binary search with custom comparator - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
+        bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+        ```
 
-            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+    - passing dereferenced unique pointer to binary search with custom comparator
 
-    - passing dereferenced unique pointer to comparator - **NOT WORKING AT ALL FOR `std::set` with elements of `std::unique_ptr` type**
+        ```
+        // main.cpp
 
-            // main.cpp
+        bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator())
+        ```
 
-            std::set<std::unique_ptr<Package>> installedPackages{};
+    - `std::binary_search` with `std::set` inicialized with custom comparator as a second template parameter - overloading the default `std::less` and `operator<` for comparing and sorting elements of custom type
 
-            <~snip~>
+        ```
+        std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
 
-            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
-            bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator())
+        //std::set<std::unique_ptr<Package, PackageComparator>> installedPackages; // doesn't work - using PackageComparator as a second template argument for 'unique_ptr' as default deleter instead of using it as a second template argument for 'set' as a comparator
+        //std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+
+        //auto packageComparator = std::make_unique<PackageComparator>();
+        //std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
+
+        //auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        //    return onePackage < anotherPackage;
+        //};
+        //std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda); // WORKS
+
+        //std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages(comparePackages); // WORKS
+        //std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer
+        //std::set<std::unique_ptr<Package>, decltype(&comparePackages)> installedPackages(&comparePackages); // WORKS
+        //std::set<std::unique_ptr<Package>, decltype(&comparePackages)> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer
+        ```
 
 - main - Package.h
     - public friend `operator<` function with both parameters of reference type to `const unique_ptr<Package>`

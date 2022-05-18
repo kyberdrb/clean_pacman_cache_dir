@@ -197,7 +197,7 @@ int main() {
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 // 'set::find'
-//                auto matchingPackage = installedPackages.find(packageWithInferredName);
+                auto matchingPackage = installedPackages.find(packageWithInferredName);
 
                 // 'std::find' (direct and dereferenced comparison in 'operator==' in class for custom element type)
 //                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
@@ -227,10 +227,10 @@ int main() {
 //                        PackageComparatorPredicate(packageWithInferredName));
 
                 // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
-                auto matchingPackage = std::find_if(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(*packageWithInferredName));
+//                auto matchingPackage = std::find_if(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
 //                bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
@@ -248,13 +248,13 @@ int main() {
 //                        PackageComparatorPredicate(packageWithInferredName));
 
                 // 'std::any_of' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
-                bool isPackageWithInferredNameFoundAsTest = std::any_of(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(*packageWithInferredName));
+//                bool isPackageWithInferredNameFoundAsTest = std::any_of(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(*packageWithInferredName));
 
                 // 'std::binary_search'
-//                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // Doesn't work even with overloaded operators '<' '==' and '!=' all at once that are used in the standard library functions
+                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // WORKS with overloaded public friend 'operator<' with all const args and even with 'installedPackages' set initialized as 'std::set<std::unique_ptr<Package>> installedPackages{};' with only default comparator. Binary search works only on ordered datastructures. The order is attained by the overloaded 'operator<' as a public friend function with all const params, which gets called at insertion to the 'std::set' - `emplace()`/`push_back()`. That's why the lookup actually finds a matching element of custom type in 'std::set'
 //                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
 
 //                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);

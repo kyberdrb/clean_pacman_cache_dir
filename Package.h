@@ -65,10 +65,9 @@ public:
 //  which works with and without 'std::less' overload
 
     // WORKS for direct comparison with and without overloading 'std::less' funcion
-    // Doesn't work for 'std::binary_search'
-//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-//        return onePackage->name < anotherPackage->name;
-//    }
+    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->name < anotherPackage->name;
+    }
 
     // Doesn't work - compiles but fails to find the searched for element at runtime when used as a standalone function
 //    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
