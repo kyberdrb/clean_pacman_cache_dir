@@ -1,7 +1,7 @@
 #include "Package.h"
 #include "IgnoredPackageName.h"
 //#include "PackageComparator.h"
-#include "PackageComparatorPredicate.h"
+//#include "PackageComparatorPredicate.h"
 
 #include "alpm.h"
 #include "alpm_list.h"

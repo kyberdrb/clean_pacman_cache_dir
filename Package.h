@@ -65,9 +65,9 @@ public:
 //  which works with and without 'std::less' overload
 
     // WORKS for direct comparison with and without overloading 'std::less' funcion
-    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-        return onePackage->name < anotherPackage->name;
-    }
+//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name < anotherPackage->name;
+//    }
 
     // Doesn't work - compiles but fails to find the searched for element at runtime when used as a standalone function
 //    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
@@ -117,7 +117,8 @@ public:
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'SET::FIND'
 //  Functions in this section work for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
-//  or with custom comparator without 'std::less' overload
+//  or with custom comparator without 'std::less' overload,
+//  but I couldn't make the element lookup work for 'std::binary_search'
 
 //    bool operator<(const Package& package) const {
 //        // TODO maybe replace the 'getName()' function with only fields?
@@ -161,7 +162,6 @@ public:
 ////        return Package::name < package.name;
 //    }
 
-
 //    bool operator<(Package& package) {
 //        // TODO maybe replace the 'getName()' function with only fields?
 //
@@ -190,6 +190,18 @@ public:
 
 //    friend bool operator<(Package& onePackage, const Package& anotherPackage) {
 //        return onePackage.name < anotherPackage.name;
+//    }
+
+// FOR 'STD::BINARY_SEARCH' WITH PASSED DEREFERENCED SMART POINTER - COULDN'T MAKE IT WORK
+
+    // for 'stl_algo.h'
+//    friend bool operator<(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage.name < anotherPackage->name;
+//    }
+//
+//    // for 'predefined_ops.h'
+//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->name < anotherPackage.name;
 //    }
 
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'STD::FIND'
@@ -358,9 +370,30 @@ private:
 //    return onePackage < anotherPackage;
 //}
 
-// Doesn't work for 'std::binary_search'
+// 'STD::BINARY_SEARCH' - DIRECTLY PASSING AN UNIQUE POINTER
+
+namespace std {
+    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->getName() < anotherPackage->getName();
+    }
+}
+
 //namespace std {
 //    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-//        return onePackage->getName() < anotherPackage->getName();
+//        return *onePackage < *anotherPackage;
+//    }
+//}
+
+// 'STD::BINARY_SEARCH' - PASSING A DEREFERENCED UNIQUE POINTER
+
+//namespace std {
+//    inline bool operator<(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage.getName() < anotherPackage->getName();
+//    }
+//}
+//
+//namespace std {
+//    inline bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->getName() < anotherPackage.getName();
 //    }
 //}
