@@ -509,6 +509,18 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 };
             }
 
+    - overloading `std::operator<`
+
+        ```
+        // Package.h
+
+        namespace std {
+            inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->getName() < anotherPackage->getName();
+            }
+        }
+        ```
+
     - comparator functor added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr (with specialized 'std::less' with dereference by `->` or without specialized 'std::less' with defined public friend `operator<` with all const params of reference type to unique_ptr<Package> - see examples above)
 
             // main.cpp - changing only 'std::set' declaration leaving 'set::find' as is
@@ -714,33 +726,49 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
     - **_passing unique pointer directly - direct comparison of unique pointers_** (allegedly slower that the specialized 'find' function 'std::set::find' - O(log(n)) vs O(n), and, in fact, the progrm intuitively takes longer, althogh I didn't measure it exactly).
 
-            // main.cpp
+        ```
+        // main.cpp
 
-            auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+        auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+        ```
 
         The mentioned `std::find` function finds the element by overloading the `operator==` as a public friend function with all params of refrence type to unique pointer to Package (or any element of custom type in general) (assuming the element with given key or element feature compared in the `operator==` function exist in the `std::set`)
 
-            // Package.h        
-    
-            //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
-            friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-                return onePackage->name == anotherPackage->name;
-            }
+        ```
+        // Package.h        
 
-            // Doesn't work
-            friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
-                return onePackage->name == anotherPackage->name;
-            }
+        //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
+        friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+            return onePackage->name == anotherPackage->name;
+        }
 
-            // Doesn't work
-            bool operator==(const std::unique_ptr<Package>& package) const {
-                // TODO maybe replace the 'getName()' function with only fields?
-                return this->getName() == package->getName();
-            //    return this->name == package.getName();
-            //    return this->name < package.name;
-            //    return Package::name == package.getName();
-            //    return Package::name == package.name;
+        // Doesn't work
+        friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
+            return onePackage->name == anotherPackage->name;
+        }
+
+        // Doesn't work
+        bool operator==(const std::unique_ptr<Package>& package) const {
+            // TODO maybe replace the 'getName()' function with only fields?
+            return this->getName() == package->getName();
+        //    return this->name == package.getName();
+        //    return this->name < package.name;
+        //    return Package::name == package.getName();
+        //    return Package::name == package.name;
+        }
+        ```
+
+        Or overload the global `std::operator<`
+
+        ```
+        // Package.h
+
+        namespace std {
+            inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+                return onePackage->getName() == anotherPackage.getName();
             }
+        }
+        ```
 
     - **_passing dereferenced unique pointer - comparison of unique pointer and the passed underlying instance the uniqe pointer holds_**
 
@@ -770,6 +798,18 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             //        return this->name == otherPackage.name;
             //    }
 
+        Or overload the global `std::operator<`
+
+        ```
+        // Package.h
+
+        namespace std {
+            inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+                return onePackage->getName() == anotherPackage.getName();
+            }
+        }
+        ``
+
 - `std::find_if`
 
         // main.cpp
@@ -789,7 +829,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             );
             ```
 
-          Works only with `friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)` in 'Package.h'
+            Works only with `friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)` in 'Package.h'
 
             ```
             // Package.h
@@ -797,6 +837,18 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
             friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
                 return onePackage->name == anotherPackage->name;
+            }
+            ```
+
+            Or overload the global `std::operator<`
+
+            ```
+            // Package.h
+
+            namespace std {
+                inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+                    return onePackage->getName() == anotherPackage.getName();
+                }
             }
             ```
 
@@ -849,6 +901,8 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 return this->name == otherPackage.name;
             }
             ```
+
+            Doesn't work with overloaded `std::operator<` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
 
         - lambda with dereferenced comparison by `->` - delegating comparison
 

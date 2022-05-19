@@ -364,13 +364,31 @@ private:
 //    };
 //}
 
-// LAMBDA COMPARATOR FOR SECOND TEMPLATE PARAMETER
+// 'STD::FIND', 'STD::FIND_IF' - DIRECTLY PASSING AN UNIQUE POINTER
 
-//inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-//    return onePackage < anotherPackage;
+namespace std {
+    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->getName() == anotherPackage->getName();
+    }
+}
+
+// 'STD::FIND' - PASSING A DEREFERENCED UNIQUE POINTER - DOESN'T WORK FOR 'STD::FIND_IF' with dereferenced unique ptr comparison
+
+//namespace std {
+//    inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->getName() == anotherPackage.getName();
+//    }
 //}
 
-// 'STD::BINARY_SEARCH' - DIRECTLY PASSING AN UNIQUE POINTER
+// 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER
+
+//namespace std {
+//    inline bool operator==(const Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'SET::FIND', 'STD::BINARY_SEARCH' - DIRECTLY PASSING AN UNIQUE POINTER
 
 namespace std {
     inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
@@ -396,4 +414,10 @@ namespace std {
 //    inline bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
 //        return onePackage->getName() < anotherPackage.getName();
 //    }
+//}
+
+// LAMBDA COMPARATOR FOR SECOND TEMPLATE PARAMETER
+
+//inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//    return onePackage < anotherPackage;
 //}
