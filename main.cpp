@@ -1,7 +1,7 @@
 #include "Package.h"
 #include "IgnoredPackageName.h"
 //#include "PackageComparator.h"
-//#include "PackageComparatorPredicate.h"
+#include "PackageComparatorPredicate.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -204,13 +204,13 @@ int main() {
 //                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), *packageWithInferredName); // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage)' in 'Package.h'
 
                 // 'std::find_if' with lambda (passing directly) - (direct and dereferenced comparison in lambda)
-                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
-                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
-                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
-//                            return *packageWithInferredName == *currentInstalledPackage; // works with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' and 'operator==' const member functions in 'Package.h'
-//                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
-                        }
-                );
+//                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+//                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return *packageWithInferredName == *currentInstalledPackage; // works with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' and 'operator==' const member functions in 'Package.h'
+////                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                        }
+//                );
 
                 // Couldn't make it work
 //                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
@@ -222,10 +222,10 @@ int main() {
 //                );
 
                 // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
-//                auto matchingPackage = std::find_if(
-//                        installedPackages.begin(),
-//                        installedPackages.end(),
-//                        PackageComparatorPredicate(packageWithInferredName));
+                auto matchingPackage = std::find_if(
+                        installedPackages.begin(),
+                        installedPackages.end(),
+                        PackageComparatorPredicate(packageWithInferredName));
 
                 // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(

@@ -812,9 +812,11 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
 - `std::find_if`
 
-        // main.cpp
+    ```
+    // main.cpp
 
-        std::set<std::unique_ptr<Package>> installedPackages{};
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    ```
 
     - `std::find_if` with lambda comparator
         - lambda with direct comparison
@@ -840,14 +842,14 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             }
             ```
 
-            Or overload the global `std::operator<`
+            Or overload the global `std::operator==` outside (e.g. under) the class definition:
 
             ```
             // Package.h
 
             namespace std {
-                inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
-                    return onePackage->getName() == anotherPackage.getName();
+                inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->getName() == anotherPackage->getName();
                 }
             }
             ```
@@ -902,7 +904,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             }
             ```
 
-            Doesn't work with overloaded `std::operator<` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+            Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
 
         - lambda with dereferenced comparison by `->` - delegating comparison
 
@@ -916,24 +918,44 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             );
             ```
 
-        - passing dereferenced unique pointer to lambda in `std::find_if` - **NOT WORKING**
+        - passing dereferenced unique pointer to lambda in `std::find_if` - **COULDN'T MAKE IT WORK**
+
+            ```
+            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const Package& currentInstalledPackage) {
+                        return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+            //            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+            //            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
+            ```
+
             - `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers` when a value from first function is declared as `const` and this value is passed through a parameter to another function which take the same parameter type without const
             - when forgetting to add `const`ness of the second parameter of public friend `operator==` function or of first parameer of public member `operator==` function
             - or
             - `error: no match for call to ‘(main()::<lambda(const Package&)>) (const std::unique_ptr<Package>&)’`
             - `note:   no known conversion for argument 1 from ‘const std::unique_ptr<Package>’ to ‘const Package&’`
+            - Possible solution would be to define an implicit?/(explicit? casted to `Package&` with `static_cast?`) conversion constructor `Package::Package(const std::unique_ptr<Package> uniquePtr)` but that would only slow things down and make the code less readable and expressive. Let's keep it simple ;)
+
     - `std::find_if` with comparator predicate
 
         ```
         // main.cpp
 
-        auto matchingPackage = std::find_if(
-                installedPackages.begin(),
-                installedPackages.end(),
-                PackageComparatorPredicate(packageWithInferredName));
+        #include "PackageComparatorPredicate.h"
         ```
 
         - passing unique pointer to comparator predicate directly
+
+            ```
+            // main.cpp
+
+            auto matchingPackage = std::find_if(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(packageWithInferredName));
+            ```
+
             - comparator predicate with direct comparison
 
                 ```
@@ -964,6 +986,18 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
                 friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
                     return onePackage->name == anotherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage->getName();
+                    }
                 }
                 ```
 
@@ -1028,6 +1062,8 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 }
                 ```
 
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
             - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
 
                 ```
@@ -1055,13 +1091,14 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
             ```
             // main.cpp
+
             auto matchingPackage = std::find_if(
                     installedPackages.begin(),
                     installedPackages.end(),
                     PackageComparatorPredicate(*packageWithInferredName));
             ```
 
-            - comparator predicate with comparison of dereferenced member variable (instance with features to search by) with smart pointer
+            - comparator predicate with direct comparison - comparison of dereferenced member variable (instance with features to search by) with smart pointer
 
                 ```
                 // PackageComparatorPredicate.h
@@ -1088,12 +1125,24 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 ```
                 // Package.h
               
-                friend bool operator==(const Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+                friend bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
                     return onePackage->name == anotherPackage.name;
                 }
 
                 bool operator==(const std::unique_ptr<Package>& otherPackage) const {
                     return this->name == otherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage.getName();
+                    }
                 }
                 ```
 
@@ -1140,6 +1189,8 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                     return this->name == otherPackage.name;
                 }
                 ```
+
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& anotherPackage, Package& onePackage)` - `error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘Package’)`
 
             - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
 
@@ -1187,9 +1238,11 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
 - `std::any_of`
 
-        // main.cpp
+    ```
+    // main.cpp
 
-        std::set<std::unique_ptr<Package>> installedPackages{};
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    ```
 
     - `std::any_of` with lambda comparator
         - lambda with direct comparison
@@ -1197,7 +1250,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             ```
             // main.cpp
           
-            auto matchingPackage = std::any_of(installedPackages.begin(), installedPackages.end(),
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
                     [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
                         return packageWithInferredName == currentInstalledPackage;
                     }
@@ -1215,12 +1268,24 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             }
             ```
 
+            Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+            ```
+            // Package.h
+
+            namespace std {
+                inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->getName() == anotherPackage->getName();
+                }
+            }
+            ```
+
         - lambda with dereferenced comparison by `*`
 
             ```
             // main.cpp
-
-            auto matchingPackage = std::any_of(installedPackages.begin(), installedPackages.end(),
+          
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
                     [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
                         return *packageWithInferredName == *currentInstalledPackage;
                     }
@@ -1235,11 +1300,11 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
                 return onePackage.name == anotherPackage.name;
             }
-          
+
             friend bool operator==(const Package& onePackage, Package& anotherPackage) {
                 return onePackage.name == anotherPackage.name;
             }
-          
+
             friend bool operator==(Package& onePackage, const Package& anotherPackage) {
                 return onePackage.name == anotherPackage.name;
             }
@@ -1265,26 +1330,30 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
             }
             ```
 
-        - lambda with dereferenced comparison by `->` - delegating comparison with `operator`to the class of the return type, in which it's defined
+            Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
+        - lambda with dereferenced comparison by `->` - delegating comparison
 
             ```
             // main.cpp
           
-            auto matchingPackage = std::any_of(installedPackages.begin(), installedPackages.end(),
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
                     [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
                         return packageWithInferredName->getName() == currentInstalledPackage->getName();
                     }
             );
             ```
-        - passing dereferenced unique pointer to lambda in `std::any_of` - **NOT WORKING**
-      
+
+        - passing dereferenced unique pointer to lambda in `std::any_of` - **COULDN'T MAKE IT WORK**
+
             ```
-            // main.cpp
-          
-            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
-                        [&packageWithInferredName](const Package& currentInstalledPackage) {
-                            return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
-            }
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const Package& currentInstalledPackage) {
+                        return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+            //            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+            //            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
             ```
 
             - `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers` when a value from first function is declared as `const` and this value is passed through a parameter to another function which take the same parameter type without const
@@ -1299,13 +1368,20 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
         ```
         // main.cpp
 
-        auto matchingPackage = std::any_of(
-                installedPackages.begin(),
-                installedPackages.end(),
-                PackageComparatorPredicate(packageWithInferredName));
+        #include "PackageComparatorPredicate.h"
         ```
 
         - passing unique pointer to comparator predicate directly
+
+            ```
+            // main.cpp
+
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(packageWithInferredName));
+            ```
+
             - comparator predicate with direct comparison
 
                 ```
@@ -1338,6 +1414,19 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                     return onePackage->name == anotherPackage->name;
                 }
                 ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage->getName();
+                    }
+                }
+                ```
+
             - comparator predicate with dereferenced comparison by `*`
 
                 ```
@@ -1399,7 +1488,9 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 }
                 ```
 
-            - comparator predicate with dereferenced comparison by `->` - delegating 'operator==' to the class in which the return type is defined. We're delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
 
                 ```
                 // PackageComparatorPredicate.h
@@ -1426,13 +1517,14 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
             ```
             // main.cpp
-            auto matchingPackage = std::any_of(
+
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(
                     installedPackages.begin(),
                     installedPackages.end(),
                     PackageComparatorPredicate(*packageWithInferredName));
             ```
 
-            - comparator predicate with comparison of dereferenced member variable (instance with features to search by) with smart pointer
+            - comparator predicate with direct comparison - comparison of dereferenced member variable (instance with features to search by) with smart pointer
 
                 ```
                 // PackageComparatorPredicate.h
@@ -1459,12 +1551,24 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 ```
                 // Package.h
               
-                friend bool operator==(const Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+                friend bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
                     return onePackage->name == anotherPackage.name;
                 }
 
                 bool operator==(const std::unique_ptr<Package>& otherPackage) const {
                     return this->name == otherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage.getName();
+                    }
                 }
                 ```
 
@@ -1512,7 +1616,9 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 }
                 ```
 
-            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded in the class in which the return type defined instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& anotherPackage, Package& onePackage)` - `error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘Package’)`
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
 
                 ```
                 // PackageComparatorPredicate.h
@@ -1530,6 +1636,28 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
                     bool operator()(const std::unique_ptr<Package>& otherPackage) const {
                         return (this->package.getName() == otherPackage->getName());
+                    }
+                };
+                ```
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package->getName() == otherPackage->getName());
                     }
                 };
                 ```

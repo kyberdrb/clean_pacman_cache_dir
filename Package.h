@@ -274,7 +274,7 @@ public:
 // FOR DEREFERENCED (SMART) POINTER COMPARISON FOR LAMBDA COMPARATOR OR PREDICATE COMPARATOR FOR 'STD::FIND_IF', 'STD::ANY_OF' WITH SEARCHED ELEMENT PASSED AS ALREADY DEREFERENCED
 
     // WORKS for comparing dereferenced smart pointer (i.e. the instance) with directly passed smart pointer in the comparator predicate
-//    friend bool operator==(const Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+//    friend bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
 //        return onePackage->name == anotherPackage.name;
 //    }
 
@@ -380,10 +380,27 @@ namespace std {
 //    }
 //}
 
-// 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER
+// 'STD::FIND_IF' - DIRECTLY PASSING A UNIQUE POINTER - DOESN'T WORK FOR COMPARATOR PREDICATE WITH DEREFERENCED COMPARISON
+//   error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)
 
 //namespace std {
 //    inline bool operator==(const Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER - DIRECT COMPARISON
+
+//namespace std {
+//    inline bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER - DEREFERENCED COMPARISON WITH '*' - DOESN'T WORK
+
+//namespace std {
+//    inline bool operator==(const Package& anotherPackage, Package& onePackage) {
 //        return onePackage.getName() == anotherPackage.getName();
 //    }
 //}
