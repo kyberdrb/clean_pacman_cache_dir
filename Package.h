@@ -366,11 +366,11 @@ private:
 
 // 'STD::FIND', 'STD::FIND_IF' - DIRECTLY PASSING AN UNIQUE POINTER
 
-namespace std {
-    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-        return onePackage->getName() == anotherPackage->getName();
-    }
-}
+//namespace std {
+//    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->getName() == anotherPackage->getName();
+//    }
+//}
 
 // 'STD::FIND' - PASSING A DEREFERENCED UNIQUE POINTER - DOESN'T WORK FOR 'STD::FIND_IF' with dereferenced unique ptr comparison
 

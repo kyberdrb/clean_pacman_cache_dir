@@ -450,21 +450,25 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
 - `set::find` - passing unique ptr ref
 
-        // main.cpp
+    ```
+    // main.cpp
 
-        std::set<std::unique_ptr<Package>> installedPackages{};
+    std::set<std::unique_ptr<Package>> installedPackages{};
 
-        <~snip~>
-  
-        auto matchingPackage = installedPackages.find(packageWithInferredName);
+    <~snip~>
+
+    auto matchingPackage = installedPackages.find(packageWithInferredName);
+    ```
 
     - public friend `operator<` with all const params of reference type to const `unique_ptr` with dereferenced comparison by `->` within the operator function **without** specialized `std::less`
 
-              // Package.h
+        ```
+        // Package.h
 
-              friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
-                  return onePackage->name < anotherPackage->name;
-              }
+        friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+            return onePackage->name < anotherPackage->name;
+        }
+        ```
 
     - public friend `operator<` with all const params of reference type to const `unique_ptr` with dereferenced comparison by `->` within the operator function **with** specialized `std::less` (**unnecessary** to specialize 'std::less' - the public friend `operator<` in mentioned format is enough to ensure ordering of elements in the `std::set`)
 
@@ -509,7 +513,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
                 };
             }
 
-    - overloading `std::operator<`
+    - overloading the global `std::operator<` outside (e.g. under) the class definition:
 
         ```
         // Package.h
@@ -2156,7 +2160,7 @@ STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
 
         **It doesn't matter which one of the initializations for `std::set` I use, the `std::binary_search` doesn't find anything.**
 
-        **`std::binary_search` for `std::set` works only when the class, that the elements in `std::set` are a type of, has overloaded `operator<` as a public friend function with all const params of the same type that the elements the `std::set` holds**  
+        **`std::binary_search` for `std::set` works only when the class, that the type of elements in `std::set` are defined in, has overloaded `operator<` as a public friend function with all const params of the same type that the elements the `std::set` holds**  
         **or with a globally overloaded `std::operator<` with the same mentioned parameter list**
 
 **Entire code excerpts**

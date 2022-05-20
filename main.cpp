@@ -197,7 +197,7 @@ int main() {
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 // 'set::find'
-//                auto matchingPackage = installedPackages.find(packageWithInferredName);
+                auto matchingPackage = installedPackages.find(packageWithInferredName);
 
                 // 'std::find' (direct and dereferenced comparison in 'operator==' in class for custom element type)
 //                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
@@ -222,10 +222,10 @@ int main() {
 //                );
 
                 // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
-                auto matchingPackage = std::find_if(
-                        installedPackages.begin(),
-                        installedPackages.end(),
-                        PackageComparatorPredicate(packageWithInferredName));
+//                auto matchingPackage = std::find_if(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(packageWithInferredName));
 
                 // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
 //                auto matchingPackage = std::find_if(
