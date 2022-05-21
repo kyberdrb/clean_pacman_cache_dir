@@ -400,7 +400,7 @@ private:
 // 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER - DEREFERENCED COMPARISON WITH '*' - DOESN'T WORK
 
 //namespace std {
-//    inline bool operator==(const Package& anotherPackage, Package& onePackage) {
+//    inline bool operator==(const Package& onePackage, Package& anotherPackage) {
 //        return onePackage.getName() == anotherPackage.getName();
 //    }
 //}
@@ -416,6 +416,14 @@ namespace std {
 //namespace std {
 //    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
 //        return *onePackage < *anotherPackage;
+//    }
+//}
+
+// 'SET::FIND' - DIRECTLY PASSING AN UNIQUE POINTER - DEREFERENCED COMPARISON IN COMPARATOR - COULDN'T MAKE IT WORK
+
+//namespace std {
+//    inline bool operator<(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.getName() == anotherPackage.getName();
 //    }
 //}
 
