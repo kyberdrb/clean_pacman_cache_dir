@@ -242,6 +242,7 @@ The version of the algorithm with a tokenization
 
 - std::find
     - public friend function - all params const (the only one that worked for me for smart pointers)
+    - TODO overloading global `std::operator==`
 - std::find_if
     - direct comparison in main
         - lambda
@@ -287,6 +288,13 @@ The version of the algorithm with a tokenization
                 - public member non-const function - const parameter
                 - public member const function - non-const parameter
                 - public member non-const function - non-const param
+- TODO `std::binary_search`
+    - TODO friend `operator<`
+    - TODO member `operator<`
+    - TODO `std::operator<`
+    - TODO `std::less` - for ascending lexicographic order
+    - TODO `std::greater` - for descending lexicographic order
+    - TODO custom comparator
 
 Example code
 
@@ -428,6 +436,2593 @@ struct IgnoredPackageNamesEqualityComparator {
     }
 };
 ```
+
+### Ways of finding an element of custom type in a `std::set`
+
+- Client: `main.cpp`
+- Comparator: lambda/`PackageComparator.h`/internal comparison logic in overloaded `operator<` or specialized `std::less` function (the default function/functor that `std::set` uses to compare elements)
+- Element of custom type in `std::set`: Package (`Package.h`)
+
+PACKAGE (INSTANCE OF CUSTOM TYPE) TO FIND
+
+    // main.cpp
+
+    #include "Package.h"
+
+    <~snip~>
+
+    std::string inferredPackageNameAsText = packageNameAndVersion;
+    auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText));
+
+STRATEGIES TO FIND A PACKAGE (AN INSTANCE OF CUSTOM TYPE)
+
+- `set::find` - passing unique ptr ref
+
+    ```
+    // main.cpp
+
+    std::set<std::unique_ptr<Package>> installedPackages{};
+
+    <~snip~>
+
+    auto matchingPackage = installedPackages.find(packageWithInferredName);
+    ```
+
+    - overloading `operator<`
+        - public friend `operator<` with all const params of reference type to const `unique_ptr` with dereferenced comparison by `->` within the operator function **without** specialized `std::less`
+
+            ```
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+            ```
+
+        - public friend `operator<` with all const params of reference type to const `unique_ptr` with dereferenced comparison by `->` within the operator function **with** specialized `std::less` (**unnecessary** to specialize 'std::less' - the public friend `operator<` in mentioned format is enough to ensure ordering of elements in the `std::set`)
+
+                  // Package.h
+
+                  // WORKS for direct comparison with and without overloading 'std::less' funcion
+                  friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                      return onePackage->name < anotherPackage->name;
+                  }
+
+                  // Doesn't work - compiles but fails to find the searched for element at runtime
+                  //    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
+                  //        return onePackage->name < anotherPackage->name;
+                  //    }
+
+                  // Doesn't work - compiles but fails to find the searched for element at runtime
+                  //    bool operator<(const std::unique_ptr<Package>& package) const {
+                  //        // TODO maybe replace the 'getName()' function with only fields?
+                  //
+                  //        assert(this->getName() == this->name);
+                  //        assert(this->getName() == Package::name);
+                  //        assert(this->name == Package::name);
+                  //
+                  //        return this->getName() < package->getName();
+                  //        //        return this->name < package->getName();
+                  //        //        return Package::name < package->getName();
+                  //        //        return this->name < package->name;
+                  //        //        return Package::name < package->name;
+                  //    }
+
+            And then specialize the `std::less` function outside of the class as a non-member function, e. g. under the class block in the header file
+
+                // Package.h
+
+                // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+                namespace std {
+                    template<>
+                    struct less<unique_ptr<Package>> {
+                        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+                            return onePackage < anotherPackage;
+                        }
+                    };
+                }
+
+        - overloading the global `std::operator<` outside (e.g. under) the class definition:
+
+            ```
+            // Package.h
+
+            namespace std {
+                inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->getName() < anotherPackage->getName();
+                }
+            }
+            ```
+
+    - defining a custom comparator
+
+        and passing the custom comparator as a second template argument at initialization
+
+        - comparator functor class added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr (with specialized 'std::less' with dereference by `->` or without specialized 'std::less' with defined public friend `operator<` with all const params of reference type to unique_ptr<Package> - see examples above)
+
+            ```
+            // main.cpp - changing only 'std::set' declaration leaving 'set::find' as is
+
+            #include "PackageComparator.h"
+
+            <~snip~>
+
+            std::set<std::unique_ptr<Package>, PackageComparator> installedPackages;
+
+            <~snip~>
+
+            auto matchingPackage = installedPackages.find(packageWithInferredName);
+            ```
+
+            Define the separate custom comparator:
+
+            ```
+            // PackageComparator.h
+
+            #pragma once
+
+            #include "Package.h"
+
+            struct PackageComparator {
+                bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+                    // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+                    return onePackage < anotherPackage;
+                }
+            };
+            ```
+
+            Define comparator function for matching compared types for the class, that the element type in `std::set` is defined in:
+
+            ```
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+            ```
+
+            Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+            ```
+            // Package.h
+            namespace std {
+                inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->getName() < anotherPackage->getName();
+                }
+            }
+            ```
+
+        - TODO comparator functor class - directly passed unique ptrs - dereferenced comparison with `*`
+
+            Doesn't work with overloaded `std::operator<` as `inline bool operator<(const Package& onePackage, Package& anotherPackage)` - `error: no match for ‘operator<’ (operand types are ‘Package’ and ‘Package’)`
+
+        - TODO comparator functor class - directly passed unique ptrs - dereferenced comparison with `->` with an accessor function
+
+        - comparator lambda added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+                // main.cpp - changing 'std::set' declaration
+
+                auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) { 
+                    return onePackage < anotherPackage;
+                };
+                std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda);
+
+          Define public friend `operator<` for the comparison of directly passed unique pointers
+
+                // Package.h
+
+                friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name < anotherPackage->name;
+                }
+
+        - TODO comparator lambda - comparison of dereferenced unique pointers by `*` + public friend/member `operator<`
+        - TODO comparator lambda - comparison of dereferenced unique pointers by `->`
+
+        - comparator function added as a second template parameter at 'std::set' construction - direct comparison of unique ptrs passed by reference - public friend operator< with all const params of reference type to const unique_ptr without specialized 'std::less'
+
+              // main.cpp - changing 'std::set' declaration
+
+              std::set<std::unique_ptr<Package>, decltype(PackageComparatorFunction)*> installedPackages(comparePackages);
+              //std::set<std::unique_ptr<Package>, decltype(PackageComparatorFunction)*> installedPackages; // C++20 and newer
+
+          or
+
+              std::set<std::unique_ptr<Package>, decltype(&PackageComparatorFunction)> installedPackages(&comparePackages);
+              //std::set<std::unique_ptr<Package>, decltype(&PackageComparatorFunction)> installedPackages;  // C++20 and newer
+
+          leaving 'set::find' as is
+
+              auto matchingPackage = installedPackages.find(packageWithInferredName);
+
+          Define comparator function outside of the class block, e. g. underneath as a non-member function at the end of the header file
+
+              // Package.h
+
+              inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                  return onePackage < anotherPackage;
+              }
+
+          Then define public friend `operator<` for the direct unique pointer comparison
+
+              // Package.h
+
+              friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                  return onePackage->name < anotherPackage->name;
+              }
+
+        - TODO comparator function - comparison of dereferenced unique pointers by `*` + public friend/member `operator<`
+        - TODO comparator function - comparison of dereferenced unique pointers by `->`
+
+        - specialized 'std::less' with dereferenced comparison within by `->` - **without** public friend `operator<` - the standalone `std::less` function is enough to find a matching element in `std::set` that holds elements of custom type when lookup is performed with specialized `find` function `set::find` instead of other methods [O(log(n) vs O(n)]. The `std::less` functor relies on the public friend/member `operator<` of the another dereferenced type that are given as return values from the accessor methods.
+
+                // Package.h
+
+                // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+                namespace std {
+                    template<>
+                    struct less<unique_ptr<Package>> {
+                        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+                            return onePackage->getName() < anotherPackage->getName();
+                        }
+                    };
+                }
+
+    - specializing `std::less`
+        - directly passed unique pointer to `set::find` with specialized 'std::less' with direct comparison
+
+        - directly passed unique pointer to `set::find` with specialized 'std::less' with dereferenced comparison by '\*' **with** public friend/member operator< with specialized 'std::less' with dereferenced comparison by '\*'
+
+            Specialize the `std::less` function with parameter types matching the type of elemenents the `std::set` holds
+
+                // Package.h
+
+                // overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+                namespace std {
+                    template<>
+                    struct less<unique_ptr<Package>> {
+                        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+                            return *onePackage < *anotherPackage;
+                        }
+                    };
+                }
+
+            Choose one of the belowmentioned functions to overload `operator<` as friend or member function with parameter types matching the type of dereferenced smart pointer.
+
+            All of the belowmentioned functions work for dereferenced comparison together with overloaded 'std::less' funcion for cutom type or with custom comparator without 'std::less' specialization
+
+                // Package.h
+
+                bool operator<(const Package& package) const {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                    return this->getName() < package.getName();
+                //        return this->name < package.getName();
+                //        return Package::name < package.getName();
+                //        return this->name < package.name;
+                //        return Package::name < package.name;
+                }
+
+                bool operator<(const Package& package) {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                //        return this->getName() < package.getName();
+                    return this->name < package.getName();
+                //        return Package::name < package.getName();
+                //        return this->name < package.name;
+                //        return Package::name < package.name;
+                }
+
+                bool operator<(Package& package) const {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                //        return this->getName() < package.getName();
+                //        return this->name < package.getName();
+                //        return Package::name < package.getName();
+                    return this->name < package.name;
+                //        return Package::name < package.name;
+                }
+
+
+                bool operator<(Package& package) {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                //        return this->getName() < package.getName();
+                //        return this->name < package.getName();
+                //        return Package::name < package.getName();
+                //        return this->name < package.name;
+                    return Package::name < package.name;
+                }
+
+                friend bool operator<(Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+                friend bool operator<(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+                friend bool operator<(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+                friend bool operator<(Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+        - TODO directly passed unique pointer to `set::find` with specialized 'std::less' with dereferened comparison with `->` and an accessor function
+
+    - `std::integral_constant` as comparator
+
+- `std::find`
+
+        // main.cpp
+
+        std::set<std::unique_ptr<Package>> installedPackages{};
+
+    - **_passing unique pointer directly - direct comparison of unique pointers_** (allegedly slower that the specialized 'find' function 'std::set::find' - O(log(n)) vs O(n), and, in fact, the progrm intuitively takes longer, althogh I didn't measure it exactly).
+
+        ```
+        // main.cpp
+
+        auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+        ```
+
+        The mentioned `std::find` function finds the element by overloading the `operator==` as a public friend function with all params of refrence type to unique pointer to Package (or any element of custom type in general) (assuming the element with given key or element feature compared in the `operator==` function exist in the `std::set`)
+
+        ```
+        // Package.h        
+
+        //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
+        friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+            return onePackage->name == anotherPackage->name;
+        }
+
+        // Doesn't work
+        friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
+            return onePackage->name == anotherPackage->name;
+        }
+
+        // Doesn't work
+        bool operator==(const std::unique_ptr<Package>& package) const {
+            // TODO maybe replace the 'getName()' function with only fields?
+            return this->getName() == package->getName();
+        //    return this->name == package.getName();
+        //    return this->name < package.name;
+        //    return Package::name == package.getName();
+        //    return Package::name == package.name;
+        }
+        ```
+
+        Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+        ```
+        // Package.h
+
+        namespace std {
+            inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+                return onePackage->getName() == anotherPackage.getName();
+            }
+        }
+        ```
+
+    - **_passing dereferenced unique pointer - comparison of unique pointer and the passed underlying instance the uniqe pointer holds_**
+
+        ```
+        // main.cpp
+
+        auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+        ```
+
+        This version of `std::find` works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage)' in 'Package.h'
+
+        ```
+        // Package.h
+
+        // WORKS only for 'std::find'
+        friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+            return onePackage->name == anotherPackage.name;
+        }
+
+        // Doesn't work - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+        //    friend bool operator==(std::unique_ptr<Package>& onePackage, Package& anotherPackage) {
+        //        return onePackage->name == anotherPackage.name;
+        //    }
+
+        // Doesn't work - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+        //    bool operator==(const Package& otherPackage) const {
+        //        return this->name == otherPackage.name;
+        //    }
+
+        // Doesn't work - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+        //    bool operator==(Package& otherPackage) {
+        //        return this->name == otherPackage.name;
+        //    }
+        ```
+
+        Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+        ```
+        // Package.h
+
+        namespace std {
+            inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+                return onePackage->getName() == anotherPackage.getName();
+            }
+        }
+        ``
+
+- `std::find_if`
+
+    ```
+    // main.cpp
+
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    ```
+
+    - `std::find_if` with lambda comparator
+        - lambda with direct comparison
+
+            ```
+            // main.cpp
+          
+            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return packageWithInferredName == currentInstalledPackage;
+                    }
+            );
+            ```
+
+            Works only with `friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)` in 'Package.h'
+
+            ```
+            // Package.h
+          
+            //   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
+            friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name == anotherPackage->name;
+            }
+            ```
+
+            Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+            ```
+            // Package.h
+
+            namespace std {
+                inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->getName() == anotherPackage->getName();
+                }
+            }
+            ```
+
+        - lambda with dereferenced comparison by `*`
+
+            ```
+            // main.cpp
+          
+            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return *packageWithInferredName == *currentInstalledPackage;
+                    }
+            );
+            ```
+
+            Works only with any of the `operator==` mentioned below
+
+            ```
+            // Package.h
+
+            friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            bool operator==(const Package& otherPackage) const {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(const Package& otherPackage) {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(Package& otherPackage) const {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(Package& otherPackage) {
+                return this->name == otherPackage.name;
+            }
+            ```
+
+            Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
+        - lambda with dereferenced comparison by `->` - delegating comparison
+
+            ```
+            // main.cpp
+          
+            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
+            ```
+
+        - passing dereferenced unique pointer to lambda in `std::find_if` - **COULDN'T MAKE IT WORK**
+
+            ```
+            auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const Package& currentInstalledPackage) {
+                        return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+            //            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+            //            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
+            ```
+
+            - `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers` when a value from first function is declared as `const` and this value is passed through a parameter to another function which take the same parameter type without const
+            - when forgetting to add `const`ness of the second parameter of public friend `operator==` function or of first parameer of public member `operator==` function
+            - or
+            - `error: no match for call to ‘(main()::<lambda(const Package&)>) (const std::unique_ptr<Package>&)’`
+            - `note:   no known conversion for argument 1 from ‘const std::unique_ptr<Package>’ to ‘const Package&’`
+            - Possible solution would be to define an implicit?/(explicit? casted to `Package&` with `static_cast?`) conversion constructor `Package::Package(const std::unique_ptr<Package> uniquePtr)` but that would only slow things down and make the code less readable and expressive. Let's keep it simple ;)
+
+    - `std::find_if` with comparator predicate
+
+        ```
+        // main.cpp
+
+        #include "PackageComparatorPredicate.h"
+        ```
+
+        - passing unique pointer to comparator predicate directly
+
+            ```
+            // main.cpp
+
+            auto matchingPackage = std::find_if(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(packageWithInferredName));
+            ```
+
+            - comparator predicate with direct comparison
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == otherPackage);
+                    }
+                };
+
+                ```
+
+                For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
+
+                ```
+                // Package.h
+
+                friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name == anotherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage->getName();
+                    }
+                }
+                ```
+
+            - comparator predicate with dereferenced comparison by `*`
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (*(this->package) == *otherPackage);
+                    }
+                };
+
+                ```
+
+                For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package->getName() == otherPackage->getName());
+                    }
+                };
+
+                ```
+
+        - passing dereferenced unique pointer to comparator predicate
+
+            ```
+            // main.cpp
+
+            auto matchingPackage = std::find_if(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(*packageWithInferredName));
+            ```
+
+            - comparator predicate with direct comparison - comparison of dereferenced member variable (instance with features to search by) with smart pointer
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return this->package == otherPackage;
+                    }
+                };
+                ```
+
+                The overloaded `operator==` needs to be implemented as `const` function with all `const` operands (parameters) 
+
+                ```
+                // Package.h
+              
+                friend bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name == anotherPackage.name;
+                }
+
+                bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+                    return this->name == otherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage.getName();
+                    }
+                }
+                ```
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with dereferenced smart pointer
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == *otherPackage);
+                    }
+                };
+                ```
+
+                The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems occured during compilation, when I ommitted the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘Package’)`
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package.getName() == otherPackage->getName());
+                    }
+                };
+                ```
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package->getName() == otherPackage->getName());
+                    }
+                };
+                ```
+
+- `std::any_of`
+
+    ```
+    // main.cpp
+
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    ```
+
+    - `std::any_of` with lambda comparator
+        - lambda with direct comparison
+
+            ```
+            // main.cpp
+          
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return packageWithInferredName == currentInstalledPackage;
+                    }
+            );
+            ```
+
+            Works only with `friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)` in 'Package.h'
+
+            ```
+            // Package.h
+          
+            //   WORKS for direct comparison in 'std::find', 'std::any_of', 'std::any_of'
+            friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name == anotherPackage->name;
+            }
+            ```
+
+            Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+            ```
+            // Package.h
+
+            namespace std {
+                inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->getName() == anotherPackage->getName();
+                }
+            }
+            ```
+
+        - lambda with dereferenced comparison by `*`
+
+            ```
+            // main.cpp
+          
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return *packageWithInferredName == *currentInstalledPackage;
+                    }
+            );
+            ```
+
+            Works only with any of the `operator==` mentioned below
+
+            ```
+            // Package.h
+
+            friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                return onePackage.name == anotherPackage.name;
+            }
+
+            bool operator==(const Package& otherPackage) const {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(const Package& otherPackage) {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(Package& otherPackage) const {
+                return this->name == otherPackage.name;
+            }
+
+            bool operator==(Package& otherPackage) {
+                return this->name == otherPackage.name;
+            }
+            ```
+
+            Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
+        - lambda with dereferenced comparison by `->` - delegating comparison
+
+            ```
+            // main.cpp
+          
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+                        return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
+            ```
+
+        - passing dereferenced unique pointer to lambda in `std::any_of` - **COULDN'T MAKE IT WORK**
+
+            ```
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+                    [&packageWithInferredName](const Package& currentInstalledPackage) {
+                        return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+            //            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+            //            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+                    }
+            );
+            ```
+
+            - `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers` when a value from first function is declared as `const` and this value is passed through a parameter to another function which take the same parameter type without const
+            - when forgetting to add `const`ness of the second parameter of public friend `operator==` function or of first parameer of public member `operator==` function
+            - or
+            - `error: no match for call to ‘(main()::<lambda(const Package&)>) (const std::unique_ptr<Package>&)’`
+            - `note:   no known conversion for argument 1 from ‘const std::unique_ptr<Package>’ to ‘const Package&’`
+            - Possible solution would be to define an implicit?/(explicit? casted to `Package&` with `static_cast?`) conversion constructor `Package::Package(const std::unique_ptr<Package> uniquePtr)` but that would only slow things down and make the code less readable and expressive. Let's keep it simple ;)
+
+    - `std::any_of` with comparator predicate
+
+        ```
+        // main.cpp
+
+        #include "PackageComparatorPredicate.h"
+        ```
+
+        - passing unique pointer to comparator predicate directly
+
+            ```
+            // main.cpp
+
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(packageWithInferredName));
+            ```
+
+            - comparator predicate with direct comparison
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == otherPackage);
+                    }
+                };
+
+                ```
+
+                For direct comparison of unique pointers is effective only function that overloads the `operator==` as public friend function with all `const` params (public friend `operator==` without const parameters and any of the public member function for `operator==` don't find anything):
+
+                ```
+                // Package.h
+
+                friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name == anotherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage->getName();
+                    }
+                }
+                ```
+
+            - comparator predicate with dereferenced comparison by `*`
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (*(this->package) == *otherPackage);
+                    }
+                };
+
+                ```
+
+                For comparison of dereferenced unique pointers use one of the belowmentioned functions to overloading `operator==`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, const Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)`
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package->getName() == otherPackage->getName());
+                    }
+                };
+
+                ```
+
+        - passing dereferenced unique pointer to comparator predicate
+
+            ```
+            // main.cpp
+
+            bool isPackageWithInferredNameFoundAsTest = std::any_of(
+                    installedPackages.begin(),
+                    installedPackages.end(),
+                    PackageComparatorPredicate(*packageWithInferredName));
+            ```
+
+            - comparator predicate with direct comparison - comparison of dereferenced member variable (instance with features to search by) with smart pointer
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return this->package == otherPackage;
+                    }
+                };
+                ```
+
+                The overloaded `operator==` needs to be implemented as `const` function with all `const` operands (parameters) 
+
+                ```
+                // Package.h
+              
+                friend bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                    return onePackage->name == anotherPackage.name;
+                }
+
+                bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+                    return this->name == otherPackage->name;
+                }
+                ```
+
+                Or overload the global `std::operator==` outside (e.g. under) the class definition:
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() == anotherPackage.getName();
+                    }
+                }
+                ```
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with dereferenced smart pointer
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package == *otherPackage);
+                    }
+                };
+                ```
+
+                The comparator predicate in this case uses the `operator==` with operand types `const Package` and `Package`. When `const` is added to the second parameter of the friend `operator==` overload as well (or the single parameter from member overload function), everything works as intended. Problems occured during compilation, when I ommitted the `const` qualifier for mentioned operands at mentioned position which produces an error `error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers`
+
+                ```
+                // Package.h
+
+                friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name == anotherPackage.name;
+                }
+
+                bool operator==(const Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+
+                bool operator==(Package& otherPackage) const {
+                    return this->name == otherPackage.name;
+                }
+                ```
+
+                Doesn't work with overloaded `std::operator==` as `inline bool operator==(const Package& onePackage, Package& anotherPackage)` - `error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘Package’)`
+
+            - comparator predicate with comparison of member variable of reference type (instance with features to search by) with smart pointer - both dereferenced to call an accessor function (`->` for unique pointer, `.` for reference) to delegating the comparison from the original reference type to the type returned by the accessor function. The returned type needs to have the `operator==` overloaded instead of the original type. For the concrete implementations of overloaded `operator==` for particular use cases see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const Package& package;
+
+                    explicit PackageComparatorPredicate(const Package& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package.getName() == otherPackage->getName());
+                    }
+                };
+                ```
+
+            - comparator predicate with dereferenced comparison by `->` - delegating comparison to the return type of the function we're sending the message to, so we need to overload `operator==` in the class that the type is defined in or that the type refers to. For the concrete implementations of overloaded `operator==` for particular types see mentioned examples in this section.
+
+                ```
+                // PackageComparatorPredicate.h
+
+                #pragma once
+
+                #include "Package.h"
+
+                struct PackageComparatorPredicate {
+                    const std::unique_ptr<Package>& package;
+
+                    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+                            package(packageToFind)
+                    {}
+
+                    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+                        return (this->package->getName() == otherPackage->getName());
+                    }
+                };
+                ```
+
+- `std::binary_search`
+    - `std::binary_search` with `std::set` inicialized without custom comparator as a second template parameter - using the default `std::less` and `operator<` for comparing and sorting elements of custom type
+
+    ```
+    // main.cpp
+
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    ```
+
+    - directly passing unique pointer to binary search
+
+        ```
+        // main.cpp
+
+        bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);
+        ```
+
+        - public friend `operator<` with all const args
+
+            Works even with `installedPackages` set initialized as `std::set<std::unique_ptr<Package>> installedPackages{};` with only default comparator (without custom comparator). Binary search works only on ordered datastructures. The order is attained by the overloaded `operator<` as a public friend function with all const params, which gets called at insertion to the `std::set` - `emplace()`/`push_back()`. That`s why the lookup actually finds a matching element of custom type in `std::set`
+
+            ```
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+            ```
+
+        - overloaded `std::operator<` - globally overloaded `operator<`
+
+            According to `Clang-Tidy` "Modification of 'std' namespace can result in undefined behavior", so going to test it out.
+
+            - overloaded `std::operator<` - globally overloaded `operator<` - with dereferenced comparison by `->` and an accessor function
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return onePackage->getName() < anotherPackage->getName();
+                    }
+                }
+                ```
+
+            - overloaded `std::operator<` - globally overloaded `operator<` - with dereferenced comparison by `*`
+
+                ```
+                // Package.h
+
+                namespace std {
+                    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                        return *onePackage < *anotherPackage;
+                    }
+                }
+                ```
+
+                Choose one of the functions for overloading `operator<` from below:
+
+                ```
+                // Package.h
+
+                bool operator<(const Package& package) const {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                    return this->getName() < package.getName();
+                //    return this->name < package.getName();
+                //    return Package::name < package.getName();
+                //    return this->name < package.name;
+                //    return Package::name < package.name;
+                }
+
+                bool operator<(const Package& package) {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                    return this->getName() < package.getName();
+                    return this->name < package.getName();
+                    return Package::name < package.getName();
+                    return this->name < package.name;
+                    return Package::name < package.name;
+                }
+
+                bool operator<(Package& package) const {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                //    return this->getName() < package.getName();
+                //    return this->name < package.getName();
+                //    return Package::name < package.getName();
+                    return this->name < package.name;
+                //    return Package::name < package.name;
+                }
+
+                bool operator<(Package& package) {
+                    // TODO maybe replace the 'getName()' function with only fields?
+
+                    assert(this->getName() == this->name);
+                    assert(this->getName() == Package::name);
+                    assert(this->name == Package::name);
+
+                //    return this->getName() < package.getName();
+                //    return this->name < package.getName();
+                //    return Package::name < package.getName();
+                //    return this->name < package.name;
+                    return Package::name < package.name;
+                }
+
+                friend bool operator<(Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+                friend bool operator<(const Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+                friend bool operator<(const Package& onePackage, Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+
+                friend bool operator<(Package& onePackage, const Package& anotherPackage) {
+                    return onePackage.name < anotherPackage.name;
+                }
+                ```
+
+        - public friend `operator<` with all const params of reference type to const `unique_ptr` with dereferenced comparison by `->` within the operator function **with** specialized `std::less` (**unnecessary** to specialize 'std::less' - the public friend `operator<` in mentioned format is enough to ensure ordering of elements in the `std::set`)
+
+            Standalone specialized `std:less` functor doesn't find an element of custom type for `std::binary_search`, even though the functor is specialized for the custom type the `std::set` holds.
+
+            ```
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+
+            <~snip~>
+
+            namespace std {
+                template<>
+                struct less<unique_ptr<Package>> {
+                    bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+                        return onePackage < anotherPackage;
+                    }
+                };
+            }
+            ```
+
+        - specializing `std::less` with dereferenced comparison - **COULDN'T MAKE IT WORK** with `operator<` in any version
+
+            ```
+            // Package.h
+
+            bool operator<(const Package& package) const {
+                // TODO maybe replace the 'getName()' function with only fields?
+
+                assert(this->getName() == this->name);
+                assert(this->getName() == Package::name);
+                assert(this->name == Package::name);
+
+                return this->getName() < package.getName();
+            //    return this->name < package.getName();
+            //    return Package::name < package.getName();
+            //    return this->name < package.name;
+            //    return Package::name < package.name;
+            }
+
+            bool operator<(const Package& package) {
+                // TODO maybe replace the 'getName()' function with only fields?
+
+                assert(this->getName() == this->name);
+                assert(this->getName() == Package::name);
+                assert(this->name == Package::name);
+
+                return this->getName() < package.getName();
+                return this->name < package.getName();
+                return Package::name < package.getName();
+                return this->name < package.name;
+                return Package::name < package.name;
+            }
+
+            bool operator<(Package& package) const {
+                // TODO maybe replace the 'getName()' function with only fields?
+
+                assert(this->getName() == this->name);
+                assert(this->getName() == Package::name);
+                assert(this->name == Package::name);
+
+            //    return this->getName() < package.getName();
+            //    return this->name < package.getName();
+            //    return Package::name < package.getName();
+                return this->name < package.name;
+            //    return Package::name < package.name;
+            }
+
+            bool operator<(Package& package) {
+                // TODO maybe replace the 'getName()' function with only fields?
+
+                assert(this->getName() == this->name);
+                assert(this->getName() == Package::name);
+                assert(this->name == Package::name);
+
+            //    return this->getName() < package.getName();
+            //    return this->name < package.getName();
+            //    return Package::name < package.getName();
+            //    return this->name < package.name;
+                return Package::name < package.name;
+            }
+
+            friend bool operator<(Package& onePackage, Package& anotherPackage) {
+                return onePackage.name < anotherPackage.name;
+            }
+
+            friend bool operator<(const Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name < anotherPackage.name;
+            }
+
+            friend bool operator<(const Package& onePackage, Package& anotherPackage) {
+                return onePackage.name < anotherPackage.name;
+            }
+
+            friend bool operator<(Package& onePackage, const Package& anotherPackage) {
+                return onePackage.name < anotherPackage.name;
+            }
+
+            <~snip~>
+
+            namespace std {
+                template<>
+                struct less<unique_ptr<Package>> {
+                    bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+                        return *onePackage < *anotherPackage;
+                    }
+                };
+            }
+            ```
+            
+    - directly passing unique pointer to binary search with custom comparator
+
+        ```
+        // main.cpp
+
+        #include "PackageComparator.h"
+
+        <~snip~>
+
+        bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+        ```
+
+        - direct comparison of unique pointers in comparator
+
+            ```
+            #pragma once
+
+            #include "Package.h"
+
+            struct PackageComparator {
+                bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+                    // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+                    return onePackage < anotherPackage;
+                }
+            };
+            ```
+
+            ```
+            // Package.h
+
+            friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+                return onePackage->name < anotherPackage->name;
+            }
+            ```
+
+        - **comparison of dereferenced unique pointers in comparator by `*` and `->` with an accessor method didn't work with any version of overloaded `operator<`. Maybe because of the mystical `std::binary_search` `ForwardIterator` limitation?** See examples above.
+
+    - passing dereferenced unique pointer to binary search - **COULDN'T MAKE IT WORK** with `operator<` in both required versions
+
+        ```
+        // main.cpp
+
+        bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+        ```
+
+        ```
+        // Package.h
+
+        // for 'stl_algo.h'
+        friend bool operator<(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+            return onePackage.name < anotherPackage->name;
+        }
+
+        // for 'predefined_ops.h'
+        friend bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+            return onePackage->name < anotherPackage.name;
+        }
+        ```
+
+    - passing dereferenced unique pointer to binary search with custom comparator - **COULDN'T MAKE IT WORK** for any version of comparison in comparator with any version of overloaded `operator<`
+
+        ```
+        // main.cpp
+
+        #include "PackageComparator.h"
+
+        <~snip~>
+
+        bool packageWithInferredNameIsMissingAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator())
+        ```
+
+        ```
+        // PackageComparator.h
+
+        #pragma once
+
+        #include "Package.h"
+
+        //struct PackageComparator {
+        //    bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+        //        // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+        ////        return onePackage < anotherPackage;
+        //
+        //        // DEREFERENCED COMPARISON without accessor method - works with
+        //        //  - 'bool operator<(const Package& package) const'
+        //        //  - 'bool operator<(Package& package)'
+        //        //  - 'friend bool operator<(Package& onePackage, Package& anotherPackage)'
+        ////        return *onePackage < *anotherPackage;
+        //
+        //        // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'operator<' functions in this class ('Package') element to compared field within the 'Package' element
+        //        //  which has 'operator<' implemented, leaving the 'Package' class intact. works without overloading 'std::less' in 'Package' class
+        //        //  Works out of the box for 'std::string'.
+        //        //  For custom type at least public friend 'operator<' with all const params needs to be implemented
+        //        return onePackage->getName() < anotherPackage->getName();
+        //    }
+        //};
+
+        struct PackageComparator {
+            bool operator()(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+                // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+                return onePackage < anotherPackage;
+
+                // DEREFERENCED COMPARISON without accessor method - works with
+                //  - 'bool operator<(const Package& package) const'
+                //  - 'bool operator<(Package& package)'
+                //  - 'friend bool operator<(Package& onePackage, Package& anotherPackage)'
+        //        return onePackage < *anotherPackage;
+
+                // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'operator<' functions in this class ('Package') element to compared field within the 'Package' element
+                //  which has 'operator<' implemented, leaving the 'Package' class intact. works without overloading 'std::less' in 'Package' class
+                //  Works out of the box for 'std::string'.
+                //  For custom type at least public friend 'operator<' with all const params needs to be implemented
+        //        return onePackage.getName() < anotherPackage->getName();
+            }
+
+            bool operator()(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) const {
+                // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+                return onePackage < anotherPackage;
+
+                // DEREFERENCED COMPARISON without accessor method - works with
+                //  - 'bool operator<(const Package& package) const'
+                //  - 'bool operator<(Package& package)'
+                //  - 'friend bool operator<(Package& onePackage, Package& anotherPackage)'
+        //        return *onePackage < anotherPackage;
+
+                // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'operator<' functions in this class ('Package') element to compared field within the 'Package' element
+                //  which has 'operator<' implemented, leaving the 'Package' class intact. works without overloading 'std::less' in 'Package' class
+                //  Works out of the box for 'std::string'.
+                //  For custom type at least public friend 'operator<' with all const params needs to be implemented
+        //        return onePackage->getName() < anotherPackage.getName();
+            }
+        };
+
+        ```
+
+        ```
+        // Package.h
+
+        // FOR DIRECT COMPARISON
+            // for 'stl_algo.h'
+        //    friend bool operator<(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        //        return onePackage.name < anotherPackage->name;
+        //    }
+        //
+        //    // for 'predefined_ops.h'
+        //    friend bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+        //        return onePackage->name < anotherPackage.name;
+        //    }
+
+        // FOR DEREFERENCED COMPARISON without accessor method
+        //    bool operator<(const Package& package) const {
+        //        // TODO maybe replace the 'getName()' function with only fields?
+        //
+        //        assert(this->getName() == this->name);
+        //        assert(this->getName() == Package::name);
+        //        assert(this->name == Package::name);
+        //
+        //        return this->getName() < package.getName();
+        ////        return this->name < package.getName();
+        ////        return Package::name < package.getName();
+        ////        return this->name < package.name;
+        ////        return Package::name < package.name;
+        //    }
+
+        //    bool operator<(const Package& package) {
+        //        // TODO maybe replace the 'getName()' function with only fields?
+        //
+        //        assert(this->getName() == this->name);
+        //        assert(this->getName() == Package::name);
+        //        assert(this->name == Package::name);
+        //
+        ////        return this->getName() < package.getName();
+        //        return this->name < package.getName();
+        ////        return Package::name < package.getName();
+        ////        return this->name < package.name;
+        ////        return Package::name < package.name;
+        //    }
+
+        //    bool operator<(Package& package) const {
+        //        // TODO maybe replace the 'getName()' function with only fields?
+        //
+        //        assert(this->getName() == this->name);
+        //        assert(this->getName() == Package::name);
+        //        assert(this->name == Package::name);
+        //
+        ////        return this->getName() < package.getName();
+        ////        return this->name < package.getName();
+        ////        return Package::name < package.getName();
+        //        return this->name < package.name;
+        ////        return Package::name < package.name;
+        //    }
+
+        //    bool operator<(Package& package) {
+        //        // TODO maybe replace the 'getName()' function with only fields?
+        //
+        //        assert(this->getName() == this->name);
+        //        assert(this->getName() == Package::name);
+        //        assert(this->name == Package::name);
+        //
+        ////        return this->getName() < package.getName();
+        ////        return this->name < package.getName();
+        ////        return Package::name < package.getName();
+        ////        return this->name < package.name;
+        //        return Package::name < package.name;
+        //    }
+
+        //    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+        //        return onePackage.name < anotherPackage.name;
+        //    }
+
+        //    friend bool operator<(const Package& onePackage, const Package& anotherPackage) {
+        //        return onePackage.name < anotherPackage.name;
+        //    }
+
+        //    friend bool operator<(const Package& onePackage, Package& anotherPackage) {
+        //        return onePackage.name < anotherPackage.name;
+        //    }
+
+        //    friend bool operator<(Package& onePackage, const Package& anotherPackage) {
+        //        return onePackage.name < anotherPackage.name;
+        //    }
+        ```
+
+    - `std::binary_search` with `std::set` inicialized with custom comparator as a second template parameter - overloading the default `std::less` and `operator<` for comparing and sorting elements of custom type
+
+        ```
+        std::set<std::unique_ptr<Package>> installedPackages{}; // WORKS - with at least overloaded public friend 'operator<' with all const params of reference type to constant unique_ptr to Package
+
+        //std::set<std::unique_ptr<Package, PackageComparator>> installedPackages; // doesn't work - using PackageComparator as a second template argument for 'unique_ptr' as default deleter instead of using it as a second template argument for 'set' as a comparator
+        //std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+
+        //auto packageComparator = std::make_unique<PackageComparator>();
+        //std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
+
+        //auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        //    return onePackage < anotherPackage;
+        //};
+        //std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda); // WORKS
+
+        //std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages(comparePackages); // WORKS
+        //std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer
+        //std::set<std::unique_ptr<Package>, decltype(&comparePackages)> installedPackages(&comparePackages); // WORKS
+        //std::set<std::unique_ptr<Package>, decltype(&comparePackages)> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer
+        ```
+
+        **It doesn't matter which one of the initializations for `std::set` I use, the `std::binary_search` doesn't find anything.**
+
+        **`std::binary_search` for `std::set` works only when the class, that the type of elements in `std::set` are defined in, has overloaded `operator<` as a public friend function with all const params of the same type that the elements the `std::set` holds**  
+        **or with a globally overloaded `std::operator<` with the same mentioned parameter list**
+
+**Entire code excerpts**
+
+```
+main.cpp ('std::set' initialization with optional comparator initialization excerpts + finding a package)
+
+<~snip~>
+
+    std::set<std::unique_ptr<Package>> installedPackages{};
+    
+    std::set<std::unique_ptr<Package, PackageComparator>> installedPackages; // doesn't work - using PackageComparator as a second template argument for 'unique_ptr' as default deleter instead of using it as a second template argument for 'set' as a comparator
+    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages; // WORKS - thanks https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+
+    auto packageComparator = std::make_unique<PackageComparator>();
+    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages(*packageComparator); // WORKS
+
+    auto packageComparatorLambda = [](const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage < anotherPackage;
+    };
+    std::set<std::unique_ptr<Package>, decltype(packageComparatorLambda)> installedPackages(packageComparatorLambda); // WORKS
+
+    std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages(comparePackages); // WORKS
+    std::set<std::unique_ptr<Package>, decltype(comparePackages)*> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer
+    std::set<std::unique_ptr<Package>, decltype(&comparePackages)> installedPackages(&comparePackages); // WORKS
+    std::set<std::unique_ptr<Package>, decltype(&comparePackages)> installedPackages; // Doesn't work - fails at runtime - Works only for C++20 and newer
+
+    auto packageComparator = std::make_unique<PackageComparator>();
+    std::set<std::unique_ptr<Package>> installedPackages(*packageComparator); // still doesn't work
+
+<~snip~>
+
+            std::string inferredPackageNameAsText = packageNameAndVersion;
+            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText));
+
+            while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
+                // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
+                // 'set::find'
+                auto matchingPackage = installedPackages.find(packageWithInferredName);
+
+                // 'std::find' (direct and dereferenced comparison in 'operator==' in class for custom element type)
+//                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+//                auto matchingPackage = std::find(installedPackages.begin(), installedPackages.end(), *packageWithInferredName); // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage)' in 'Package.h'
+
+                // 'std::find_if' with lambda (passing directly) - (direct and dereferenced comparison in lambda)
+//                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+//                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+//                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return *packageWithInferredName == *currentInstalledPackage; // works with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' and 'operator==' const member functions in 'Package.h'
+////                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                        }
+//                );
+
+                // Couldn't make it work
+//                auto matchingPackage = std::find_if(installedPackages.begin(), installedPackages.end(),
+//                        [&packageWithInferredName](const Package& currentInstalledPackage) {
+//                            return packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+////                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                        }
+//                );
+
+                // 'std::find_if' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
+//                auto matchingPackage = std::find_if(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::find_if' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
+//                auto matchingPackage = std::find_if(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(*packageWithInferredName));
+
+                // 'std::any_of' with lambda (direct and dereferenced comparison in lambda)
+//                bool isPackageWithInferredNameFoundAsTest = std::any_of(installedPackages.begin(), installedPackages.end(),
+//                                                                        [&packageWithInferredName](const std::unique_ptr<Package>& currentInstalledPackage) {
+////                            return packageWithInferredName == currentInstalledPackage; // works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)' in 'Package.h'
+////                            return *packageWithInferredName == *currentInstalledPackage; // works only with 'friend bool operator==(const Package& onePackage, const Package& anotherPackage)' in 'Package.h'
+//                            return packageWithInferredName->getName() == currentInstalledPackage->getName();
+//                        }
+//                );
+
+                // 'std::any_of' with comparator predicate (directly pass to comparator predicate - direct and dereferenced comparison in comparator predicate)
+//                bool isPackageWithInferredNameFoundAsTest = std::any_of(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(packageWithInferredName));
+
+                // 'std::any_of' with comparator predicate (pass dereferenced unique ptr to comparator predicate - direct and dereferenced comparison in comparator predicate)
+//                bool isPackageWithInferredNameFoundAsTest = std::any_of(
+//                        installedPackages.begin(),
+//                        installedPackages.end(),
+//                        PackageComparatorPredicate(*packageWithInferredName));
+
+                // 'std::binary_search'
+                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName);  // WORKS with overloaded public friend 'operator<' with all const args and even with 'installedPackages' set initialized as 'std::set<std::unique_ptr<Package>> installedPackages{};' with only default comparator. Binary search works only on ordered datastructures. The order is attained by the overloaded 'operator<' as a public friend function with all const params, which gets called at insertion to the 'std::set' - `emplace()`/`push_back()`. That's why the lookup actually finds a matching element of custom type in 'std::set'
+//                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), packageWithInferredName, PackageComparator());
+
+//                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName);
+//                bool isPackageWithInferredNameFoundAsTest = std::binary_search(installedPackages.begin(), installedPackages.end(), *packageWithInferredName, PackageComparator());
+
+                // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
+                //  trying to show the values for STL containers and smartpointer instances.
+                //  Instead it shows an error message saying "Cannot instantiate printer for default visualizer"
+//                std::cout << *packageWithInferredName << "\n";
+
+                // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
+                // comment out for 'std::any_of' and 'std::binary_search'
+                bool packageWithInferredNameIsMissing = matchingPackage == installedPackages.end();
+
+                bool packageWithInferredNameIsMissingAsTest = !isPackageWithInferredNameFoundAsTest;
+                assert(packageWithInferredNameIsMissing == packageWithInferredNameIsMissingAsTest);
+
+<~snip~>
+```
+
+```
+PackageComparator.h
+
+#pragma once
+
+#include "Package.h"
+
+struct PackageComparator {
+    bool operator()(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+        // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+        return onePackage < anotherPackage;
+
+        // DEREFERENCED COMPARISON without accessor method - works with
+        //  - 'bool operator<(const Package& package) const'
+        //  - 'bool operator<(Package& package)'
+        //  - 'friend bool operator<(Package& onePackage, Package& anotherPackage)'
+//        return *onePackage < *anotherPackage;
+
+        // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'operator<' functions in this class ('Package') element to compared field within the 'Package' element
+        //  which has 'operator<' implemented, leaving the 'Package' class intact. works without overloading 'std::less' in 'Package' class
+        //  Works out of the box for 'std::string'.
+        //  For custom type at least public friend 'operator<' with all const params needs to be implemented
+//        return onePackage->getName() < anotherPackage->getName();
+    }
+};
+
+//struct PackageComparator {
+//    bool operator()(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) const {
+//        // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+////        return onePackage < anotherPackage;
+//
+//        // DEREFERENCED COMPARISON without accessor method - works with
+//        //  - 'bool operator<(const Package& package) const'
+//        //  - 'bool operator<(Package& package)'
+//        //  - 'friend bool operator<(Package& onePackage, Package& anotherPackage)'
+////        return onePackage < *anotherPackage;
+//
+//        // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'operator<' functions in this class ('Package') element to compared field within the 'Package' element
+//        //  which has 'operator<' implemented, leaving the 'Package' class intact. works without overloading 'std::less' in 'Package' class
+//        //  Works out of the box for 'std::string'.
+//        //  For custom type at least public friend 'operator<' with all const params needs to be implemented
+//        return onePackage.getName() < anotherPackage->getName();
+//    }
+//
+//    bool operator()(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) const {
+//        // DIRECT COMPARISON - works only with 'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+////        return onePackage < anotherPackage;
+//
+//        // DEREFERENCED COMPARISON without accessor method - works with
+//        //  - 'bool operator<(const Package& package) const'
+//        //  - 'bool operator<(Package& package)'
+//        //  - 'friend bool operator<(Package& onePackage, Package& anotherPackage)'
+////        return *onePackage < anotherPackage;
+//
+//        // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'operator<' functions in this class ('Package') element to compared field within the 'Package' element
+//        //  which has 'operator<' implemented, leaving the 'Package' class intact. works without overloading 'std::less' in 'Package' class
+//        //  Works out of the box for 'std::string'.
+//        //  For custom type at least public friend 'operator<' with all const params needs to be implemented
+//        return onePackage->getName() < anotherPackage.getName();
+//    }
+//};
+
+
+```
+
+```
+Package.h ('operator<' overloads, 'std::less' specializations and 'operator==' overloads)
+
+<~snip~>
+
+// MEMBER OPERATORS
+
+// FOR DIRECT (SMART) POINTER COMPARISON FOR 'SET::FIND'
+//  Functions in this section work for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+//  or with custom comparator without 'std::less' overload
+//  except the
+//  'friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+//  which works with and without 'std::less' overload
+
+    // WORKS for direct comparison with and without overloading 'std::less' funcion
+//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name < anotherPackage->name;
+//    }
+
+    // Doesn't work - compiles but fails to find the searched for element at runtime when used as a standalone function
+//    friend bool operator<(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name < anotherPackage->name;
+//    }
+
+    // Doesn't work - compiles but fails to find the searched for element at runtime
+//    bool operator<(const std::unique_ptr<Package>& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+//        return this->getName() < package->getName();
+//        //        return this->name < package->getName();
+//        //        return Package::name < package->getName();
+//        //        return this->name < package->name;
+//        //        return Package::name < package->name;
+//    }
+
+// FOR DIRECT (SMART) POINTER COMPARISON FOR 'STD::FIND', 'STD::FIND_IF' (lambda or predicate comparator), 'STD::ANY_OF' (lambda or predicate comparator)
+
+//   WORKS for direct comparison in 'std::find', 'std::find_if', 'std::any_of'
+//    friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name == anotherPackage->name;
+//    }
+
+    // Doesn't work
+//    friend bool operator==(std::unique_ptr<Package>& onePackage, std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name == anotherPackage->name;
+//    }
+
+    // Doesn't work
+//    bool operator==(const std::unique_ptr<Package>& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//        return this->getName() == package->getName();
+////        return this->name == package.getName();
+////        return this->name < package.name;
+////        return Package::name == package.getName();
+////        return Package::name == package.name;
+//    }
+
+// ------------------------------------------------------------------------------------------------
+// ================================================================================================
+// ------------------------------------------------------------------------------------------------
+
+// FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'SET::FIND'
+//  Functions in this section work for dereferenced comparison together with overloaded 'std::less' funcion for cutom type
+//  or with custom comparator without 'std::less' overload,
+//  but I couldn't make the element lookup work for 'std::binary_search'
+
+//    bool operator<(const Package& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+//        return this->getName() < package.getName();
+////        return this->name < package.getName();
+////        return Package::name < package.getName();
+////        return this->name < package.name;
+////        return Package::name < package.name;
+//    }
+
+//    bool operator<(const Package& package) {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+////        return this->getName() < package.getName();
+//        return this->name < package.getName();
+////        return Package::name < package.getName();
+////        return this->name < package.name;
+////        return Package::name < package.name;
+//    }
+
+//    bool operator<(Package& package) const {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+////        return this->getName() < package.getName();
+////        return this->name < package.getName();
+////        return Package::name < package.getName();
+//        return this->name < package.name;
+////        return Package::name < package.name;
+//    }
+
+//    bool operator<(Package& package) {
+//        // TODO maybe replace the 'getName()' function with only fields?
+//
+//        assert(this->getName() == this->name);
+//        assert(this->getName() == Package::name);
+//        assert(this->name == Package::name);
+//
+////        return this->getName() < package.getName();
+////        return this->name < package.getName();
+////        return Package::name < package.getName();
+////        return this->name < package.name;
+//        return Package::name < package.name;
+//    }
+
+//    friend bool operator<(Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+//    friend bool operator<(const Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+//    friend bool operator<(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+//    friend bool operator<(Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.name < anotherPackage.name;
+//    }
+
+// FOR 'STD::BINARY_SEARCH' WITH PASSED DEREFERENCED SMART POINTER - COULDN'T MAKE IT WORK
+
+    // for 'stl_algo.h'
+//    friend bool operator<(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage.name < anotherPackage->name;
+//    }
+//
+//    // for 'predefined_ops.h'
+//    friend bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->name < anotherPackage.name;
+//    }
+
+// FOR DEREFERENCED (SMART) POINTER COMPARISON FOR 'STD::FIND'
+
+    // WORKS only for 'std::find'
+//    friend bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+    // Doesn't work - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+//    friend bool operator==(std::unique_ptr<Package>& onePackage, Package& anotherPackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+    // Doesn't work - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+//    bool operator==(const Package& otherPackage) const {
+//        return this->name == otherPackage.name;
+//    }
+
+    // Doesn't work - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+//    bool operator==(Package& otherPackage) {
+//        return this->name == otherPackage.name;
+//    }
+
+// FOR DEREFERENCED (SMART) POINTER COMPARISON FOR LAMBDA COMPARATOR OR PREDICATE COMPARATOR FOR 'STD::FIND_IF', 'STD::ANY_OF' WITH SEARCHED ELEMENT PASSED DIRECTLY
+
+    // WORKS
+    // ... but doesn't work for 'std::find'  - error: no match for ‘operator==’ (operand types are ‘const std::unique_ptr<Package>’ and ‘const Package’)
+//    friend bool operator==(const Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.name == anotherPackage.name;
+//    }
+
+    // WORKS - the exact candidate function for comparison with comparator predicate with dereferenced comparison with '*'
+//    friend bool operator==(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name == anotherPackage.name;
+//    }
+
+    // Doesn't work - 'error: binding reference of type ‘Package&’ to ‘const Package’ discards qualifiers'
+//    friend bool operator==(Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.name == anotherPackage.name;
+//    }
+
+    // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
+    //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
+//    friend bool operator==(Package& onePackage, Package& anotherPackage) {
+//        return onePackage.name == anotherPackage.name;
+//    }
+
+    // WORKS
+//    bool operator==(const Package& otherPackage) const {
+//        return this->name == otherPackage.name;
+//    }
+
+//    // Doesn't work - 'error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]'
+//    bool operator==(const Package& otherPackage) {
+//        return this->name == otherPackage.name;
+//    }
+
+    // WORKS
+//    bool operator==(Package& otherPackage) const {
+//        return this->name == otherPackage.name;
+//    }
+
+    // Doesn't work for passing searched element to the comparator predicate as dereferenced smart pointer and comparing them directly
+    //  - error: passing ‘const Package’ as ‘this’ argument discards qualifiers [-fpermissive]
+//    bool operator==(Package& otherPackage) {
+//        return this->name == otherPackage.name;
+//    }
+
+// FOR DEREFERENCED (SMART) POINTER COMPARISON FOR LAMBDA COMPARATOR OR PREDICATE COMPARATOR FOR 'STD::FIND_IF', 'STD::ANY_OF' WITH SEARCHED ELEMENT PASSED AS ALREADY DEREFERENCED
+
+    // WORKS for comparing dereferenced smart pointer (i.e. the instance) with directly passed smart pointer in the comparator predicate
+//    friend bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+    // Doesn't work
+    //  - error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘const std::unique_ptr<Package>’) - missing 'const' for all parameters of function
+    //  - PackageComparatorPredicate.h:51:33: error: binding reference of type ‘std::unique_ptr<Package>&’ to ‘const std::unique_ptr<Package>’ discards qualifiers
+//    friend bool operator==(Package& anotherPackage, std::unique_ptr<Package>& onePackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+    // Doesn't work
+    //  - error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘const std::unique_ptr<Package>’) - missing 'const' for all parameters of function
+//    friend bool operator==(const Package& anotherPackage, std::unique_ptr<Package>& onePackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+    // Doesn't work
+    //  - error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘const std::unique_ptr<Package>’) - missing 'const' for all parameters of function
+//    friend bool operator==(Package& anotherPackage, const std::unique_ptr<Package>& onePackage) {
+//        return onePackage->name == anotherPackage.name;
+//    }
+
+    // WORKS for comparing dereferenced smart pointer (i.e. the instance) with directly passed smart pointer in the comparator predicate
+//    bool operator==(const std::unique_ptr<Package>& otherPackage) const {
+//        return this->name == otherPackage->name;
+//    }
+
+    // Doesn't work - ‘const Package’ is not derived from ‘const std::pair<_T1, _T2>’
+    //  the function needs to be 'const'
+//    bool operator==(const std::unique_ptr<Package>& otherPackage) {
+//        return this->name == otherPackage->name;
+//    }
+
+    // Doesn't work - ‘const Package’ is not derived from ‘const std::pair<_T1, _T2>’
+    //  the operand needs to be 'const'
+//    bool operator==(std::unique_ptr<Package>& otherPackage) const {
+//        return this->name == otherPackage->name;
+//    }
+
+    // Doesn't work - missing 'const' for parameter
+    //  - error: no match for ‘operator==’ (operand types are ‘const Package’ and ‘const std::unique_ptr<Package>’)
+    //  - PackageComparatorPredicate.h:51:33: error: binding reference of type ‘std::unique_ptr<Package>&’ to ‘const std::unique_ptr<Package>’ discards qualifiers
+//    bool operator==(std::unique_ptr<Package>& otherPackage) {
+//        return this->name == otherPackage->name;
+//    }
+
+<~snip~>
+
+// NON-MEMBER OPERATORS/COMPARATORS - OVERLOADED/SPECIALIZED FUNCTIONS/FUNCTORS FROM 'STD'
+
+// DIRECT COMPARISON WITH SPECIALIZED 'STD::LESS' FUNCTOR FOR 'SET::FIND'
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+//namespace std {
+//    template<>
+//    struct less<unique_ptr<Package>> {
+//        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+//            return onePackage < anotherPackage;
+//        }
+//    };
+//}
+
+// DEREFERENCED COMPARISON WITH SPECIALIZED 'STD::LESS' FUNCTOR FOR 'SET::FIND'
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+//namespace std {
+//    template<>
+//    struct less<unique_ptr<Package>> {
+//        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+//            return onePackage->getName() < anotherPackage->getName();
+//        }
+//    };
+//}
+
+// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+//namespace std {
+//    template<>
+//    struct less<unique_ptr<Package>> {
+//        bool operator() (const unique_ptr<Package>& onePackage, const unique_ptr<Package>& anotherPackage) const {
+//            return *onePackage < *anotherPackage;
+//        }
+//    };
+//}
+
+// 'STD::FIND', 'STD::FIND_IF' - DIRECTLY PASSING AN UNIQUE POINTER
+
+//namespace std {
+//    inline bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->getName() == anotherPackage->getName();
+//    }
+//}
+
+// 'STD::FIND' - PASSING A DEREFERENCED UNIQUE POINTER - DOESN'T WORK FOR 'STD::FIND_IF' with dereferenced unique ptr comparison
+
+//namespace std {
+//    inline bool operator==(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'STD::FIND_IF' - DIRECTLY PASSING A UNIQUE POINTER - DOESN'T WORK FOR COMPARATOR PREDICATE WITH DEREFERENCED COMPARISON
+//   error: no match for ‘operator==’ (operand types are ‘Package’ and ‘Package’)
+
+//namespace std {
+//    inline bool operator==(const Package& onePackage, const Package& anotherPackage) {
+//        return onePackage.getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER - DIRECT COMPARISON
+
+//namespace std {
+//    inline bool operator==(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage->getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'STD::FIND_IF' - PASSING A DEREFERENCED UNIQUE POINTER - DEREFERENCED COMPARISON WITH '*' - DOESN'T WORK
+
+//namespace std {
+//    inline bool operator==(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'SET::FIND', 'STD::BINARY_SEARCH' - DIRECTLY PASSING AN UNIQUE POINTER
+
+namespace std {
+    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+        return onePackage->getName() < anotherPackage->getName();
+    }
+}
+
+//namespace std {
+//    inline bool operator<(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return *onePackage < *anotherPackage;
+//    }
+//}
+
+// 'SET::FIND' - DIRECTLY PASSING AN UNIQUE POINTER - DEREFERENCED COMPARISON IN COMPARATOR - COULDN'T MAKE IT WORK
+
+//namespace std {
+//    inline bool operator<(const Package& onePackage, Package& anotherPackage) {
+//        return onePackage.getName() == anotherPackage.getName();
+//    }
+//}
+
+// 'STD::BINARY_SEARCH' - PASSING A DEREFERENCED UNIQUE POINTER
+
+//namespace std {
+//    inline bool operator<(const Package& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//        return onePackage.getName() < anotherPackage->getName();
+//    }
+//}
+//
+//namespace std {
+//    inline bool operator<(const std::unique_ptr<Package>& onePackage, const Package& anotherPackage) {
+//        return onePackage->getName() < anotherPackage.getName();
+//    }
+//}
+
+// LAMBDA COMPARATOR FOR SECOND TEMPLATE PARAMETER
+
+//inline bool comparePackages(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage) {
+//    return onePackage < anotherPackage;
+//}
+```
+
+```
+PackageComparatorPredicate.h
+
+#pragma once
+
+#include "Package.h"
+
+// using Predicate instead (reusable; no modification of the compared class)
+
+// FOR PASSING SMART POINTER TO COMPARATOR PREDICATE DIRECTLY
+
+struct PackageComparatorPredicate {
+    const std::unique_ptr<Package>& package;
+
+    explicit PackageComparatorPredicate(const std::unique_ptr<Package>& packageToFind) :
+            package(packageToFind)
+    {}
+
+    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+        // DIRECT COMPARISON - works only with 'friend bool operator==(const std::unique_ptr<Package>& onePackage, const std::unique_ptr<Package>& anotherPackage)'
+        return (this->package == otherPackage);
+
+        // DEREFERENCED COMPARISON without accessor method - works with
+        //  - 'friend bool operator==(Package& onePackage, Package& anotherPackage)' (with/without const for parameters)
+        //  - and member function 'bool operator==(Package& otherPackage)' (with/without const for function/parameters)
+//        return (*(this->package) == *otherPackage);
+
+        // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'Package' element to compared field within the 'Package' element
+//        return (this->package->getName() == otherPackage->getName());
+    }
+};
+
+// FOR PASSING DEREFERENCED SMART POINTER TO COMPARATOR PREDICATE
+
+//struct PackageComparatorPredicate {
+//    const Package& package;
+//
+//    explicit PackageComparatorPredicate(const Package& packageToFind) :
+//            package(packageToFind)
+//    {}
+//
+//    bool operator()(const std::unique_ptr<Package>& otherPackage) const {
+//        // COMPARISON OF SEARCHED DEREFERENCED MEMBER VARIABLE WITH SMART POINTER
+//        //  - works with 'friend bool operator==(Package& onePackage, std::unique_ptr<Package>& anotherPackage)'
+////        return this->package == otherPackage;
+//
+//        // COMPARISON OF MEMBER VARIABLE REFERENCE WITH DEREFERENCED SMART POINTER
+//        //  - 'friend bool operator==(Package& onePackage, Package& anotherPackage)' (with/without const for parameters)
+//        //  - and member function 'bool operator==(Package& otherPackage)' (with/without const for function/parameters)
+////        return (this->package == *otherPackage);
+//
+//        // DEREFERENCED COMPARISON with accessor method - delegating comparison from 'Package' element to compared field within the 'Package' element
+//        return (this->package.getName() == otherPackage->getName());
+//    }
+//};
+```
+
+Sources for finding an element of custom type in `std::set`
+
+- https://duckduckgo.com/?q=c%2B%2B+set+smart+pointer+find&t=ffab&ia=web&iax=qa
+- https://stackoverflow.com/questions/25878437/c-find-in-set-of-pointers
+    - `set::find` with heterogenous lookup with `std::less`
+    - `set::find` with `const_cast` to find a `const` pointer in a `std::set` of non-const elements of pointer type
+- https://duckduckgo.com/?t=ffab&q=std+set+custom+comparator&ia=web&iax=qa
+- https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
+    - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/46128321#46128321 - **Using `set::find` with provided comparator as a second template parameter at `std::set` initialization to enable finding an element of custom type in `std::set`**
+        - Lambda comparator C++20 solution
+
+            ```
+            auto cmp = [](int a, int b) { return ... };
+            std::set<int, decltype(cmp)> s;
+            ```
+
+        - Lambda comparator C++11 solution
+
+            ```
+            auto cmp = [](int a, int b) { return ... };
+            std::set<int, decltype(cmp)> s(cmp);
+            ```
+
+        - Non-member Function comparator
+
+            ```
+            bool cmp(int a, int b) {
+                return ...;
+            }
+            ```
+
+            and use it at `std::set` initialization either as
+
+            ```
+            std::set<int, decltype(cmp)*> s(cmp);
+            ```
+
+            or as
+
+            ```
+            std::set<int, decltype(&cmp)> s(&cmp);
+            ```
+
+        - Comparator class
+
+            ```
+            struct cmp {
+                bool operator() (int a, int b) const {
+                    return ...
+                }
+            };
+
+            std::set<int, cmp> s;
+            ```
+
+        - Non-member Function comparator wrapped in `std::integral_constant` - _https://en.cppreference.com/w/cpp/types/integral_constant_
+
+            Define comparator function
+
+            ```
+            bool cmp(int a, int b) {
+                return ...;
+            }
+            ```
+
+            Wrap the function into `std::integral_constant`
+
+            ```
+            #include <type_traits>
+            using Cmp = std::integral_constant<decltype(&cmp), &cmp>;
+            ```
+
+            Use the wrapped comparator function at `std::set` initialization
+
+            ```
+            std::set<int, Cmp> set;
+            ```
+
+- https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/56457701#56457701 - **Using `set::find` with provided comparator as overloaded `operator<` or specialized `std::less` - both in various forms - to enable finding an element of custom type in `std::set`**
+    - specializing `std::less` functor as comparator (with optional overload of `operator<`) for ascending order, i. e. `a-z` and `A-Z`
+    - overloading `operator<` as a public `friend`/member/`std` function
+    - specializing `std::greater` functor as comparator (with optional overload of `operator<`) for descending order, i. e. `Z-A` and `z-a`
+    - overloading the _spaceship_ operator `operator<=>` (C++20>)
+- https://stackoverflow.com/questions/11185223/stdset-select-less-or-greater-comparator-at-runtime#11185365
+
+- https://stackoverflow.com/questions/23377400/creating-a-c-stl-set-containing-custom-objects
+    - use `using namespace` i. e. `using` directive only in `.cpp` files
+- https://duckduckgo.com/?t=ffab&q=using+directive+vs+declaration&ia=web
+- https://www.programming4beginners.com/tutorial/chapter13/using-Directive-and-using-Declaration
+
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+custom+objects+operator+comparator&ia=web
+- https://www.reddit.com/r/cpp_questions/comments/p66t83/stdset_of_pointers_with_custom_comparator_and/
+- https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
+- https://www.reddit.com/r/cpp/comments/5yljrp/functors_are_not_dead_the_double_functor_trick/
+- https://usaco.guide/silver/custom-cpp-stl?lang=cpp - C++ Sets with Custom Comparators
+- http://neutrofoton.github.io/blog/2016/12/30/c-plus-plus-set-with-custom-comparator/ - C++ Set With Custom Comparator
+- https://thispointer.com/stdset-tutorial-part-1-set-usage-details-with-default-sorting-criteria/
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+doesn%27t+find&ia=web
+- https://www.cplusplus.com/reference/set/set/find/
+- https://www.cplusplus.com/reference/set/set/
+- https://www.cplusplus.com/reference/set/set/set/
+- https://stackoverflow.com/questions/14288825/setfind-doesnt-find
+- https://stackoverflow.com/questions/14288825/setfind-doesnt-find/14288925#14288925
+    - **strict weak ordering**
+        - For all x: x < x is never true, everything should be equal to itself
+        - If x < y then y < x cannot be true
+        - If x < y and y < z then x < z, the ordering should be transitive
+        - If x == y and y == z then x == z, equality should be transitive
+    - **`std::tie` for interval comparisons**
+- https://duckduckgo.com/?t=ffab&q=strict+weak+ordering+c%2B%2B&ia=web
+- https://stackoverflow.com/questions/1293231/stl-ordering-strict-weak-ordering
+- https://stackoverflow.com/questions/1293231/stl-ordering-strict-weak-ordering/35773903#35773903
+    - **The whole point of limiting the [STL] library to a less-than operator [`operator<`] is that all of the logical operators can be [derived from this one mentioned operator - `operator<` in order to conform to the strict weak ordering]:**
+        - `<(a, b): (a < b)`
+        - `<=(a, b): !(b < a)`
+        - `==(a, b): !(a < b) && !(b < a)`
+        - `!=(a, b): (a < b) || (b < a)`
+        - `>(a, b): (b < a)`
+        - `>=(a, b): !(a < b)`
+
+    This works as long as your provided operator meets the conditions of a strict weak ordering. The standard <= and >= operators do not.
+
+- https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort/answer/Adam-Helps?srid=XiLw&share=d2cd7d8a
+- https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort
+- https://en.wikipedia.org/wiki/Weak_ordering#Axiomatizations
+- https://stackoverflow.com/questions/67357282/how-does-comparator-in-a-set-works-with-functor-in-c
+- https://duckduckgo.com/?t=ffab&q=std%3A%3Atie&ia=web
+- https://en.cppreference.com/w/cpp/utility/tuple/tie
+
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+std%3A%3Aset+with+unique_ptr&ia=web
+- https://stackoverflow.com/questions/46458514/stdset-of-unique-ptr-range-insert
+
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+set+custom+objects+operator%3C&ia=web&iax=qa
+- https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
+- https://duckduckgo.com/?q=c%2B%2B+std+set+custom+objects+friend+operator%3C&t=ffab&ia=web&iax=qa
+- https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set#19871726
+- https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set/19871721#19871721
+
+- https://duckduckgo.com/?q=c%2B%2B+no+matching+function+call+set+find+comparator&t=ffab&ia=web
+- https://stackoverflow.com/questions/21609490/stdfind-error-no-matching-function
+- https://duckduckgo.com/?t=ffab&q=std%3A%3Afind+set%3A%3Afind&ia=web
+- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset
+- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#comment1576902_1701083
+    - this is specific for sets and maps [i.e. datastructures implemented with RB Tree - for logarithmic - log(n) - complexity for `insert`/`push`/`emplace`, `delete` and `find` functions]. vectors, lists etc. don't have a find member function [sorted vector can have `binary_search` to get log(n) complexity for `find`, but other datastructures - mainly explicitly defined - have O(n) complexity].
+- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/1701855#1701855 - check if an element exists in `std::set` with `count` function
+- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#54197839 - check if an element exists in `std::set` with `contains` (C++20>) function
+
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+comparator+functor&ia=web
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+pointers+smart+unique+comparator&ia=web
+- https://stackoverflow.com/questions/31562548/set-of-pointers-with-custom-comparator
+- https://duckduckgo.com/?q=c%2B%2B+set+custom+less+specialization+pointers+unique&t=ffab&ia=web
+- https://stackoverflow.com/questions/63213832/ordering-in-stdset-of-unique-pointers
+- https://duckduckgo.com/?q=c%2B%2B+ordering+less+set+of+unique+pointers+comparator+functor&t=ffab&ia=web
+- https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+
+- https://duckduckgo.com/?q=c%2B%2B+std+binary_search+set+operator&t=ffab&ia=web&iax=about
+- https://stackoverflow.com/questions/18406479/binary-search-with-stdpair-using-a-custom-operator
+- https://en.cppreference.com/w/cpp/algorithm/binary_search
+    - ways of finding an element of custom type in `std::set`
+        - Returning an Iterator to an element
+            - `set::find`
+            - `std::find`
+            - `std::find_if`
+        - Returning a boolean whether the k
+            - `std::count`
+            - `std::contains` (C++20>)
+            - `std::any_of`
+            - `std::binary_search`
+
+- https://duckduckgo.com/?q=c%2B%2B+std+binary_search+vector+unique&t=ffab&ia=web
+- https://stackoverflow.com/questions/6919405/mystical-restriction-on-stdbinary-search?noredirect=1&lq=1
+    - **the type of the searched value passed to `std::binary_search` matches the type of elements that the `std::set` holds**
+- https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
+- https://en.cppreference.com/w/cpp/utility/functional/bind
+- https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
+- https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
+- https://en.cppreference.com/w/cpp/algorithm/for_each
 
 ## Sources
 
