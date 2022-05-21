@@ -16,10 +16,6 @@ public:
     std::string getRelatedPackageName() const;
     std::string getRelatedPackageVersion() const;
 
-    bool operator<(const PackageFile& packageFilename) const {
-        return this->getFilename() < packageFilename.getFilename();
-    }
-
     friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {
         if (packageFilename.filename.empty()) {
             os << packageFilename.absolutePath;
