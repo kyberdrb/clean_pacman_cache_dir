@@ -2846,184 +2846,6 @@ struct PackageComparatorPredicate {
 //};
 ```
 
-Sources for finding an element of custom type in `std::set`
-
-- https://duckduckgo.com/?q=c%2B%2B+set+smart+pointer+find&t=ffab&ia=web&iax=qa
-- https://stackoverflow.com/questions/25878437/c-find-in-set-of-pointers
-    - `set::find` with heterogenous lookup with `std::less`
-    - `set::find` with `const_cast` to find a `const` pointer in a `std::set` of non-const elements of pointer type
-- https://duckduckgo.com/?t=ffab&q=std+set+custom+comparator&ia=web&iax=qa
-- https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
-    - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/46128321#46128321 - **Using `set::find` with provided comparator as a second template parameter at `std::set` initialization to enable finding an element of custom type in `std::set`**
-        - Lambda comparator C++20 solution
-
-            ```
-            auto cmp = [](int a, int b) { return ... };
-            std::set<int, decltype(cmp)> s;
-            ```
-
-        - Lambda comparator C++11 solution
-
-            ```
-            auto cmp = [](int a, int b) { return ... };
-            std::set<int, decltype(cmp)> s(cmp);
-            ```
-
-        - Non-member Function comparator
-
-            ```
-            bool cmp(int a, int b) {
-                return ...;
-            }
-            ```
-
-            and use it at `std::set` initialization either as
-
-            ```
-            std::set<int, decltype(cmp)*> s(cmp);
-            ```
-
-            or as
-
-            ```
-            std::set<int, decltype(&cmp)> s(&cmp);
-            ```
-
-        - Comparator class
-
-            ```
-            struct cmp {
-                bool operator() (int a, int b) const {
-                    return ...
-                }
-            };
-
-            std::set<int, cmp> s;
-            ```
-
-        - Non-member Function comparator wrapped in `std::integral_constant` - _https://en.cppreference.com/w/cpp/types/integral_constant_
-
-            Define comparator function
-
-            ```
-            bool cmp(int a, int b) {
-                return ...;
-            }
-            ```
-
-            Wrap the function into `std::integral_constant`
-
-            ```
-            #include <type_traits>
-            using Cmp = std::integral_constant<decltype(&cmp), &cmp>;
-            ```
-
-            Use the wrapped comparator function at `std::set` initialization
-
-            ```
-            std::set<int, Cmp> set;
-            ```
-
-- https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/56457701#56457701 - **Using `set::find` with provided comparator as overloaded `operator<` or specialized `std::less` - both in various forms - to enable finding an element of custom type in `std::set`**
-    - specializing `std::less` functor as comparator (with optional overload of `operator<`) for ascending order, i. e. `a-z` and `A-Z`
-    - overloading `operator<` as a public `friend`/member/`std` function
-    - specializing `std::greater` functor as comparator (with optional overload of `operator<`) for descending order, i. e. `Z-A` and `z-a`
-    - overloading the _spaceship_ operator `operator<=>` (C++20>)
-- https://stackoverflow.com/questions/11185223/stdset-select-less-or-greater-comparator-at-runtime#11185365
-
-- https://stackoverflow.com/questions/23377400/creating-a-c-stl-set-containing-custom-objects
-    - use `using namespace` i. e. `using` directive only in `.cpp` files
-- https://duckduckgo.com/?t=ffab&q=using+directive+vs+declaration&ia=web
-- https://www.programming4beginners.com/tutorial/chapter13/using-Directive-and-using-Declaration
-
-- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+custom+objects+operator+comparator&ia=web
-- https://www.reddit.com/r/cpp_questions/comments/p66t83/stdset_of_pointers_with_custom_comparator_and/
-- https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
-- https://www.reddit.com/r/cpp/comments/5yljrp/functors_are_not_dead_the_double_functor_trick/
-- https://usaco.guide/silver/custom-cpp-stl?lang=cpp - C++ Sets with Custom Comparators
-- http://neutrofoton.github.io/blog/2016/12/30/c-plus-plus-set-with-custom-comparator/ - C++ Set With Custom Comparator
-- https://thispointer.com/stdset-tutorial-part-1-set-usage-details-with-default-sorting-criteria/
-- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+doesn%27t+find&ia=web
-- https://www.cplusplus.com/reference/set/set/find/
-- https://www.cplusplus.com/reference/set/set/
-- https://www.cplusplus.com/reference/set/set/set/
-- https://stackoverflow.com/questions/14288825/setfind-doesnt-find
-- https://stackoverflow.com/questions/14288825/setfind-doesnt-find/14288925#14288925
-    - **strict weak ordering**
-        - For all x: x < x is never true, everything should be equal to itself
-        - If x < y then y < x cannot be true
-        - If x < y and y < z then x < z, the ordering should be transitive
-        - If x == y and y == z then x == z, equality should be transitive
-    - **`std::tie` for interval comparisons**
-- https://duckduckgo.com/?t=ffab&q=strict+weak+ordering+c%2B%2B&ia=web
-- https://stackoverflow.com/questions/1293231/stl-ordering-strict-weak-ordering
-- https://stackoverflow.com/questions/1293231/stl-ordering-strict-weak-ordering/35773903#35773903
-    - **The whole point of limiting the [STL] library to a less-than operator [`operator<`] is that all of the logical operators can be [derived from this one mentioned operator - `operator<` in order to conform to the strict weak ordering]:**
-        - `<(a, b): (a < b)`
-        - `<=(a, b): !(b < a)`
-        - `==(a, b): !(a < b) && !(b < a)`
-        - `!=(a, b): (a < b) || (b < a)`
-        - `>(a, b): (b < a)`
-        - `>=(a, b): !(a < b)`
-
-    This works as long as your provided operator meets the conditions of a strict weak ordering. The standard <= and >= operators do not.
-
-- https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort/answer/Adam-Helps?srid=XiLw&share=d2cd7d8a
-- https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort
-- https://en.wikipedia.org/wiki/Weak_ordering#Axiomatizations
-- https://stackoverflow.com/questions/67357282/how-does-comparator-in-a-set-works-with-functor-in-c
-- https://duckduckgo.com/?t=ffab&q=std%3A%3Atie&ia=web
-- https://en.cppreference.com/w/cpp/utility/tuple/tie
-
-- https://duckduckgo.com/?t=ffab&q=c%2B%2B+std%3A%3Aset+with+unique_ptr&ia=web
-- https://stackoverflow.com/questions/46458514/stdset-of-unique-ptr-range-insert
-
-- https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+set+custom+objects+operator%3C&ia=web&iax=qa
-- https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
-- https://duckduckgo.com/?q=c%2B%2B+std+set+custom+objects+friend+operator%3C&t=ffab&ia=web&iax=qa
-- https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set#19871726
-- https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set/19871721#19871721
-
-- https://duckduckgo.com/?q=c%2B%2B+no+matching+function+call+set+find+comparator&t=ffab&ia=web
-- https://stackoverflow.com/questions/21609490/stdfind-error-no-matching-function
-- https://duckduckgo.com/?t=ffab&q=std%3A%3Afind+set%3A%3Afind&ia=web
-- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset
-- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#comment1576902_1701083
-    - this is specific for sets and maps [i.e. datastructures implemented with RB Tree - for logarithmic - log(n) - complexity for `insert`/`push`/`emplace`, `delete` and `find` functions]. vectors, lists etc. don't have a find member function [sorted vector can have `binary_search` to get log(n) complexity for `find`, but other datastructures - mainly explicitly defined - have O(n) complexity].
-- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/1701855#1701855 - check if an element exists in `std::set` with `count` function
-- https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#54197839 - check if an element exists in `std::set` with `contains` (C++20>) function
-
-- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+comparator+functor&ia=web
-- https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+pointers+smart+unique+comparator&ia=web
-- https://stackoverflow.com/questions/31562548/set-of-pointers-with-custom-comparator
-- https://duckduckgo.com/?q=c%2B%2B+set+custom+less+specialization+pointers+unique&t=ffab&ia=web
-- https://stackoverflow.com/questions/63213832/ordering-in-stdset-of-unique-pointers
-- https://duckduckgo.com/?q=c%2B%2B+ordering+less+set+of+unique+pointers+comparator+functor&t=ffab&ia=web
-- https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
-
-- https://duckduckgo.com/?q=c%2B%2B+std+binary_search+set+operator&t=ffab&ia=web&iax=about
-- https://stackoverflow.com/questions/18406479/binary-search-with-stdpair-using-a-custom-operator
-- https://en.cppreference.com/w/cpp/algorithm/binary_search
-    - ways of finding an element of custom type in `std::set`
-        - Returning an Iterator to an element
-            - `set::find`
-            - `std::find`
-            - `std::find_if`
-        - Returning a boolean whether the k
-            - `std::count`
-            - `std::contains` (C++20>)
-            - `std::any_of`
-            - `std::binary_search`
-
-- https://duckduckgo.com/?q=c%2B%2B+std+binary_search+vector+unique&t=ffab&ia=web
-- https://stackoverflow.com/questions/6919405/mystical-restriction-on-stdbinary-search?noredirect=1&lq=1
-    - **the type of the searched value passed to `std::binary_search` matches the type of elements that the `std::set` holds**
-- https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
-- https://en.cppreference.com/w/cpp/utility/functional/bind
-- https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
-- https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
-- https://en.cppreference.com/w/cpp/algorithm/for_each
-
 ## Sources
 
 - `libalpm` - library of the Arch Linux Package Manager - the `pacman`
@@ -3075,6 +2897,180 @@ Sources for finding an element of custom type in `std::set`
 - `std::set`
     - https://www.cplusplus.com/reference/set/set/
     - https://www.cplusplus.com/reference/set/set/find/
+    - https://duckduckgo.com/?q=c%2B%2B+set+smart+pointer+find&t=ffab&ia=web&iax=qa
+    - https://stackoverflow.com/questions/25878437/c-find-in-set-of-pointers
+        - `set::find` with heterogenous lookup with `std::less`
+        - `set::find` with `const_cast` to find a `const` pointer in a `std::set` of non-const elements of pointer type
+    - https://duckduckgo.com/?t=ffab&q=std+set+custom+comparator&ia=web&iax=qa
+    - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
+        - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/46128321#46128321 - **Using `set::find` with provided comparator as a second template parameter at `std::set` initialization to enable finding an element of custom type in `std::set`**
+            - Lambda comparator C++20 solution
+
+                ```
+                auto cmp = [](int a, int b) { return ... };
+                std::set<int, decltype(cmp)> s;
+                ```
+
+            - Lambda comparator C++11 solution
+
+                ```
+                auto cmp = [](int a, int b) { return ... };
+                std::set<int, decltype(cmp)> s(cmp);
+                ```
+
+            - Non-member Function comparator
+
+                ```
+                bool cmp(int a, int b) {
+                    return ...;
+                }
+                ```
+
+                and use it at `std::set` initialization either as
+
+                ```
+                std::set<int, decltype(cmp)*> s(cmp);
+                ```
+
+                or as
+
+                ```
+                std::set<int, decltype(&cmp)> s(&cmp);
+                ```
+
+            - Comparator class
+
+                ```
+                struct cmp {
+                    bool operator() (int a, int b) const {
+                        return ...
+                    }
+                };
+
+                std::set<int, cmp> s;
+                ```
+
+            - Non-member Function comparator wrapped in `std::integral_constant` - _https://en.cppreference.com/w/cpp/types/integral_constant_
+
+                Define comparator function
+
+                ```
+                bool cmp(int a, int b) {
+                    return ...;
+                }
+                ```
+
+                Wrap the function into `std::integral_constant`
+
+                ```
+                #include <type_traits>
+                using Cmp = std::integral_constant<decltype(&cmp), &cmp>;
+                ```
+
+                Use the wrapped comparator function at `std::set` initialization
+
+                ```
+                std::set<int, Cmp> set;
+                ```
+              
+    - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/56457701#56457701 - **Using `set::find` with provided comparator as overloaded `operator<` or specialized `std::less` - both in various forms - to enable finding an element of custom type in `std::set`**
+        - specializing `std::less` functor as comparator (with optional overload of `operator<`) for ascending order, i. e. `a-z` and `A-Z`
+        - overloading `operator<` as a public `friend`/member/`std` function
+        - specializing `std::greater` functor as comparator (with optional overload of `operator<`) for descending order, i. e. `Z-A` and `z-a`
+        - overloading the _spaceship_ operator `operator<=>` (C++20>)
+    - https://stackoverflow.com/questions/11185223/stdset-select-less-or-greater-comparator-at-runtime#11185365
+    - https://stackoverflow.com/questions/23377400/creating-a-c-stl-set-containing-custom-objects
+        - use `using namespace` i. e. `using` directive only in `.cpp` files
+    - https://duckduckgo.com/?t=ffab&q=using+directive+vs+declaration&ia=web
+    - https://www.programming4beginners.com/tutorial/chapter13/using-Directive-and-using-Declaration
+
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+custom+objects+operator+comparator&ia=web
+    - https://www.reddit.com/r/cpp_questions/comments/p66t83/stdset_of_pointers_with_custom_comparator_and/
+    - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
+    - https://www.reddit.com/r/cpp/comments/5yljrp/functors_are_not_dead_the_double_functor_trick/
+    - https://usaco.guide/silver/custom-cpp-stl?lang=cpp - C++ Sets with Custom Comparators
+    - http://neutrofoton.github.io/blog/2016/12/30/c-plus-plus-set-with-custom-comparator/ - C++ Set With Custom Comparator
+    - https://thispointer.com/stdset-tutorial-part-1-set-usage-details-with-default-sorting-criteria/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+doesn%27t+find&ia=web
+    - https://www.cplusplus.com/reference/set/set/find/
+    - https://www.cplusplus.com/reference/set/set/
+    - https://www.cplusplus.com/reference/set/set/set/
+    - https://stackoverflow.com/questions/14288825/setfind-doesnt-find
+    - https://stackoverflow.com/questions/14288825/setfind-doesnt-find/14288925#14288925
+        - **strict weak ordering**
+            - For all x: x < x is never true, everything should be equal to itself
+            - If x < y then y < x cannot be true
+            - If x < y and y < z then x < z, the ordering should be transitive
+            - If x == y and y == z then x == z, equality should be transitive
+        - **`std::tie` for interval comparisons**
+    - https://duckduckgo.com/?t=ffab&q=strict+weak+ordering+c%2B%2B&ia=web
+    - https://stackoverflow.com/questions/1293231/stl-ordering-strict-weak-ordering
+    - https://stackoverflow.com/questions/1293231/stl-ordering-strict-weak-ordering/35773903#35773903
+        - **The whole point of limiting the [STL] library to a less-than operator [`operator<`] is that all of the logical operators can be [derived from this one mentioned operator - `operator<` in order to conform to the strict weak ordering]:**
+            - `<(a, b): (a < b)`
+            - `<=(a, b): !(b < a)`
+            - `==(a, b): !(a < b) && !(b < a)`
+            - `!=(a, b): (a < b) || (b < a)`
+            - `>(a, b): (b < a)`
+            - `>=(a, b): !(a < b)`
+
+        This works as long as your provided operator meets the conditions of a strict weak ordering. The standard <= and >= operators do not.
+
+    - https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort/answer/Adam-Helps?srid=XiLw&share=d2cd7d8a
+    - https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort
+    - https://en.wikipedia.org/wiki/Weak_ordering#Axiomatizations
+    - https://stackoverflow.com/questions/67357282/how-does-comparator-in-a-set-works-with-functor-in-c
+    - https://duckduckgo.com/?t=ffab&q=std%3A%3Atie&ia=web
+    - https://en.cppreference.com/w/cpp/utility/tuple/tie
+
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std%3A%3Aset+with+unique_ptr&ia=web
+    - https://stackoverflow.com/questions/46458514/stdset-of-unique-ptr-range-insert
+
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+set+custom+objects+operator%3C&ia=web&iax=qa
+    - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
+    - https://duckduckgo.com/?q=c%2B%2B+std+set+custom+objects+friend+operator%3C&t=ffab&ia=web&iax=qa
+    - https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set#19871726
+    - https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set/19871721#19871721
+
+    - https://duckduckgo.com/?q=c%2B%2B+no+matching+function+call+set+find+comparator&t=ffab&ia=web
+    - https://stackoverflow.com/questions/21609490/stdfind-error-no-matching-function
+    - https://duckduckgo.com/?t=ffab&q=std%3A%3Afind+set%3A%3Afind&ia=web
+    - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset
+    - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#comment1576902_1701083
+        - this is specific for sets and maps [i.e. datastructures implemented with RB Tree - for logarithmic - log(n) - complexity for `insert`/`push`/`emplace`, `delete` and `find` functions]. vectors, lists etc. don't have a find member function [sorted vector can have `binary_search` to get log(n) complexity for `find`, but other datastructures - mainly explicitly defined - have O(n) complexity].
+    - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/1701855#1701855 - check if an element exists in `std::set` with `count` function
+    - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#54197839 - check if an element exists in `std::set` with `contains` (C++20>) function
+
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+comparator+functor&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+pointers+smart+unique+comparator&ia=web
+    - https://stackoverflow.com/questions/31562548/set-of-pointers-with-custom-comparator
+    - https://duckduckgo.com/?q=c%2B%2B+set+custom+less+specialization+pointers+unique&t=ffab&ia=web
+    - https://stackoverflow.com/questions/63213832/ordering-in-stdset-of-unique-pointers
+    - https://duckduckgo.com/?q=c%2B%2B+ordering+less+set+of+unique+pointers+comparator+functor&t=ffab&ia=web
+    - https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
+
+    - https://duckduckgo.com/?q=c%2B%2B+std+binary_search+set+operator&t=ffab&ia=web&iax=about
+    - https://stackoverflow.com/questions/18406479/binary-search-with-stdpair-using-a-custom-operator
+    - https://en.cppreference.com/w/cpp/algorithm/binary_search
+        - ways of finding an element of custom type in `std::set`
+            - Returning an Iterator to an element
+                - `set::find`
+                - `std::find`
+                - `std::find_if`
+            - Returning a boolean whether the k
+                - `std::count`
+                - `std::contains` (C++20>)
+                - `std::any_of`
+                - `std::binary_search`
+
+    - https://duckduckgo.com/?q=c%2B%2B+std+binary_search+vector+unique&t=ffab&ia=web
+    - https://stackoverflow.com/questions/6919405/mystical-restriction-on-stdbinary-search?noredirect=1&lq=1
+        - **the type of the searched value passed to `std::binary_search` matches the type of elements that the `std::set` holds**
+    - https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
+    - https://en.cppreference.com/w/cpp/utility/functional/bind
+    - https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
+    - https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
+    - https://en.cppreference.com/w/cpp/algorithm/for_each
 - `regex`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
