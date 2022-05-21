@@ -56,12 +56,9 @@ public:
         return out;
     }
 
-    bool operator<(const Package& package) const {
-        // TODO maybe replace the 'getName()' function with only fields?
-        return this->getName() < package.getName();
-//        return this->name < package.getName();
-//        return Package::name < package.getName();
-//        return Package::name < package.name;
+    // Relates to the specialized 'std::less' for this class (at the bottom?)
+    bool operator<(const Package& anotherPackage) const {
+        return Package::name < anotherPackage.name;
     }
 
 private:
@@ -73,12 +70,13 @@ private:
     std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
 };
 
-// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
+// specialize 'std::less' functor to enable lookup with 'set::find' in a 'std::set' or a 'map'
+//  with instances of this class as an element (std::set) / key (std::map), or with any custom object-type key
 namespace std {
     template<>
     struct less<unique_ptr<Package>> {
-        bool operator() (const unique_ptr<Package>& lhs, const unique_ptr<Package>& rhs) const {
-            return *lhs < *rhs;
+        bool operator() (const unique_ptr<Package>& package, const unique_ptr<Package>& anotherPackage) const {
+            return *package < *anotherPackage;
         }
     };
 }
