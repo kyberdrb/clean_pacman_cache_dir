@@ -14,13 +14,15 @@ public:
 
     std::string getName() const;
 
-    void getNextInferredPackageNameCandidate();
+    bool isPackageNameEmpty() const;
 
     bool hasStillSomethingInPackageName() const;
 
-    bool isPackageNameEmpty() const;
+    void getNextInferredPackageNameCandidate();
 
     uint8_t getStartingPositionForPackageVersion() const;
+
+    bool hasInstallationPackageFilesForDifferentVersions() const;
 
     void addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile);
 

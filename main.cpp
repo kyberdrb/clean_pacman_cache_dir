@@ -216,12 +216,26 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF INSTALLED PACKAGES WITH RELATED PACKAGE FILES FOR DIFFERENT VERSIONS\n\n";
+    std::cout << "LIST OF ALL INSTALLED PACKAGES WITH RELATED PACKAGE FILES FOR DIFFERENT VERSIONS (IF ANY)\n\n";
 
     std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
 
     for (const auto& package : installedPackages) {
-        std::cout << *package << "\n";
+        if (package->hasInstallationPackageFilesForDifferentVersions()) {
+            std::cout << *package << "\n";
+        }
+    }
+
+    std::cout << "\n";
+    std::cout << "===============================================\n\n";
+    std::cout << "LIST OF ONLY THOSE INSTALLED PACKAGES THAT HAVE RELATED PACKAGE FILES FOR DIFFERENT VERSIONS\n\n";
+
+    std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
+
+    for (const auto& package : installedPackages) {
+        if (package->hasInstallationPackageFilesForDifferentVersions()) {
+            std::cout << *package << "\n";
+        }
     }
 
     std::cout << "\n";

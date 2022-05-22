@@ -18,6 +18,37 @@ Package::Package(std::string inferredPackageName) :
     name(inferredPackageName)
 {}
 
+std::string Package::getName() const {
+    return name;
+}
+
+bool Package::isPackageNameEmpty() const {
+    return this->name.empty();
+}
+
+bool Package::hasStillSomethingInPackageName() const {
+    return ! isPackageNameEmpty();
+}
+
+void Package::getNextInferredPackageNameCandidate() {
+    for (int i = this->name.size() - 1; i >= 0;             --i) {
+        char delimiter = '-';
+        bool weFoundDelimiterCharacter = this->name.at(i) == delimiter;
+        this->name.pop_back();
+        if (weFoundDelimiterCharacter) {
+            break;
+        }
+    }
+}
+
+uint8_t Package::getStartingPositionForPackageVersion() const {
+    return this->name.size() + 1;
+}
+
+bool Package::hasInstallationPackageFilesForDifferentVersions() const {
+    return this->packageFilesForDeletion.size() >= 1;
+}
+
 void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
     bool isPackageNamesMatching = this->name == packageRelatedPackageFile->getRelatedPackageName();
     bool isPackageVersionDifferent = this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion();
@@ -26,10 +57,6 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
     if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {
         this->packageFilesForDeletion.emplace_back(std::move(packageRelatedPackageFile));
     }
-}
-
-std::string Package::getName() const {
-    return name;
 }
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
@@ -42,27 +69,4 @@ void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string path
         std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
             std::filesystem::rename(from, to);
     }
-}
-
-void Package::getNextInferredPackageNameCandidate() {
-     for (int i = this->name.size() - 1; i >= 0;             --i) {
-        char delimiter = '-';
-        bool weFoundDelimiterCharacter = this->name.at(i) == delimiter;
-         this->name.pop_back();
-         if (weFoundDelimiterCharacter) {
-             break;
-         }
-     }
-}
-
-bool Package::isPackageNameEmpty() const {
-    return this->name.empty();
-}
-
-bool Package::hasStillSomethingInPackageName() const {
-    return ! isPackageNameEmpty();
-}
-
-uint8_t Package::getStartingPositionForPackageVersion() const {
-    return this->name.size() + 1;
 }
