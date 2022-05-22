@@ -82,7 +82,8 @@ int main() {
     //  a key, like an ID for example, while the object itself is to be considered as a value."
     //   - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
     //  Therefore a 'set' and
-    //   - not a 'multiset' [the embedded key - package name - is unique - only one package name in many different versions of it],
+    //   - not a 'multiset' [the embedded key - package name - is unique - only one package name in all different versions of it
+    //     than the local one],
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
     std::set<std::unique_ptr<Package>> installedPackages{};
@@ -186,7 +187,7 @@ int main() {
 
                 // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
                 //  trying to show the values for STL containers and smartpointer instances.
-                //  Instead it shows an error message saying "Cannot instantiate printer for default visualizer"
+                //  Instead, it shows an error message saying "Cannot instantiate printer for default visualizer"
 //                std::cout << *packageWithInferredName << "\n";
 
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
