@@ -35,6 +35,7 @@ int main() {
 
     // TODO OPTIONAL (assuming no leading spaces/tabs) remove leading and ending blank characters
     // TODO OPTIONAL (assuming no ending spaces/tabs; only one space delimiting [separating] each package filename) replace multiple spaces or tabs with one space
+
     // build a list of ignored packages
 
     auto lineWithIgnoredPackagesWithoutOptionPrefix = regex_replace(lineWithIgnoredPackages, regexForIgnoredPackagesInPacmanConfigFile, "");
@@ -74,12 +75,16 @@ int main() {
 
     // BUILD LIST OF LOCALLY INSTALLED PACKAGES
 
-    //  Assuming that each package has only one locally installed version with possibly multiple related package files for multiple versions that the Package will remember with itself
-    //   and not as a value for the Package key,
-    //   therefore a 'set' and
-    //    - not a 'multiset' [only one package name with multiple possible versions of it],
-    //    - not a 'map' [the values are related and contained in the key itself] and
-    //    - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
+    // Assuming that each package has only one locally installed version with possibly multiple related package files for
+    //  multiple versions that the Package will remember within itself
+    //  and not as a value for the Package key.
+    // "Some sets store object that embed their own keys, that is to say that such objects have a subpart that is to be considered as
+    //  a key, like an ID for example, while the object itself is to be considered as a value."
+    //   - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
+    //  Therefore a 'set' and
+    //   - not a 'multiset' [the embedded key - package name - is unique - only one package name in many different versions of it],
+    //   - not a 'map' [the values are related and contained in the key itself] and
+    //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
     std::set<std::unique_ptr<Package>> installedPackages{};
 
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
@@ -96,7 +101,9 @@ int main() {
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         bool isIgnored = false;
-        if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName) != ignoredPackageNamesInTextFormat.end()) {
+        if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName)
+                != ignoredPackageNamesInTextFormat.end())
+        {
             isIgnored = true;
         }
 
@@ -191,7 +198,8 @@ int main() {
 
                 // if the key WAS found,
                 //  - infer the package version from the compound package name and version,
-                //  - create a package file with filename, absolute path and package version and add it to the matching locally installed package
+                //  - create a package file with filename, absolute path and package version
+                //     and add it to the matching locally installed package
                 //  - break out of the loop
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
@@ -221,7 +229,7 @@ int main() {
     std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
 
     for (const auto& package : installedPackages) {
-        if (package->hasInstallationPackageFilesForDifferentVersions()) {
+        if (package->getNumberOfInstallationPackageFilesForDifferentVersions()) {
             std::cout << *package << "\n";
         }
     }
@@ -230,13 +238,27 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF ONLY THOSE INSTALLED PACKAGES THAT HAVE RELATED PACKAGE FILES FOR DIFFERENT VERSIONS\n\n";
 
-    std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
+    uint_fast16_t numberOfPackagesWithInstallationPackageFilesForOtherVersions = 0;
+    uint_fast16_t numberOfInstallationPackageFilesForOtherVersions = 0;
 
     for (const auto& package : installedPackages) {
-        if (package->hasInstallationPackageFilesForDifferentVersions()) {
+        uint_fast16_t numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage =
+                package->getNumberOfInstallationPackageFilesForDifferentVersions();
+
+        if (numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage > 0) {
             std::cout << *package << "\n";
+
+            numberOfPackagesWithInstallationPackageFilesForOtherVersions++;
+            numberOfInstallationPackageFilesForOtherVersions += numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage;
         }
     }
+
+    std::cout << "\n";
+    std::cout << "Found " << numberOfPackagesWithInstallationPackageFilesForOtherVersions
+            << " installed packages with installation package files for other than locally installed version\n";
+
+    std::cout << "Found " << numberOfInstallationPackageFilesForOtherVersions
+            << " installation package files for different version than the locally installed\n\n";
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";

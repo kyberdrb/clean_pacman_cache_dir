@@ -45,8 +45,8 @@ uint8_t Package::getStartingPositionForPackageVersion() const {
     return this->name.size() + 1;
 }
 
-bool Package::hasInstallationPackageFilesForDifferentVersions() const {
-    return this->packageFilesForDeletion.size() >= 1;
+uint_fast16_t Package::getNumberOfInstallationPackageFilesForDifferentVersions() const {
+    return this->packageFilesForDeletion.size();
 }
 
 void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {

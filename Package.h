@@ -22,7 +22,7 @@ public:
 
     uint8_t getStartingPositionForPackageVersion() const;
 
-    bool hasInstallationPackageFilesForDifferentVersions() const;
+    uint_fast16_t getNumberOfInstallationPackageFilesForDifferentVersions() const;
 
     void addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile);
 

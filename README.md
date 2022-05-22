@@ -2987,6 +2987,7 @@ struct PackageComparatorPredicate {
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+custom+objects+operator+comparator&ia=web
     - https://www.reddit.com/r/cpp_questions/comments/p66t83/stdset_of_pointers_with_custom_comparator_and/
     - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
+        - Some **sets store object that embed their own keys**, that is to say that **such objects have a subpart that is to be considered as a key, like an ID for example, while the [entire] object itself is to be considered as a value.**
     - https://www.reddit.com/r/cpp/comments/5yljrp/functors_are_not_dead_the_double_functor_trick/
     - https://usaco.guide/silver/custom-cpp-stl?lang=cpp - C++ Sets with Custom Comparators
     - http://neutrofoton.github.io/blog/2016/12/30/c-plus-plus-set-with-custom-comparator/ - C++ Set With Custom Comparator
