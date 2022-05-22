@@ -6,7 +6,7 @@
 
 class PackageFile {
 public:
-    PackageFile(std::string absolutePath);
+    explicit PackageFile(std::string absolutePath);
 
     PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion);
 
