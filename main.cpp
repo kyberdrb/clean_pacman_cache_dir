@@ -4,7 +4,6 @@
 #include "alpm.h"
 #include "alpm_list.h"
 
-#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
