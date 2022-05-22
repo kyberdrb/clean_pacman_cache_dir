@@ -43,12 +43,9 @@ int main() {
     std::string ignoredPackageNameAsText{};
     char delimiterForIgnoredPackages = ' ';
 
-    std::vector<std::string> ignoredPackageNamesInTextFormat{};
     std::vector<std::unique_ptr<IgnoredPackageName>> ignoredPackageNames;
 
     while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPackages)) {
-        ignoredPackageNamesInTextFormat.push_back(ignoredPackageNameAsText);
-
         auto ignoredPackageName = std::make_unique<IgnoredPackageName>(std::move(ignoredPackageNameAsText));
         ignoredPackageNames.emplace_back(std::move(ignoredPackageName));
     }
@@ -56,16 +53,6 @@ int main() {
     std::cout << "\n";
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF IGNORED PACKAGES\n\n";
-
-    std::cout << "Found " << ignoredPackageNamesInTextFormat.size() << " ignored packages\n\n";
-
-    for (const auto& ignoredPackageName : ignoredPackageNamesInTextFormat) {
-        std::cout << ignoredPackageName  << "\n";
-    }
-
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "LIST OF IGNORED PACKAGES AS INSTANCES\n\n";
 
     std::cout << "Found " << ignoredPackageNames.size() << " ignored packages\n\n";
 
@@ -102,20 +89,11 @@ int main() {
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         bool isIgnored = false;
-        if(std::find(ignoredPackageNamesInTextFormat.begin(), ignoredPackageNamesInTextFormat.end(), packageName)
-                != ignoredPackageNamesInTextFormat.end())
-        {
-            isIgnored = true;
-        }
-
-        bool isIgnoredInAnotherList = false;
         auto packageNameCopy = packageName;
         auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
         if(std::find(ignoredPackageNames.begin(), ignoredPackageNames.end(), ignoredPackageNameCandidate) != ignoredPackageNames.end()) {
-            isIgnoredInAnotherList = true;
+            isIgnored = true;
         }
-
-        assert(isIgnored == isIgnoredInAnotherList);
 
         auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture, isIgnored);
 
@@ -214,9 +192,8 @@ int main() {
                 break;
             }
 
-            // handle package files for missing reference to locally installed package
-            //  i.e. add the package files to another container 'packageFilesForDeletion'
-            if (packageWithInferredName->isPackageNameEmpty()) {
+            bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
+            if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
                 auto packageFileForMissingPackage = std::make_unique<PackageFile>(packageAbsolutePathAsText);
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
@@ -230,14 +207,12 @@ int main() {
     std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
 
     for (const auto& package : installedPackages) {
-        if (package->getNumberOfInstallationPackageFilesForDifferentVersions()) {
-            std::cout << *package << "\n";
-        }
+        std::cout << *package << "\n";
     }
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF ONLY THOSE INSTALLED PACKAGES THAT HAVE RELATED PACKAGE FILES FOR DIFFERENT VERSIONS\n\n";
+    std::cout << "LIST OF INSTALLED PACKAGES THAT HAVE AT LEAST ONE RELATED INSTALLATION PACKAGE FILE FOR DIFFERENT VERSION THAN THE LOCALLY INSTALLED ONE\n\n";
 
     uint_fast16_t numberOfPackagesWithInstallationPackageFilesForOtherVersions = 0;
     uint_fast16_t numberOfInstallationPackageFilesForOtherVersions = 0;
