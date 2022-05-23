@@ -103,7 +103,6 @@ int main() {
         packageNameCopy = packageNameAsText;
         auto packageName = std::make_unique<PackageName>(std::move(packageNameCopy));
         auto pkg = std::make_unique<Package>(
-                packageNameAsText,
                 std::move(packageName),
                 locallyInstalledVersion,
                 architecture,
@@ -169,9 +168,8 @@ int main() {
             packageNameAndVersion.pop_back();
 
             std::string inferredPackageNameAsText = packageNameAndVersion;
-            std::string inferredPackageNameAsTextCopy = packageNameAndVersion;
-            auto packageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsTextCopy));
-            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText), std::move(packageName));
+            auto packageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsText));
+            auto packageWithInferredName = std::make_unique<Package>(std::move(packageName));
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'

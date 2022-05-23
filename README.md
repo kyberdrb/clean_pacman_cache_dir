@@ -2899,8 +2899,17 @@ struct PackageComparatorPredicate {
     - https://www.cplusplus.com/reference/set/set/find/
     - https://duckduckgo.com/?q=c%2B%2B+set+smart+pointer+find&t=ffab&ia=web&iax=qa
     - https://stackoverflow.com/questions/25878437/c-find-in-set-of-pointers
-        - `set::find` with heterogenous lookup with `std::less`
+        - `set::find` with transparent comparator functor heterogenous lookup with `std::less`
+            - but the transparent comparator functor didn't worked in my case - the 'non-transparent' - the duplicitly specified one did - in the case of organizing the elements in `std::set` in descending order with
+
+                ```
+                'std::greater<std::unique_ptr<PackageName>>'
+                ```
+
         - `set::find` with `const_cast` to find a `const` pointer in a `std::set` of non-const elements of pointer type
+    - https://duckduckgo.com/?q=c%2B%2B+set+transparent+comparator+greater&t=ffab&ia=web
+    - https://stackoverflow.com/questions/17737132/transparent-operator-functors
+    - https://thecodeteacher.com/question/40532/c++---What-are-transparent-comparators
     - https://duckduckgo.com/?t=ffab&q=std+set+custom+comparator&ia=web&iax=qa
     - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
         - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator/46128321#46128321 - **Using `set::find` with provided comparator as a second template parameter at `std::set` initialization to enable finding an element of custom type in `std::set`**
@@ -2993,6 +3002,8 @@ struct PackageComparatorPredicate {
     - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
         - Some **sets store object that embed their own keys**, that is to say that **such objects have a subpart that is to be considered as a key, like an ID for example, while the [entire] object itself is to be considered as a value.**
     - https://www.reddit.com/r/cpp/comments/5yljrp/functors_are_not_dead_the_double_functor_trick/
+    - https://stackoverflow.com/search?tab=Relevance&pagesize=50&q=%5bc%2b%2b%5d%20std%3a%3aset%20smart%20pointer
+    - https://stackoverflow.com/questions/18563508/does-stdset-still-sort-when-elements-are-wrapped-in-smart-pointers
     - https://usaco.guide/silver/custom-cpp-stl?lang=cpp - C++ Sets with Custom Comparators
     - http://neutrofoton.github.io/blog/2016/12/30/c-plus-plus-set-with-custom-comparator/ - C++ Set With Custom Comparator
     - https://thispointer.com/stdset-tutorial-part-1-set-usage-details-with-default-sorting-criteria/
