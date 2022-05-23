@@ -83,18 +83,25 @@ int main() {
         alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
-        std::string packageName = alpm_pkg_get_name(alpm_pkg);
+        std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
         std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         bool isIgnored = false;
-        auto packageNameCopy = packageName;
+        auto packageNameCopy = packageNameAsText;
         auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
         if(std::find(ignoredPackageNames.begin(), ignoredPackageNames.end(), ignoredPackageNameCandidate) != ignoredPackageNames.end()) {
             isIgnored = true;
         }
 
-        auto pkg = std::make_unique<Package>(packageName, locallyInstalledVersion, architecture, isIgnored);
+        packageNameCopy = packageNameAsText;
+        auto packageName = std::make_unique<PackageName>(std::move(packageNameCopy));
+        auto pkg = std::make_unique<Package>(
+                packageNameAsText,
+                std::move(packageName),
+                locallyInstalledVersion,
+                architecture,
+                isIgnored);
 
         installedPackages.emplace(std::move(pkg));
     }
@@ -156,7 +163,9 @@ int main() {
             packageNameAndVersion.pop_back();
 
             std::string inferredPackageNameAsText = packageNameAndVersion;
-            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText));
+            std::string inferredPackageNameAsTextCopy = packageNameAndVersion;
+            auto packageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsTextCopy));
+            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageNameAsText), std::move(packageName));
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
