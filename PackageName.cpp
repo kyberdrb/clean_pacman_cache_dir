@@ -24,7 +24,7 @@ void PackageName::pop_back() {
     PackageName::name.pop_back();
 }
 
-//const std::string& PackageName::string() const {
-std::string PackageName::string() const {
+const std::string& PackageName::string() const {
+//std::string PackageName::string() const {
     return PackageName::name;
 }

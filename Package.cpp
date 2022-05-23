@@ -45,6 +45,7 @@ void Package::getNextInferredPackageNameCandidate() {
         char delimiter = '-';
         bool weFoundDelimiterCharacter = this->nameAsText.at(i) == delimiter;
         this->nameAsText.pop_back();
+        this->name->pop_back();
         if (weFoundDelimiterCharacter) {
             break;
         }

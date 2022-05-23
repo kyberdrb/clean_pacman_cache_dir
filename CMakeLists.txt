@@ -16,7 +16,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif()
 
 # For lambda predicate
-add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h PackageName.cpp PackageName.h)
+add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h PackageName.cpp PackageName.h PackageComparator.h)
 
 # For comparator functor predicate
 #add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h PackageFile.cpp PackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h IgnoredPackageNamesEqualityComparator.h)

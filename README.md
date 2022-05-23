@@ -2980,6 +2980,10 @@ struct PackageComparatorPredicate {
         - overloading the _spaceship_ operator `operator<=>` (C++20>)
     - https://stackoverflow.com/questions/11185223/stdset-select-less-or-greater-comparator-at-runtime#11185365
     - https://stackoverflow.com/questions/23377400/creating-a-c-stl-set-containing-custom-objects
+    - https://duckduckgo.com/?q=c%2B%2B+std+set+descending&t=ffab&ia=web
+    - https://stackoverflow.com/questions/22591645/c-stdmap-items-in-descending-order-of-keys
+    - https://cplusplus.com/forum/general/205795/
+    - https://en.cppreference.com/w/cpp/utility/functional/greater
         - use `using namespace` i. e. `using` directive only in `.cpp` files
     - https://duckduckgo.com/?t=ffab&q=using+directive+vs+declaration&ia=web
     - https://www.programming4beginners.com/tutorial/chapter13/using-Directive-and-using-Declaration

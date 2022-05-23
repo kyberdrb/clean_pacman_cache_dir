@@ -61,26 +61,24 @@ public:
     }
 
     // WORKS with comparison with 'nameAsText' (string)
-    // Doesn't work with comparing 'name' (unique_ptr<PackageName>) even with defined friend 'operator<' for these types
-    // Doesn't work even when comparing unique_ptr<PackageName> by the 'string()' function within the pointer
-    // I don't know what is going on... Why comparing internal strings finds an element,
-    //  but comparing external strings doesn't...
-    friend bool operator<(const std::unique_ptr<Package>& package, const std::unique_ptr<Package>& anotherPackage) {
-        return package->nameAsText < anotherPackage->nameAsText;
-//        return package->name < anotherPackage->name;
-//        return package->name->string() < anotherPackage->name->string();
-    }
-
-//    friend bool operator<(
-//            std::unique_ptr<PackageName>& packageName,
-//            std::unique_ptr<PackageName>& otherPackageName)
-//    {
-//        return packageName->string() < otherPackageName->string();
+//    friend bool operator<(const std::unique_ptr<Package>& package, const std::unique_ptr<Package>& anotherPackage) {
+//        return package->nameAsText < anotherPackage->nameAsText;
 //    }
+
+    // Works with comparison with 'name' (unique_ptr<PackageName>)
+    //  - with defined friend 'operator<' for with unique_ptr params in 'PackageName' class for direct comparison
+    //  - standalone with 'string()' function returning 'std::string'
+    friend bool operator<(const std::unique_ptr<Package>& package, const std::unique_ptr<Package>& anotherPackage) {
+//        return package->name < anotherPackage->name;
+        return package->name->string() < anotherPackage->name->string();
+    }
 
     // Relates to the specialized 'std::less' for this class (at the bottom?)
 //    bool operator<(const Package& anotherPackage) const {
+//        // Works standalone
 //        return Package::nameAsText < anotherPackage.nameAsText;
+//
+//        // Works with overloaded 'operator<' with 'unique_ptr<PackageName>' type for both parameters in 'PackageName' class
 ////        return Package::name < anotherPackage.name;
 //    }
 
@@ -95,7 +93,7 @@ private:
     std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
 };
 
-// WORKS on its own
+// WORKS standalone
 //namespace std {
 //    template<>
 //    struct less<unique_ptr<Package>> {
@@ -117,13 +115,47 @@ private:
 //    };
 //}
 
-// Doesn't work. Why? It's comparing strings, just like in previous example, or not?
+// WORKS
 //namespace std {
 //    template<>
 //    struct less<unique_ptr<Package>> {
 //        bool operator() (const unique_ptr<Package>& package, const unique_ptr<Package>& anotherPackage) const {
+//            // WORKS with overloaded 'operator<' in class 'PackageName' defined as 'friend bool operator<(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)'
 ////            return package->getNameAsInstance() < anotherPackage->getNameAsInstance();
+//
+//            // WORKS standalone
 //            return package->getNameAsInstance()->string() < anotherPackage->getNameAsInstance()->string();
+//
+//            // WORKS with overloaded 'operator<' in class 'PackageName' defined as 'friend bool operator<(const PackageName& packageName, const PackageName& otherPackageName)'
+////            return *package->getNameAsInstance() < *anotherPackage->getNameAsInstance();
 //        }
 //    };
 //}
+
+//template<>
+//struct std::less<std::unique_ptr<Package>> {
+//    bool operator() (const unique_ptr<Package>& package, const unique_ptr<Package>& anotherPackage) const {
+//        // WORKS with overloaded 'operator<' in class 'PackageName' defined as 'friend bool operator<(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)'
+////        return package->getNameAsInstance() < anotherPackage->getNameAsInstance();
+//
+//        // WORKS standalone
+//        return package->getNameAsInstance()->string() < anotherPackage->getNameAsInstance()->string();
+//
+//        // WORKS with overloaded 'operator<' in class 'PackageName' defined as 'friend bool operator<(const PackageName& packageName, const PackageName& otherPackageName)'
+////        return *package->getNameAsInstance() < *anotherPackage->getNameAsInstance();
+//    }
+//};
+
+//template<>
+//struct std::greater<std::unique_ptr<Package>> {
+//    bool operator() (const unique_ptr<Package>& package, const unique_ptr<Package>& anotherPackage) const {
+//        // WORKS with overloaded 'operator>' in class 'PackageName' defined as 'friend bool operator>(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)'
+////        return package->getNameAsInstance() > anotherPackage->getNameAsInstance();
+//
+//        // WORKS standalone
+////        return package->getNameAsInstance()->string() > anotherPackage->getNameAsInstance()->string();
+//
+//        // WORKS with overloaded 'operator>' in class 'PackageName' defined as 'friend bool operator>(const PackageName& packageName, const PackageName& otherPackageName)'
+//        return *package->getNameAsInstance() > *anotherPackage->getNameAsInstance();
+//    }
+//};

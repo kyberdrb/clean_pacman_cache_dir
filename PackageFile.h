@@ -26,6 +26,14 @@ public:
         return os;
     }
 
+    // Doesn't work either for direct comparison of two package names as unique pointers :/
+//    friend bool operator<(
+//            std::unique_ptr<PackageName>& packageName,
+//            std::unique_ptr<PackageName>& otherPackageName)
+//    {
+//        return packageName->string() < otherPackageName->string();
+//    }
+
 private:
     std::string filename;
     std::string absolutePath;

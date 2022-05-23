@@ -1,5 +1,6 @@
-#include "Package.h"
 #include "IgnoredPackageName.h"
+#include "Package.h"
+//#include "PackageComparator.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
@@ -73,6 +74,11 @@ int main() {
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
     std::set<std::unique_ptr<Package>> installedPackages{};
+//    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages{};
+//    std::set<std::unique_ptr<Package>, std::greater<std::unique_ptr<Package>>> installedPackages{};
+
+    // Transparent functor 'std::greater' didn't work: no element was found
+//    std::set<std::unique_ptr<Package>, std::greater<>> installedPackages{};
 
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);
