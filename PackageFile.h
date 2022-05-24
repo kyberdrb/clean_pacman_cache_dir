@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PackageName.h"
+
 #include <memory>
 #include <ostream>
 #include <string>
@@ -22,21 +24,13 @@ public:
             return os;
         }
 
-        os << packageFilename.filename << "\t" << packageFilename.relatedPackageName << "\t" << packageFilename.relatedPackageVersion << "\t" << packageFilename.absolutePath;
+        os << packageFilename.filename << "\t" << *(packageFilename.relatedPackageName) << "\t" << packageFilename.relatedPackageVersion << "\t" << packageFilename.absolutePath;
         return os;
     }
-
-    // Doesn't work either for direct comparison of two package names as unique pointers :/
-//    friend bool operator<(
-//            std::unique_ptr<PackageName>& packageName,
-//            std::unique_ptr<PackageName>& otherPackageName)
-//    {
-//        return packageName->string() < otherPackageName->string();
-//    }
 
 private:
     std::string filename;
     std::string absolutePath;
+    std::unique_ptr<PackageName> relatedPackageName;
     std::string relatedPackageVersion;
-    std::string relatedPackageName;
 };

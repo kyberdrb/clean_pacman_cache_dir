@@ -11,7 +11,7 @@ PackageFile::PackageFile(std::string absolutePath) :
 PackageFile::PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion) :
         filename(filename),
         absolutePath(absolutePath),
-        relatedPackageName(relatedPackageName),
+        relatedPackageName(std::make_unique<PackageName>(relatedPackageName)),
         relatedPackageVersion(relatedPackageVersion)
 {}
 
@@ -24,7 +24,7 @@ std::string PackageFile::getAbsolutePath() const {
 }
 
 std::string PackageFile::getRelatedPackageName() const {
-    return this->relatedPackageName;
+    return this->relatedPackageName->string();
 }
 
 std::string PackageFile::getRelatedPackageVersion() const {
