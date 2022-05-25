@@ -50,8 +50,12 @@ uint_fast16_t Package::getNumberOfInstallationPackageFilesForDifferentVersions()
 }
 
 void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
-    bool isPackageNamesMatching = this->name->string() == packageRelatedPackageFile->getRelatedPackageName();
-    bool isPackageVersionDifferent = this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion();
+    bool isPackageNamesMatching =
+            *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
+
+    bool isPackageVersionDifferent =
+            this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion();
+
     bool isPackageNonignored = !this->isIgnored;
 
     if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {

@@ -29,6 +29,10 @@ public:
         return packageName->name < otherPackageName->name;
     }
 
+    bool operator==(const PackageName& anotherPackageName) const {
+        return PackageName::name == anotherPackageName.name;
+    }
+
 private:
     std::string name;
 };

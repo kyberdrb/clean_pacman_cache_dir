@@ -15,7 +15,7 @@ public:
     std::string getFilename() const;
 
     std::string getAbsolutePath() const;
-    std::string getRelatedPackageName() const;
+    const PackageName& getRelatedPackageName() const;
     std::string getRelatedPackageVersion() const;
 
     friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {

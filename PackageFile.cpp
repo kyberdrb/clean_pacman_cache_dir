@@ -24,8 +24,8 @@ std::string PackageFile::getAbsolutePath() const {
     return absolutePath;
 }
 
-std::string PackageFile::getRelatedPackageName() const {
-    return this->relatedPackageName.string();
+const PackageName& PackageFile::getRelatedPackageName() const {
+    return this->relatedPackageName;
 }
 
 std::string PackageFile::getRelatedPackageVersion() const {
