@@ -41,5 +41,6 @@ private:
     std::string filename;
     std::string absolutePath;
     const PackageName& relatedPackageName;
+//    std::reference_wrapper<const PackageName> relatedPackageName;
     std::string relatedPackageVersion;
 };
