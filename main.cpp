@@ -11,6 +11,8 @@
 #include <regex>
 #include <set>
 
+//#include <cassert>
+
 int main() {
     // FIND IGNORED PACKAGES PART - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
 
@@ -194,10 +196,14 @@ int main() {
                 //  - break out of the loop
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
+
+                // For debugging purposes
+//                assert(matchingPackage->get()->getNameAsReference().string() == packageWithInferredName->getName());
+
                 auto packageRelatedFile = std::make_unique<PackageFile>(
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
-                        std::move(packageWithInferredName->getName()),
+                        matchingPackage->get()->getNameAsReference(),
                         std::move(inferredPackageVersionAsText) );
 
                 matchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));

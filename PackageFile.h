@@ -10,7 +10,7 @@ class PackageFile {
 public:
     explicit PackageFile(std::string absolutePath);
 
-    PackageFile(std::string filename, std::string absolutePath, std::string relatedPackageName, std::string relatedPackageVersion);
+    PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, std::string relatedPackageVersion);
 
     std::string getFilename() const;
 
@@ -24,13 +24,22 @@ public:
             return os;
         }
 
-        os << packageFilename.filename << "\t" << *(packageFilename.relatedPackageName) << "\t" << packageFilename.relatedPackageVersion << "\t" << packageFilename.absolutePath;
+        os << packageFilename.filename;
+
+        // TODO 'relatedPackageName' refers to a temporary when PackageFile is constructed with the single argument 'absolutePath'
+        //  constructor, which may lead to undefined behavior when dereferenced here.
+        //  For now it's sufficient to check whether the 'filename' is empty
+        os << "\t" << packageFilename.relatedPackageName;
+
+        os << "\t" << packageFilename.relatedPackageVersion;
+        os << "\t" << packageFilename.absolutePath;
+
         return os;
     }
 
 private:
     std::string filename;
     std::string absolutePath;
-    std::unique_ptr<PackageName> relatedPackageName;
+    const PackageName& relatedPackageName;
     std::string relatedPackageVersion;
 };

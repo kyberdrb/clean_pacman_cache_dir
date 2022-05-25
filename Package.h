@@ -13,7 +13,7 @@ public:
 
     explicit Package(std::unique_ptr<PackageName> inferredPackageName);
 
-    std::string getName();
+    const PackageName& getNameAsReference() const;
 
     bool isPackageNameEmpty() const;
 

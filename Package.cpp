@@ -18,8 +18,8 @@ Package::Package(std::unique_ptr<PackageName> inferredPackageName) :
         name(std::move(inferredPackageName))
 {}
 
-std::string Package::getName() {
-    return this->name->string();
+const PackageName& Package::getNameAsReference() const {
+    return *(this->name);
 }
 
 bool Package::isPackageNameEmpty() const {
