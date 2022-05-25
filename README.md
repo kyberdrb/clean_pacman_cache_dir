@@ -3158,6 +3158,42 @@ struct PackageComparatorPredicate {
     - https://docs.microsoft.com/en-us/cpp/cpp/delegating-constructors?view=msvc-170
     - https://duckduckgo.com/?q=c%2B%2B+member+non+member+friend+function&t=ffab&ia=web
     - https://www.geeksforgeeks.org/difference-between-friend-function-and-member-function-in-cpp/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+return+string+by+value&ia=web
+    - https://stackoverflow.com/questions/31406585/what-is-better-return-stdstring-by-value-or-by-constant-reference
+    - https://en.wikipedia.org/wiki/Copy_elision#Return_value_optimization
+    - https://en.wikipedia.org/wiki/Side_effect_(computer_science)
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+return+string+by+value+const+reference&ia=web
+    - https://stackoverflow.com/questions/13507698/return-stdstring-as-const-reference
+    - https://stackoverflow.com/questions/13507698/return-stdstring-as-const-reference/13507917#13507917
+        - The problem of deciding how to return a non-trivial object from some sort of a container is actually non-trivial:
+
+            1. If the class from which you return your value imposes any sort of constraint on the object, you can't return a non-const reference because it would loose the possibility to enforce its invariants [i. e. `discarding qualifiers`]. Clearly, returning an object by non-const reference is only viable if object the member function is called on is also non-const. 
+
+            ...
+
+            3. Returning an object by value may incur a significant cost for copying the object.
+        - If you class is further a viable monitor you definitely want to return the object by value because otherwise the object can be mutated before the caller had any chance to copy it.
+        - Basically, none of the choices is ideal. When in doubt, I return by value unless the object is known to be expensive to copy in which case I might return by const&.
+
+    - https://stackoverflow.com/questions/13507698/return-stdstring-as-const-reference/13507934#13507934
+        - Returning by reference or const reference has no speed difference - both are very fast as they just return a reference to the original object, no copying is involved. 
+    - https://stackoverflow.com/questions/13507698/return-stdstring-as-const-reference/13510644#13510644
+        - The most common thing to do here would be to return the value as a const-reference, then you can use a reference or copy the value as necessary
+    - https://stackoverflow.com/questions/13507698/return-stdstring-as-const-reference/13507736#13507736
+        - Return it as a reference. If a copy is needed, it certainly can be made from that reference.
+    - https://stackoverflow.com/questions/10231349/are-the-days-of-passing-const-stdstring-as-a-parameter-over
+        - On my PC, using g++ 4.6.1, I got these results :
+            - variable by reference: 1000000000 iterations -> time elapsed: 2.25912 sec
+            - variable by value: 1000000000 iterations -> time elapsed: 27.2259 sec
+            - literal by reference: 100000000 iterations -> time elapsed: 9.10319 sec
+            - literal by value: 100000000 iterations -> time elapsed: 8.62659 sec
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+converting+constructor&ia=web
+    - https://en.cppreference.com/w/cpp/language/move_constructor
+    - https://duckduckgo.com/?q=c%2B%2B+move+class+member+variable&t=ffab&ia=web&iax=qa
+    - https://duckduckgo.com/?t=ffab&q=clang+tidy+c%2B%2B+constructor+must+explicitly+initialize+the+reference+member&ia=web&iax=qa
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+initialize+member+const+reference+to+empty+value&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+reference_wrapper&t=ffab&ia=web
+    - 
 - `libarchive`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
 - CMake, LLVM toolchain, `clang`, cross-compiling
