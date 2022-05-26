@@ -14,7 +14,6 @@ public:
     PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, const PackageVersion& relatedPackageVersion);
 
     std::string getFilename() const;
-
     std::string getAbsolutePath() const;
     const PackageName& getRelatedPackageName() const;
     const PackageVersion& getRelatedPackageVersion() const;

@@ -1,0 +1,156 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+/'
+interface InstallationPackageFile {
+    + {abstract} getAbsolutePath() : string
+    + {abstract} getFilename() : string
+}
+'/
+
+'InstallationPackageFile <|-- InstallationPackageFileForMissingPackage
+
+class InstallationPackageFileForMissingPackage {
+    + InstallationPackageFileForMissingPackage(\
+        \n    absolutePath : string)
+    + getAbsolutePath() : string
+    + getFilename() : string
+}
+
+'InstallationPackageFile <|-- InstallationPackageFileForMissingPackage
+
+class InstallationPackageFileForPartiallyDownloadedPackage {
+    + InstallationPackageFileForPartiallyDownloadedPackage(\
+        \n    absolutePath : string)
+    + getAbsolutePath() : string
+    + getFilename() : string
+}
+
+enum SimpleInstallationPackageFileType {
+    PARTIALLY_DOWNLOADED
+    MISSING_LOCALLY_INSTALLED_PACKAGE
+}
+
+class SimpleInstallationPackageFile {
+    + SimpleInstallationPackageFile(\
+        \n    absolutePath : string)
+    + getAbsolutePath() : AbsolutePath
+    + getFilename() : Filename
+    - absolutePath : AbsolutePath;
+    - filename : Filename;
+    - type : SimpleInstallationPackageFileType
+}
+
+class AbsolutePath {
+    + AbsolutePath(absolutePath : string)
+    + getAbsolutePath() : string
+    - absolutePath : string
+}
+
+class Filename {
+    + Filename(filename : string)
+    + getFilename() : string
+    - filename : string
+}
+
+SimpleInstallationPackageFile *-- AbsolutePath
+SimpleInstallationPackageFile *-- Filename
+SimpleInstallationPackageFile .. SimpleInstallationPackageFileType
+
+class InstallationPackageFileForPackageWithDifferentVersionThanLocallyInstalledOne {
+    + InstallationPackageFileForPackageWithDifferentVersionThanLocallyInstalledOne(\
+        \n    filname : string,\
+        \n    absolutePath : string,\
+        \n    relatedPackageName : PackageName,\
+        \n    relatedPackageVersion : PackageVersion)
+    + getAbsolutePath() : string
+    + getFilename() : string
+}
+
+'InstallationPackageFile <|-- InstallationPackageFileForInstalledPackage
+
+class InstallationPackageFileForLocallyInstalledPackage {
+    + InstallationPackageFileForLocallyInstalledPackage(\
+        \n    filname : string,\
+        \n    absolutePath : string,\
+        \n    relatedPackageName : PackageName,\
+        \n    relatedPackageVersion : PackageVersion)
+    + getAbsolutePath() : string
+    + getFilename() : string
+}
+
+enum ExtendedInstallationPackageFileType {
+    FOR_LOCALLY_INSTALLED_PACKAGE
+    FOR_DIFFERENT_VERSION_THAN_LOCALLY_INSTALLED
+}
+
+class ExtendedInstallationPackageFile {
+    + ExtendedInstallationPackageFile(\
+        \n    filname : string,\
+        \n    absolutePath : string,\
+        \n    relatedPackageName : PackageName,\
+        \n    relatedPackageVersion : PackageVersion)
+    + getAbsolutePath() : string
+    + getFilename() : string
+    + getRelatedPackageName() : PackageName
+    + getRelatedPackageVersion() : PackageVersion
+    - absolutePath : AbsolutePath;
+    - filename : Filename;
+    - relatedPackageName : PackageName;
+    - relatedPackageVersion : PackageVersion;
+    - type : ExtendedInstallationPackageFileType
+}
+
+ExtendedInstallationPackageFile *-- AbsolutePath
+ExtendedInstallationPackageFile *-- Filename
+ExtendedInstallationPackageFile .. ExtendedInstallationPackageFileType
+
+'Splitting one 'PackageFile' to two classes to avoid assigning reference member attributes to temporary values in single-argument constructor
+class PackageFile_previous_version {
+    + PackageFile(absolutePath : string) - Constructor for one class: SimpleInstallationPackageFile
+    + PackageFile(\                      - Constructor for another class: ExtendedInstallationPackageFile
+        \n    filname : string,\
+        \n    absolutePath : string,\
+        \n    relatedPackageName : PackageName,\
+        \n    relatedPackageVersion : PackageVersion)
+    + getAbsolutePath() : string
+    + getFilename() : string
+    + getRelatedPackageName() : PackageName
+    + getRelatedPackageVersion() : PackageVersion
+    - absolutePath : AbsolutePath;
+    - filename : Filename;
+    - relatedPackageName : PackageName;
+    - relatedPackageVersion : PackageVersion;
+    - type : ExtendedInstallationPackageFileType
+}
+@enduml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+Object[] elementData
+size()
+}
+
+enum TimeUnit {
+DAYS
+HOURS
+MINUTES
+}
+
+
+Class01 <|-- Class02
+Class03 *-- Class04
+Class05 o-- Class06
+Class07 .. Class08
+Class09 -- Class10

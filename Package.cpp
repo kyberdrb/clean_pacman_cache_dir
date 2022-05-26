@@ -15,14 +15,15 @@ Package::Package(std::unique_ptr<PackageName> packageName, std::unique_ptr<Packa
 {}
 
 Package::Package(std::unique_ptr<PackageName> inferredPackageName) :
-        name(std::move(inferredPackageName))
+        name(std::move(inferredPackageName)),
+        locallyInstalledVersion(std::make_unique<PackageVersion>(std::string{}) )
 {}
 
-const PackageName& Package::getNameAsReference() const {
+const PackageName& Package::getName() const {
     return *(this->name);
 }
 
-const PackageVersion& Package::getRelatedPackageVersionAsReference() const {
+const PackageVersion& Package::getLocallyInstalledVersion() const {
     return *(this->locallyInstalledVersion);
 }
 
@@ -60,6 +61,10 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
     bool isPackageVersionDifferent =
             *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
+    if (isPackageVersionDifferent) {
+        std::cerr << "this is what I was waiting for..." << "\n";
+    }
+
     bool isPackageNonignored = !this->isIgnored;
 
     if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {
@@ -68,7 +73,7 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
 }
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
-    for (const auto& packageFileForDeletion: this->packageFilesForDeletion) {
+    for (const auto& packageFileForDeletion : this->packageFilesForDeletion) {
         const std::string& from = packageFileForDeletion->getAbsolutePath();
         const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +
                 packageFileForDeletion->getFilename();

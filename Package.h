@@ -14,9 +14,9 @@ public:
 
     explicit Package(std::unique_ptr<PackageName> inferredPackageName);
 
-    const PackageName& getNameAsReference() const;
+    const PackageName& getName() const;
 
-    const PackageVersion& getRelatedPackageVersionAsReference() const;
+    const PackageVersion& getLocallyInstalledVersion() const;
 
     bool isPackageNameEmpty() const;
 

@@ -12,10 +12,6 @@ bool PackageVersion::empty() const {
     return this->version.empty();
 }
 
-const char& PackageVersion::at(size_t position) {
-    return this->version.at(position);
-}
-
 const std::string& PackageVersion::getVersion() const {
-    return version;
+    return PackageVersion::version;
 }
