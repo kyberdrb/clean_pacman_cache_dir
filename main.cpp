@@ -96,14 +96,22 @@ int main() {
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         bool isIgnored = false;
-        auto packageNameCopy = packageNameAsText;
-        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameCopy));
-        if(std::find(ignoredPackageNames.begin(), ignoredPackageNames.end(), ignoredPackageNameCandidate) != ignoredPackageNames.end()) {
+        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(packageNameAsText);
+
+        // For debugging purposes - if the argument is passed by value to a function, which accepts the argument as a value
+        //  the argument is __copied__ from the calling to the receiving function
+//        assert(packageNameAsText != "");
+
+        if( std::find(ignoredPackageNames.begin(), ignoredPackageNames.end(), ignoredPackageNameCandidate) != ignoredPackageNames.end() ) {
             isIgnored = true;
         }
 
-        packageNameCopy = packageNameAsText;
-        auto packageName = std::make_unique<PackageName>(std::move(packageNameCopy));
+        auto packageName = std::make_unique<PackageName>(std::move(packageNameAsText));
+
+        // For debugging purposes - if the argument is passed by value with 'std::move' to a function, which accepts the argument as a value
+        //  the argument is __moved__ from the calling to the receiving function
+//        assert(packageNameAsText == "");
+
         auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
         auto pkg = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 

@@ -3203,6 +3203,8 @@ struct PackageComparatorPredicate {
     - https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
     - https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
     - https://en.cppreference.com/w/cpp/algorithm/for_each
+- General programming
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
     - https://stackoverflow.com/questions/53879422/how-to-set-g-compile-options-in-clion
     - ---
