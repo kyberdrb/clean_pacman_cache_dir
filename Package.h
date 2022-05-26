@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PackageFile.h"
+#include "ExtendedInstallationPackageFile.h"
 #include "PackageName.h"
 #include "PackageVersion.h"
 
@@ -28,7 +28,7 @@ public:
 
     uint_fast16_t getNumberOfInstallationPackageFilesForDifferentVersions() const;
 
-    void addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile);
+    void addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
 
     void movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles);
 
@@ -43,8 +43,8 @@ public:
                     << "isPackageIgnored: " << package.isIgnored << "\t"
                     << *(package.name) << "-" << *(package.locallyInstalledVersion) << "-" << package.architecture;
 
-            if ( ! (package.packageFilesForDeletion.empty() ) ) {
-                for (const auto& packageRelatedFile: package.packageFilesForDeletion) {
+            if ( ! (package.installationPackageFilesForDifferentPackageVersions.empty() ) ) {
+                for (const auto& packageRelatedFile: package.installationPackageFilesForDifferentPackageVersions) {
                     out << "\n";
                     out << "  - " << *packageRelatedFile;
                 }
@@ -64,5 +64,5 @@ private:
     std::string architecture;
     bool isIgnored;
 
-    std::vector<std::unique_ptr<PackageFile>> packageFilesForDeletion;
+    std::vector<std::unique_ptr<ExtendedInstallationPackageFile>> installationPackageFilesForDifferentPackageVersions;
 };

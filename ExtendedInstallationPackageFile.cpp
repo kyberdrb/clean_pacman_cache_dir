@@ -2,9 +2,9 @@
 // Created by laptop on 4/21/22.
 //
 
-#include "PackageFile.h"
+#include "ExtendedInstallationPackageFile.h"
 
-PackageFile::PackageFile(std::string absolutePath) :
+ExtendedInstallationPackageFile::ExtendedInstallationPackageFile(std::string absolutePath) :
         filename(std::string{}),
         absolutePath(std::move(absolutePath)),
         relatedPackageName(*std::make_unique<PackageName>(std::string{}))  // I know it's a dirty and fragile solution - a hack - that
@@ -20,25 +20,25 @@ PackageFile::PackageFile(std::string absolutePath) :
 
 {}
 
-PackageFile::PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, std::unique_ptr<PackageVersion> packageVersionOfPackageFile) :
+ExtendedInstallationPackageFile::ExtendedInstallationPackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, std::unique_ptr<PackageVersion> packageVersionOfPackageFile) :
         filename(filename),
         absolutePath(absolutePath),
         relatedPackageName(relatedPackageName),
         packageVersionOfPackageFile(std::move(packageVersionOfPackageFile))
 {}
 
-std::string PackageFile::getFilename() const {
-    return filename;
+std::string ExtendedInstallationPackageFile::getFilename() const {
+    return this->filename;
 }
 
-std::string PackageFile::getAbsolutePath() const {
-    return absolutePath;
+std::string ExtendedInstallationPackageFile::getAbsolutePath() const {
+    return this->absolutePath;
 }
 
-const PackageName& PackageFile::getRelatedPackageName() const {
+const PackageName& ExtendedInstallationPackageFile::getRelatedPackageName() const {
     return this->relatedPackageName;
 }
 
-const PackageVersion& PackageFile::getRelatedPackageVersion() const {
+const PackageVersion& ExtendedInstallationPackageFile::getRelatedPackageVersion() const {
     return *(this->packageVersionOfPackageFile);
 }

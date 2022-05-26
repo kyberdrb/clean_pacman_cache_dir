@@ -51,10 +51,10 @@ uint8_t Package::getStartingPositionForPackageVersion() const {
 }
 
 uint_fast16_t Package::getNumberOfInstallationPackageFilesForDifferentVersions() const {
-    return this->packageFilesForDeletion.size();
+    return this->installationPackageFilesForDifferentPackageVersions.size();
 }
 
-void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> packageRelatedPackageFile) {
+void Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile) {
     bool isPackageNamesMatching =
             *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
 
@@ -69,12 +69,12 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
     bool isPackageNonignored = !this->isIgnored;
 
     if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {
-        this->packageFilesForDeletion.emplace_back(std::move(packageRelatedPackageFile));
+        this->installationPackageFilesForDifferentPackageVersions.emplace_back(std::move(packageRelatedPackageFile));
     }
 }
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
-    for (const auto& packageFileForDeletion : this->packageFilesForDeletion) {
+    for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
         const std::string& from = packageFileForDeletion->getAbsolutePath();
         const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +
                 packageFileForDeletion->getFilename();

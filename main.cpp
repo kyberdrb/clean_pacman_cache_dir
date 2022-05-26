@@ -4,6 +4,7 @@
 
 #include "alpm.h"
 #include "alpm_list.h"
+#include "SimpleInstallationPackageFile.h"
 
 #include <filesystem>
 #include <fstream>
@@ -128,19 +129,19 @@ int main() {
     //  PARTIALLY DOWNLOADED PACKAGE FILES AND
     //  PACKAGE FILES FOR MISSING PACKAGES
 
-    std::set<std::unique_ptr<PackageFile>> packageFilesRelatedToMissingPackages;
-    std::set<std::unique_ptr<PackageFile>> partlyDownloadedPackageFiles;
+    std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
+    std::set<std::unique_ptr<SimpleInstallationPackageFile>> partlyDownloadedPackageFiles;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
     std::filesystem::path aPath {pacmanCacheDir};
 
     for (const auto& packageFile : std::filesystem::directory_iterator(aPath)) {
-        const auto& packageFilenameAsText = packageFile.path().filename().string();
-        const auto& packageAbsolutePathAsText = packageFile.path().string();
         const auto& packageFileExtension = packageFile.path().extension().string();
+        const auto& packageAbsolutePathAsText = packageFile.path().string();
+        const auto& packageFilenameAsText = packageFile.path().filename().string();
 
         if (packageFileExtension == ".part") {
-            auto partlyDownloadedPackageFile= std::make_unique<PackageFile>(packageAbsolutePathAsText);
+            auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(packageAbsolutePathAsText, packageFilenameAsText);
             partlyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
             continue;
         }
@@ -206,8 +207,8 @@ int main() {
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
 
-                auto packageRelatedFile = std::make_unique<PackageFile>(
-                        packageFilenameAsText,
+                auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
+                        std::move(packageFilenameAsText),
                         packageAbsolutePathAsText,
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
@@ -218,7 +219,7 @@ int main() {
 
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
-                auto packageFileForMissingPackage = std::make_unique<PackageFile>(packageAbsolutePathAsText);
+                auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(packageAbsolutePathAsText, packageFilenameAsText);
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
         }
@@ -297,7 +298,8 @@ int main() {
     for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
             const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
             const std::string& to = pathToDuplicateFilesDirectoryAsText +
-                    partlyDownloadedPackageFile->getFilename();
+                    partlyDownloadedPackageFile->getFilename(); // TODO 'getFilename()' will be always empty - pass by value with 'std::move'
+                                                                // or deduce the filename in 'SimpleInstallationPackageFile::getFilename()' function
             std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
             std::filesystem::rename(from, to);
     }
