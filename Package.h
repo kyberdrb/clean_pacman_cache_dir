@@ -2,6 +2,7 @@
 
 #include "PackageFile.h"
 #include "PackageName.h"
+#include "PackageVersion.h"
 
 #include <string>
 #include <vector>
@@ -9,11 +10,13 @@
 
 class Package {
 public:
-    Package(std::unique_ptr<PackageName> packageName, std::string locallyInstalledVersion, std::string architecture, bool isIgnored);
+    Package(std::unique_ptr<PackageName> packageName, std::unique_ptr<PackageVersion> locallyInstalledVersion, std::string architecture, bool isIgnored);
 
     explicit Package(std::unique_ptr<PackageName> inferredPackageName);
 
     const PackageName& getNameAsReference() const;
+
+    const PackageVersion& getRelatedPackageVersionAsReference() const;
 
     bool isPackageNameEmpty() const;
 
@@ -33,12 +36,12 @@ public:
         out << *(package.name) << "\t";
 
         // Print the rest of fully constructed package
-        if ( ! package.locallyInstalledVersion.empty() ) {
+        if ( ! package.locallyInstalledVersion->empty() ) {
             out
-                    << package.locallyInstalledVersion << "\t"
+                    << *(package.locallyInstalledVersion) << "\t"
                     << package.architecture << "\t"
                     << "isPackageIgnored: " << package.isIgnored << "\t"
-                    << *(package.name) << "-" << package.locallyInstalledVersion << "-" << package.architecture;
+                    << *(package.name) << "-" << *(package.locallyInstalledVersion) << "-" << package.architecture;
 
             if ( ! (package.packageFilesForDeletion.empty() ) ) {
                 for (const auto& packageRelatedFile: package.packageFilesForDeletion) {
@@ -57,7 +60,7 @@ public:
 
 private:
     std::unique_ptr<PackageName> name;
-    std::string locallyInstalledVersion;
+    std::unique_ptr<PackageVersion> locallyInstalledVersion;
     std::string architecture;
     bool isIgnored;
 

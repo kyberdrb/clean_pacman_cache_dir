@@ -92,7 +92,7 @@ int main() {
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
         std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
-        std::string locallyInstalledVersion = alpm_pkg_get_version(alpm_pkg);
+        std::string locallyInstalledVersionAsText = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         bool isIgnored = false;
@@ -104,11 +104,8 @@ int main() {
 
         packageNameCopy = packageNameAsText;
         auto packageName = std::make_unique<PackageName>(std::move(packageNameCopy));
-        auto pkg = std::make_unique<Package>(
-                std::move(packageName),
-                locallyInstalledVersion,
-                architecture,
-                isIgnored);
+        auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
+        auto pkg = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 
         installedPackages.emplace(std::move(pkg));
     }
@@ -204,7 +201,7 @@ int main() {
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
                         matchingPackage->get()->getNameAsReference(),
-                        std::move(inferredPackageVersionAsText) );
+                        matchingPackage->get()->getRelatedPackageVersionAsReference());
 
                 matchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
                 break;

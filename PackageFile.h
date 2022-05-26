@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PackageName.h"
+#include "PackageVersion.h"
 
 #include <memory>
 #include <ostream>
@@ -10,13 +11,13 @@ class PackageFile {
 public:
     explicit PackageFile(std::string absolutePath);
 
-    PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, std::string relatedPackageVersion);
+    PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, const PackageVersion& relatedPackageVersion);
 
     std::string getFilename() const;
 
     std::string getAbsolutePath() const;
     const PackageName& getRelatedPackageName() const;
-    std::string getRelatedPackageVersion() const;
+    const PackageVersion& getRelatedPackageVersion() const;
 
     friend std::ostream& operator<<(std::ostream& os, const PackageFile& packageFilename) {
         if (packageFilename.filename.empty()) {
@@ -41,6 +42,5 @@ private:
     std::string filename;
     std::string absolutePath;
     const PackageName& relatedPackageName;
-//    std::reference_wrapper<const PackageName> relatedPackageName;
-    std::string relatedPackageVersion;
+    const PackageVersion& relatedPackageVersion;
 };

@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <iostream>
 
-Package::Package(std::unique_ptr<PackageName> packageName, std::string locallyInstalledVersion, std::string architecture, bool isIgnored) :
+Package::Package(std::unique_ptr<PackageName> packageName, std::unique_ptr<PackageVersion> locallyInstalledVersion, std::string architecture, bool isIgnored) :
         name(std::move(packageName)),
         locallyInstalledVersion(std::move(locallyInstalledVersion)),
         architecture(std::move(architecture)),
@@ -20,6 +20,10 @@ Package::Package(std::unique_ptr<PackageName> inferredPackageName) :
 
 const PackageName& Package::getNameAsReference() const {
     return *(this->name);
+}
+
+const PackageVersion& Package::getRelatedPackageVersionAsReference() const {
+    return *(this->locallyInstalledVersion);
 }
 
 bool Package::isPackageNameEmpty() const {
@@ -54,7 +58,7 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
             *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
 
     bool isPackageVersionDifferent =
-            this->locallyInstalledVersion != packageRelatedPackageFile->getRelatedPackageVersion();
+            *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
     bool isPackageNonignored = !this->isIgnored;
 
@@ -69,7 +73,7 @@ void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string path
         const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +
                 packageFileForDeletion->getFilename();
         std::cout << "Locally installed package:                    " <<
-                  *(this->name) << "-" << this->locallyInstalledVersion << "-" << this->architecture << "\n";
+                  *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture << "\n";
         std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
             std::filesystem::rename(from, to);
     }
