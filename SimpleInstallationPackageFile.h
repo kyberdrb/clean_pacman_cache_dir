@@ -15,8 +15,8 @@ class SimpleInstallationPackageFile {
 public:
     explicit SimpleInstallationPackageFile(std::string absolutePath, std::string filename);
 
-    std::string getAbsolutePath() const;
-    std::string getFilename() const;
+    const std::string& getAbsolutePath() const;
+    const std::string& getFilename() const;
 
     friend std::ostream& operator<<(std::ostream& out, const SimpleInstallationPackageFile& packageFilename) {
         out << packageFilename.filename;

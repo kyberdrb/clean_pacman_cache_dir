@@ -208,8 +208,8 @@ int main() {
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
-                        std::move(packageFilenameAsText),
                         packageAbsolutePathAsText,
+                        std::move(packageFilenameAsText),
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
@@ -219,7 +219,10 @@ int main() {
 
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
-                auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(packageAbsolutePathAsText, packageFilenameAsText);
+                auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(
+                        std::move(packageAbsolutePathAsText),
+                        std::move(packageFilenameAsText));
+
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
         }

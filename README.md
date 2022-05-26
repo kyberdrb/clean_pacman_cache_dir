@@ -3203,6 +3203,8 @@ struct PackageComparatorPredicate {
     - https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
     - https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
     - https://en.cppreference.com/w/cpp/algorithm/for_each
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
+    - https://www.geeksforgeeks.org/difference-between-argument-and-parameter-in-c-c-with-examples/
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
