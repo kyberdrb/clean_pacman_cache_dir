@@ -175,7 +175,7 @@ int main() {
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
-                auto matchingPackage = installedPackages.find(packageWithInferredName);
+                auto iteratorPointingToMatchingPackage = installedPackages.find(packageWithInferredName);
 
                 // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
                 //  trying to show the values for STL containers and smartpointer instances.
@@ -183,7 +183,7 @@ int main() {
 //                std::cout << *packageWithInferredName << "\n";
 
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
-                bool packageWithInferredNameIsMissing = matchingPackage == installedPackages.end();
+                bool packageWithInferredNameIsMissing = iteratorPointingToMatchingPackage == installedPackages.end();
                 if (packageWithInferredNameIsMissing) {
                     packageWithInferredName->getNextInferredPackageNameCandidate();
                     continue;
@@ -198,15 +198,15 @@ int main() {
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
 
                 // For debugging purposes
-//                assert(matchingPackage->get()->getNameAsReference().string() == packageWithInferredName->getName());
+//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName());
 
                 auto packageRelatedFile = std::make_unique<PackageFile>(
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
-                        matchingPackage->get()->getNameAsReference(),
+                        iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersionAsText) );
 
-                matchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+                iteratorPointingToMatchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
                 break;
             }
 
@@ -288,7 +288,7 @@ int main() {
         installedPackage->movePackageFilesForDifferentVersionsToSeparateDir(pathToDuplicateFilesDirectoryAsText);
     }
 
-    for (const auto& partlyDownloadedPackageFile: partlyDownloadedPackageFiles) {
+    for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
             const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
             const std::string& to = pathToDuplicateFilesDirectoryAsText +
                     partlyDownloadedPackageFile->getFilename();
@@ -296,7 +296,7 @@ int main() {
             std::filesystem::rename(from, to);
     }
 
-    for (const auto& packageFilesRelatedToMissingPackage: packageFilesRelatedToMissingPackages) {
+    for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
         const std::string& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
         const std::string& to = pathToDuplicateFilesDirectoryAsText +
                 packageFilesRelatedToMissingPackage->getFilename();
@@ -307,8 +307,11 @@ int main() {
     // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
     //  by not deleting the pikaur directories themselves, but by deleting all files within the pikaur directories
 
-    // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
-    //  by not deleting the pikaur directories themselves, but by deleting all files within the pikaur directories
+    // TODO completely clean all files ** only ** within the pikaur cache directory `"${HOME}/.cache/pikaur/"`
+
+    // TODO completely clean all contents within the pikaur cache directory `"${HOME}/.cache/pikaur/build/"`
+
+    // TODO ** selectively ** clean all contents within the pikaur cache directory `"${HOME}/.cache/pikaur/pkg/"
 
     return 0;
 }

@@ -18,7 +18,7 @@ Package::Package(std::unique_ptr<PackageName> inferredPackageName) :
         name(std::move(inferredPackageName))
 {}
 
-const PackageName& Package::getNameAsReference() const {
+const PackageName& Package::getName() const {
     return *(this->name);
 }
 
@@ -64,7 +64,7 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
 }
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
-    for (const auto& packageFileForDeletion: this->packageFilesForDeletion) {
+    for (const auto& packageFileForDeletion : this->packageFilesForDeletion) {
         const std::string& from = packageFileForDeletion->getAbsolutePath();
         const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +
                 packageFileForDeletion->getFilename();
