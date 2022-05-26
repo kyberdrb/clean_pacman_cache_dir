@@ -2994,9 +2994,6 @@ struct PackageComparatorPredicate {
     - https://cplusplus.com/forum/general/205795/
     - https://en.cppreference.com/w/cpp/utility/functional/greater
         - use `using namespace` i. e. `using` directive only in `.cpp` files
-    - https://duckduckgo.com/?t=ffab&q=using+directive+vs+declaration&ia=web
-    - https://www.programming4beginners.com/tutorial/chapter13/using-Directive-and-using-Declaration
-
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+custom+objects+operator+comparator&ia=web
     - https://www.reddit.com/r/cpp_questions/comments/p66t83/stdset_of_pointers_with_custom_comparator_and/
     - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
@@ -3036,27 +3033,22 @@ struct PackageComparatorPredicate {
     - https://www.quora.com/What-is-strict-weak-ordering-in-C++-sort
     - https://en.wikipedia.org/wiki/Weak_ordering#Axiomatizations
     - https://stackoverflow.com/questions/67357282/how-does-comparator-in-a-set-works-with-functor-in-c
-    - https://duckduckgo.com/?t=ffab&q=std%3A%3Atie&ia=web
-    - https://en.cppreference.com/w/cpp/utility/tuple/tie
-
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std%3A%3Aset+with+unique_ptr&ia=web
     - https://stackoverflow.com/questions/46458514/stdset-of-unique-ptr-range-insert
-
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+set+custom+objects+operator%3C&ia=web&iax=qa
     - https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
     - https://duckduckgo.com/?q=c%2B%2B+std+set+custom+objects+friend+operator%3C&t=ffab&ia=web&iax=qa
     - https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set#19871726
     - https://stackoverflow.com/questions/19871647/how-do-i-insert-objects-into-stl-set/19871721#19871721
-
     - https://duckduckgo.com/?q=c%2B%2B+no+matching+function+call+set+find+comparator&t=ffab&ia=web
     - https://stackoverflow.com/questions/21609490/stdfind-error-no-matching-function
     - https://duckduckgo.com/?t=ffab&q=std%3A%3Afind+set%3A%3Afind&ia=web
     - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset
     - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#comment1576902_1701083
-        - this is specific for sets and maps [i.e. datastructures implemented with RB Tree - for logarithmic - log(n) - complexity for `insert`/`push`/`emplace`, `delete` and `find` functions]. vectors, lists etc. don't have a find member function [sorted vector can have `binary_search` to get log(n) complexity for `find`, but other datastructures - mainly explicitly defined - have O(n) complexity].
+        - this is specific for sets and maps [i.e. datastructures implemented with RB Tree - for logarithmic - log(n) - complexity for `insert`/`push`/`emplace`, `delete` and `find` functions].  
+        `vector`s, `list`s etc. don't have a find member function [sorted vector can have `binary_search` to get log(n) complexity for `find`, but other datastructures - mainly explicitly defined and unsorted - have O(n) complexity].
     - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/1701855#1701855 - check if an element exists in `std::set` with `count` function
     - https://stackoverflow.com/questions/1701067/how-to-check-that-an-element-is-in-a-stdset/54197839#54197839 - check if an element exists in `std::set` with `contains` (C++20>) function
-
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+comparator+functor&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+pointers+smart+unique+comparator&ia=web
     - https://stackoverflow.com/questions/31562548/set-of-pointers-with-custom-comparator
@@ -3064,7 +3056,6 @@ struct PackageComparatorPredicate {
     - https://stackoverflow.com/questions/63213832/ordering-in-stdset-of-unique-pointers
     - https://duckduckgo.com/?q=c%2B%2B+ordering+less+set+of+unique+pointers+comparator+functor&t=ffab&ia=web
     - https://www.codegrepper.com/code-examples/cpp/c%2B%2B+custom+comparator+for+elements+in+set
-
     - https://duckduckgo.com/?q=c%2B%2B+std+binary_search+set+operator&t=ffab&ia=web&iax=about
     - https://stackoverflow.com/questions/18406479/binary-search-with-stdpair-using-a-custom-operator
     - https://en.cppreference.com/w/cpp/algorithm/binary_search
@@ -3078,15 +3069,6 @@ struct PackageComparatorPredicate {
                 - `std::contains` (C++20>)
                 - `std::any_of`
                 - `std::binary_search`
-
-    - https://duckduckgo.com/?q=c%2B%2B+std+binary_search+vector+unique&t=ffab&ia=web
-    - https://stackoverflow.com/questions/6919405/mystical-restriction-on-stdbinary-search?noredirect=1&lq=1
-        - **the type of the searched value passed to `std::binary_search` matches the type of elements that the `std::set` holds**
-    - https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
-    - https://en.cppreference.com/w/cpp/utility/functional/bind
-    - https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
-    - https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
-    - https://en.cppreference.com/w/cpp/algorithm/for_each
 - `regex`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
@@ -3121,10 +3103,10 @@ struct PackageComparatorPredicate {
     - https://duckduckgo.com/?t=ffab&q=find+custom+object+vector&ia=web
     - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects
     - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939278#6939278 - **...or search a vector of objects or of unique pointers with `find` and by overloading the equality operator as a public friend function for the type of elements the vector holds - uses only the class features, `vector` featres and C++ features only - all encapsulated in one class with only internal comparing mechanism - no external comparator mechanisms**
-- https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906 - **search vector of objects or unique pointers with `find_if` and a custom predicate:**
-    - **either a comparator as functor encapsulated in a separate class/file - encapsulated - the class the objects of the vector are elements of is left as-is - useful when the class file is read-only, reusable, simpler client (caller) code; increases number of files in a project...**
-- https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939290#6939290
-    - **...or a lambda function - disposable function - fewer lines of code; maybe more complicated to understand...**
+    - https://stackoverflow.com/questions/3450860/check-if-a-stdvector-contains-a-certain-object#3450906 - **search vector of objects or unique pointers with `find_if` and a custom predicate:**
+        - **either a comparator as functor encapsulated in a separate class/file - encapsulated - the class the objects of the vector are elements of is left as-is - useful when the class file is read-only, reusable, simpler client (caller) code; increases number of files in a project...**
+    - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects/6939290#6939290
+        - **...or a lambda function - disposable function - fewer lines of code; maybe more complicated to understand...**
     - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/6bb11e5fb9ba9d3f39a7084a3033bc805b89c829/Packages.cpp#L122
     - https://duckduckgo.com/?t=ffab&q=find+custom+object+vector&ia=web
     - https://stackoverflow.com/questions/6939129/how-to-use-stdfind-stdfind-if-with-a-vector-of-custom-class-objects
@@ -3150,6 +3132,22 @@ struct PackageComparatorPredicate {
 - own projects
     - duplicate_finder - TODO add Github link
     - EmployeeManagementSystem - TODO add Github link
+- UML / PlantUML
+    - https://duckduckgo.com/?t=ffab&q=uml+abstract+class&ia=web
+    - https://www.guru99.com/uml-class-diagram.html
+    - https://duckduckgo.com/?q=uml+abstract+method&t=ffab&ia=web
+    - https://stackoverflow.com/questions/12636575/uml-class-diagram-is-this-how-to-write-abstract-method-and-property
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+pure+virtual+class&ia=web
+    - https://plugins.jetbrains.com/plugin/7017-plantuml-integration
+    - https://plantuml.com/class-diagram
+    - https://duckduckgo.com/?t=ffab&q=plantuml+interface&ia=web
+    - https://blog.jetbrains.com/dotnet/2020/10/06/create-uml-diagrams-using-plantuml/
+    - https://duckduckgo.com/?t=ffab&q=plantuml+comment&ia=web
+    - https://plantuml.com/commons
+    - https://stackoverflow.com/questions/61398067/override-method-in-uml
+    - https://duckduckgo.com/?t=ffab&q=plantuml+line+break&ia=web
+    - https://forum.plantuml.net/13687/can-use-line-brake-in-note-generated-from-variable
+    - How to use PlantUML with Markdown - https://gist.github.com/noamtamim/f11982b28602bd7e604c233fbe9d910f
 - C++ specific
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
@@ -3193,9 +3191,18 @@ struct PackageComparatorPredicate {
     - https://duckduckgo.com/?t=ffab&q=clang+tidy+c%2B%2B+constructor+must+explicitly+initialize+the+reference+member&ia=web&iax=qa
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+initialize+member+const+reference+to+empty+value&ia=web
     - https://duckduckgo.com/?q=c%2B%2B+reference_wrapper&t=ffab&ia=web
-    - 
-- `libarchive`
-    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
+    - https://duckduckgo.com/?t=ffab&q=using+directive+vs+declaration&ia=web
+    - https://www.programming4beginners.com/tutorial/chapter13/using-Directive-and-using-Declaration
+    - https://duckduckgo.com/?t=ffab&q=std%3A%3Atie&ia=web
+    - https://en.cppreference.com/w/cpp/utility/tuple/tie
+    - https://duckduckgo.com/?q=c%2B%2B+std+binary_search+vector+unique&t=ffab&ia=web
+    - https://stackoverflow.com/questions/6919405/mystical-restriction-on-stdbinary-search?noredirect=1&lq=1
+        - **the type of the searched value passed to `std::binary_search` needs to matche the type of elements that the `std::set`, or any other datastructure it iterates through,  holds**
+    - https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
+    - https://en.cppreference.com/w/cpp/utility/functional/bind
+    - https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t
+    - https://duckduckgo.com/?t=ffab&q=std%3A%3Afor_each&ia=web
+    - https://en.cppreference.com/w/cpp/algorithm/for_each
 - CMake, LLVM toolchain, `clang`, cross-compiling
     - https://stackoverflow.com/questions/53879422/how-to-set-g-compile-options-in-clion
     - ---
@@ -3247,3 +3254,5 @@ struct PackageComparatorPredicate {
     - https://blog.jetbrains.com/clion/2019/10/clion-2019-3-eap-ninja-cmake-generators/
     - https://duckduckgo.com/?t=ffab&q=clion+lldb+error%3A+unknown+option%3A+--interpreter%3Dmi2&ia=web
   - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1
+- `libarchive`
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa

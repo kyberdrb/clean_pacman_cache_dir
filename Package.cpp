@@ -61,9 +61,10 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<PackageFile> pa
     bool isPackageVersionDifferent =
             *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
-    if (isPackageVersionDifferent) {
-        std::cerr << "this is what I was waiting for..." << "\n";
-    }
+    // For debugging purposes
+//    if (isPackageVersionDifferent) {
+//        std::cerr << "this is what I was waiting for..." << "\n";
+//    }
 
     bool isPackageNonignored = !this->isIgnored;
 

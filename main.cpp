@@ -286,7 +286,7 @@ int main() {
         installedPackage->movePackageFilesForDifferentVersionsToSeparateDir(pathToDuplicateFilesDirectoryAsText);
     }
 
-    for (const auto& partlyDownloadedPackageFile: partlyDownloadedPackageFiles) {
+    for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
             const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
             const std::string& to = pathToDuplicateFilesDirectoryAsText +
                     partlyDownloadedPackageFile->getFilename();
