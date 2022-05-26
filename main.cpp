@@ -186,6 +186,9 @@ int main() {
                     continue;
                 }
 
+                // For debugging purposes
+//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName());
+
                 // if the key WAS found,
                 //  - infer the package version from the compound package name and version,
                 //  - create a package file with filename, absolute path and package version
@@ -193,15 +196,13 @@ int main() {
                 //  - break out of the loop
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
-
-                // For debugging purposes
-//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName());
+                auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
 
                 auto packageRelatedFile = std::make_unique<PackageFile>(
                         packageFilenameAsText,
                         packageAbsolutePathAsText,
                         iteratorPointingToMatchingPackage->get()->getName(),
-                        iteratorPointingToMatchingPackage->get()->getLocallyInstalledVersion());
+                        std::move(inferredPackageVersion));
 
                 iteratorPointingToMatchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
                 break;

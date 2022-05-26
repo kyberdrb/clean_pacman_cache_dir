@@ -11,7 +11,7 @@ class PackageFile {
 public:
     explicit PackageFile(std::string absolutePath);
 
-    PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, const PackageVersion& relatedPackageVersion);
+    PackageFile(std::string filename, std::string absolutePath, const PackageName& relatedPackageName, const std::unique_ptr<PackageVersion> relatedPackageVersion);
 
     std::string getFilename() const;
     std::string getAbsolutePath() const;
@@ -31,7 +31,7 @@ public:
         //  For now it's sufficient to check whether the 'filename' is empty
         os << "\t" << packageFilename.relatedPackageName;
 
-        os << "\t" << packageFilename.relatedPackageVersion;
+        os << "\t" << *(packageFilename.packageVersionOfPackageFile);
         os << "\t" << packageFilename.absolutePath;
 
         return os;
@@ -41,5 +41,5 @@ private:
     std::string filename;
     std::string absolutePath;
     const PackageName& relatedPackageName;
-    const PackageVersion& relatedPackageVersion;
+    std::unique_ptr<PackageVersion> packageVersionOfPackageFile;
 };
