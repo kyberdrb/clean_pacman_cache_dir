@@ -46,7 +46,7 @@ void Package::getNextInferredPackageNameCandidate() {
     }
 }
 
-uint8_t Package::getStartingPositionForPackageVersion() const {
+uint_fast8_t Package::getStartingPositionForPackageVersion() const {
     return this->name->size() + 1;
 }
 
@@ -73,7 +73,7 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstall
     }
 }
 
-void Package::movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles) {
+void Package::movePackageFilesForDifferentVersionsToSeparateDir(const std::string& pathToDirectoryForOtherVersionsOfPackageFiles) {
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
         const std::string& from = packageFileForDeletion->getAbsolutePath();
         const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +

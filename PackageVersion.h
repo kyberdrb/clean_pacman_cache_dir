@@ -12,7 +12,6 @@ public:
     explicit PackageVersion(std::string packageVersionAsText);
 
     bool empty() const;
-    const char& at(size_t position);
 
     const std::string& getVersion() const;
 

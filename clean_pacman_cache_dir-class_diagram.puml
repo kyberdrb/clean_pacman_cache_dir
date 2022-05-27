@@ -1,0 +1,96 @@
+@startuml
+skinparam nodesep 80
+skinparam ranksep 100
+
+class main
+
+class IgnoredPackageName {
+    + IgnoredPackageName(\
+        \n    ignoredPackageName : string)
+    - name : string
+}
+
+main *-u-> "ignoredPackageNames\n0..*" IgnoredPackageName
+
+class Package {
+    + Package(\
+        \n    packageName : PackageName,\
+        \n    locallyInstalledVersion : PackageVersion\
+        \n    architecture : string\
+        \n    isIgnored : bool)
+    + Package(inferredPackageName : PackageName)
+    + getName() : PackageName
+    + getLocallyInstalledVersion() : PackageVersion
+    + isPackageNameEmpty() : bool
+    + hasStillSomethingInPackageName() : bool
+    + getNextInferredPackageNameCandidate() : void
+    + getStartingPositionForPackageVersion() : uint_fast8_t
+    + getNumberOfInstallationPackageFilesForDifferentVersions()\
+        \n    : uint_fast16_t
+    + addPackageFileToDeletionCandidates(\
+        \n    packageRelatedPackageFile : PackageFile) : void
+    + movePackageFilesForDifferentVersionsToSeparateDir(\
+        \n        pathToDirectoryForOtherVersionsOfPackageFiles : string)\
+        \n    : void
+
+    - std::unique_ptr<PackageName> name;
+    - std::unique_ptr<PackageVersion> locallyInstalledVersion;
+    - std::string architecture;
+    - bool isIgnored;
+
+    - installationPackageFilesForDifferentPackageVersions :\
+        \n    std::vector<PackageFile>>
+}
+
+main *-r-> "installedPackages\n0..*" Package
+Package *--> PackageName
+Package *--> PackageVersion
+Package *---> "^ installationPackageFilesForDifferentPackageVersions\n0..*" PackageFile
+
+class PackageFile {
+    + PackageFile(absolutePath : string)
+    + PackageFile(\
+        \n    filname : string,\
+        \n    absolutePath : string,\
+        \n    relatedPackageName : PackageName,\
+        \n    relatedPackageVersion : PackageVersion)
+    + getAbsolutePath() : string
+    + getFilename() : string
+    + getRelatedPackageName() : PackageName
+    + getRelatedPackageVersion() : PackageVersion
+    - absolutePath : AbsolutePath;
+    - filename : Filename;
+    - relatedPackageName : PackageName;
+    - relatedPackageVersion : PackageVersion;
+    - type : ExtendedInstallationPackageFileType
+}
+
+main *--> "partiallyDownloadedPackageFiles ->\n0..*" PackageFile
+main *--> "<- packageFilesRelatedToMissingPackages\n0..*" PackageFile
+PackageFile o-r-> "relatedPackageName\n1" PackageName : " references ""PackageName"" from ""Package"""
+PackageFile *--> "relatedPackageVersion 1 ->" PackageVersion
+
+class PackageName {
+    + PackageName(name : string)
+    + empty() : bool
+    + at(position : size_t) : char
+    + size() : size_t
+    + pop_back() : void
+    + string() : string
+
+    - name : string;
+}
+
+main *--> PackageName
+
+class PackageVersion {
+    + PackageVersion(\
+        \n    packageVersionAsText : string)
+    + empty() : bool
+    + getVersion() : string
+
+    - version : string;
+}
+
+main *--> PackageVersion
+@enduml

@@ -24,13 +24,13 @@ public:
 
     void getNextInferredPackageNameCandidate();
 
-    uint8_t getStartingPositionForPackageVersion() const;
+    uint_fast8_t getStartingPositionForPackageVersion() const;
 
     uint_fast16_t getNumberOfInstallationPackageFilesForDifferentVersions() const;
 
     void addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
 
-    void movePackageFilesForDifferentVersionsToSeparateDir(std::string pathToDirectoryForOtherVersionsOfPackageFiles);
+    void movePackageFilesForDifferentVersionsToSeparateDir(const std::string& pathToDirectoryForOtherVersionsOfPackageFiles);
 
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
         out << *(package.name) << "\t";

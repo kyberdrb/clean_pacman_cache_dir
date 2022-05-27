@@ -1,6 +1,5 @@
 @startuml
 
-'
 'Proposed solutions to avoid assigning reference member attributes to temporary values in single-argument constructor:
 ' - Inheritance/Implementation of interface - a class with only pure virtual functions with commonfunctions
 '   - overkill/not necessary - I don't use them in one container, neither I want to complicate my code with abstractions for simplicity and understandability
@@ -8,9 +7,9 @@
 '   - to two classes
 '   - then encapsulate the 'string' type 'filname' and 'absolutePath' member variables to custom defined classes 'Filename' and 'AbsolutePath' for expressivenes
 '   - Accepted solution
-class PackageFile-previous_version {
-    + PackageFile(absolutePath : string) [Constructor for one class: SimpleInstallationPackageFile]
-    + PackageFile( [Constructor for another class: ExtendedInstallationPackageFile]\
+class PackageFile {
+    + PackageFile(absolutePath : string)
+    + PackageFile(\
         \n    filname : string,\
         \n    absolutePath : string,\
         \n    relatedPackageName : PackageName,\
@@ -25,6 +24,10 @@ class PackageFile-previous_version {
     - relatedPackageVersion : PackageVersion;
     - type : ExtendedInstallationPackageFileType
 }
+
+note top of PackageFile: previous version of ""PakcageFile"" class
+note top of PackageFile: note right: First constructor for one class: ""SimpleInstallationPackageFile""
+note right of PackageFile: note right: Second constructor for another class ""ExtendedInstallationPackageFile""
 
 'Analysis
 

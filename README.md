@@ -3148,6 +3148,80 @@ struct PackageComparatorPredicate {
     - https://duckduckgo.com/?t=ffab&q=plantuml+line+break&ia=web
     - https://forum.plantuml.net/13687/can-use-line-brake-in-note-generated-from-variable
     - How to use PlantUML with Markdown - https://gist.github.com/noamtamim/f11982b28602bd7e604c233fbe9d910f
+    - https://forum.plantuml.net/3720/how-do-you-change-the-font-used-for-monospaced-style-text
+        - PlantUML monospaced text
+
+        ```
+        ""this is monospaced""
+        ```
+    - https://forum.plantuml.net/977/change-a-distance-between-classes
+        - Increase/Decrease distance between classes/entities in PlantUML diagrams with
+
+            ```
+            skinparam nodesep 10
+            skinparam ranksep 20
+            ```
+    - https://duckduckgo.com/?t=ffab&q=plantuml+adjust+label+position&ia=web
+    - https://stackoverflow.com/questions/45103284/plantuml-define-relative-position-of-components
+    - https://stackoverflow.com/questions/45103284/plantuml-define-relative-position-of-components/67149595#67149595
+        - Specify preferred arrow direction in a relationship between entities with
+
+            ```
+            -l->
+            -r->
+            -u->
+            -d->
+            ```
+
+            or
+
+            ```
+            -lelft->
+            -right->
+            -up->
+            -down->
+            ```
+
+    - https://graphviz.org/
+        - Graphviz - The graphics engine that PlantUML uses
+    - https://duckduckgo.com/?t=ffab&q=plantuml+relative+label+position&ia=web
+    - https://stackoverflow.com/questions/48712801/how-to-correct-plantuml-line-path
+    - https://stackoverflow.com/questions/48712801/how-to-correct-plantuml-line-path/48735216#48735216
+        - Typical workarounds that I've seen or used include:
+            - adding hidden lines a -[hidden]- b
+            - extending the length of a line a --- b (more dashes, longer line)
+            - specifying preferred direction of lines (a -left- b)
+            - swapping association ends (a -- b → b -- a)
+            - changing the order of definitions (the order does matter... sometimes)
+            - adding empty nodes with background/border colors set to Transparent
+    - https://stackoverflow.com/questions/48712801/how-to-correct-plantuml-line-path/48735216#comment101108492_48735216
+        - `together` keyword for groupping entities
+
+            ```
+            together group1 { class a class b }  together group2 {  class c  class d }  group1 -[hidden]- group2
+            ```
+    - https://stackoverflow.com/questions/48712801/how-to-correct-plantuml-line-path/48804742#48804742
+        - changing line type
+
+            ```
+            skinparam linetype polyline
+            skinparam linetype ortho
+            ```
+    - https://stackoverflow.com/questions/48712801/how-to-correct-plantuml-line-path/61795202#61795202
+        - To make a connection less important in the layout, use `[norank]`
+
+            ```
+            a -[norank]-> b
+            ```
+    - https://stackoverflow.com/questions/48712801/how-to-correct-plantuml-line-path/48740023#48740023
+        - so for some reason adding the duplicated command both ways solves it.
+
+            ```
+            order -down- publisher
+            publisher -[hidden]up- order
+            ```
+    - PlantUML: Label on relations - https://plantuml.com/class-diagram#4a705b44651caa59
+    - PlantUML: Notes and stereotypes - https://plantuml.com/class-diagram#59c91a18bcc97bb0
 - C++ specific
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web

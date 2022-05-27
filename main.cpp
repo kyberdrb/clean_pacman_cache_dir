@@ -130,7 +130,7 @@ int main() {
     //  PACKAGE FILES FOR MISSING PACKAGES
 
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
-    std::set<std::unique_ptr<SimpleInstallationPackageFile>> partlyDownloadedPackageFiles;
+    std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
     std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
@@ -142,7 +142,7 @@ int main() {
 
         if (packageFileExtension == ".part") {
             auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(packageAbsolutePathAsText, packageFilenameAsText);
-            partlyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
+            partiallyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
             continue;
         }
 
@@ -273,9 +273,9 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF PARTLY DOWNLOADED PACKAGE FILES\n\n";
 
-    std::cout << "Found " << partlyDownloadedPackageFiles.size() << " partly downloaded package files\n\n";
+    std::cout << "Found " << partiallyDownloadedPackageFiles.size() << " partly downloaded package files\n\n";
 
-    for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
+    for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
         std::cout << *partlyDownloadedPackageFile << "\n";
     }
 
@@ -303,7 +303,7 @@ int main() {
         installedPackage->movePackageFilesForDifferentVersionsToSeparateDir(pathToDuplicateFilesDirectoryAsText);
     }
 
-    for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
+    for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
             const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
             const std::string& to = pathToDuplicateFilesDirectoryAsText +
                     partlyDownloadedPackageFile->getFilename();
