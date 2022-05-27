@@ -1,14 +1,32 @@
 @startuml
-'https://plantuml.com/class-diagram
 
-/'
-interface InstallationPackageFile {
-    + {abstract} getAbsolutePath() : string
-    + {abstract} getFilename() : string
+'
+'Proposed solutions to avoid assigning reference member attributes to temporary values in single-argument constructor:
+' - Inheritance/Implementation of interface - a class with only pure virtual functions with commonfunctions
+'   - overkill/not necessary - I don't use them in one container, neither I want to complicate my code with abstractions for simplicity and understandability
+' - Splitting one 'PackageFile'
+'   - to two classes
+'   - then encapsulate the 'string' type 'filname' and 'absolutePath' member variables to custom defined classes 'Filename' and 'AbsolutePath' for expressivenes
+'   - Accepted solution
+class PackageFile-previous_version {
+    + PackageFile(absolutePath : string) [Constructor for one class: SimpleInstallationPackageFile]
+    + PackageFile( [Constructor for another class: ExtendedInstallationPackageFile]\
+        \n    filname : string,\
+        \n    absolutePath : string,\
+        \n    relatedPackageName : PackageName,\
+        \n    relatedPackageVersion : PackageVersion)
+    + getAbsolutePath() : string
+    + getFilename() : string
+    + getRelatedPackageName() : PackageName
+    + getRelatedPackageVersion() : PackageVersion
+    - absolutePath : AbsolutePath;
+    - filename : Filename;
+    - relatedPackageName : PackageName;
+    - relatedPackageVersion : PackageVersion;
+    - type : ExtendedInstallationPackageFileType
 }
-'/
 
-'InstallationPackageFile <|-- InstallationPackageFileForMissingPackage
+'Analysis
 
 class InstallationPackageFileForMissingPackage {
     + InstallationPackageFileForMissingPackage(\
@@ -16,8 +34,6 @@ class InstallationPackageFileForMissingPackage {
     + getAbsolutePath() : string
     + getFilename() : string
 }
-
-'InstallationPackageFile <|-- InstallationPackageFileForMissingPackage
 
 class InstallationPackageFileForPartiallyDownloadedPackage {
     + InstallationPackageFileForPartiallyDownloadedPackage(\
@@ -67,8 +83,6 @@ class InstallationPackageFileForPackageWithDifferentVersionThanLocallyInstalledO
     + getFilename() : string
 }
 
-'InstallationPackageFile <|-- InstallationPackageFileForInstalledPackage
-
 class InstallationPackageFileForLocallyInstalledPackage {
     + InstallationPackageFileForLocallyInstalledPackage(\
         \n    filname : string,\
@@ -104,53 +118,4 @@ class ExtendedInstallationPackageFile {
 ExtendedInstallationPackageFile *-- AbsolutePath
 ExtendedInstallationPackageFile *-- Filename
 ExtendedInstallationPackageFile .. ExtendedInstallationPackageFileType
-
-'Splitting one 'PackageFile' to two classes to avoid assigning reference member attributes to temporary values in single-argument constructor
-class PackageFile_previous_version {
-    + PackageFile(absolutePath : string) - Constructor for one class: SimpleInstallationPackageFile
-    + PackageFile(\                      - Constructor for another class: ExtendedInstallationPackageFile
-        \n    filname : string,\
-        \n    absolutePath : string,\
-        \n    relatedPackageName : PackageName,\
-        \n    relatedPackageVersion : PackageVersion)
-    + getAbsolutePath() : string
-    + getFilename() : string
-    + getRelatedPackageName() : PackageName
-    + getRelatedPackageVersion() : PackageVersion
-    - absolutePath : AbsolutePath;
-    - filename : Filename;
-    - relatedPackageName : PackageName;
-    - relatedPackageVersion : PackageVersion;
-    - type : ExtendedInstallationPackageFileType
-}
 @enduml
-
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
-}
-
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
-}
-
-
-Class01 <|-- Class02
-Class03 *-- Class04
-Class05 o-- Class06
-Class07 .. Class08
-Class09 -- Class10

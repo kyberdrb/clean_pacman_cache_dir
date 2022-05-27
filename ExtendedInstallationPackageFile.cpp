@@ -4,7 +4,6 @@
 
 #include "ExtendedInstallationPackageFile.h"
 
-// TODO swap position of parameters 'filename' and 'absolutePath'
 ExtendedInstallationPackageFile::ExtendedInstallationPackageFile(std::string absolutePath, std::string filename, const PackageName& relatedPackageName, std::unique_ptr<PackageVersion> packageVersionOfPackageFile) :
         absolutePath(std::move(absolutePath)),
         filename(std::move(filename)),

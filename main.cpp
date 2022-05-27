@@ -133,9 +133,9 @@ int main() {
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partlyDownloadedPackageFiles;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
-    std::filesystem::path aPath {pacmanCacheDir};
+    std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
 
-    for (const auto& packageFile : std::filesystem::directory_iterator(aPath)) {
+    for (const auto& packageFile : std::filesystem::directory_iterator(pacmanCacheDirPath)) {
         const auto& packageFileExtension = packageFile.path().extension().string();
         const auto& packageAbsolutePathAsText = packageFile.path().string();
         const auto& packageFilenameAsText = packageFile.path().filename().string();
@@ -155,14 +155,15 @@ int main() {
             // strip the extensions and architecture from package filename leaving only package name and package version
             //  I couldn't find out how to do first-match or non-greedy replace with regex_replace,
             //  so I'm writing my own algorithm
-            auto pkgFilenameAsText = packageFilenameAsText;
-            std::reverse(pkgFilenameAsText.begin(), pkgFilenameAsText.end());
+            std::reverse(
+                    ( *(const_cast<std::string*>(&packageFilenameAsText) ) ).begin(),
+                    ( *(const_cast<std::string*>(&packageFilenameAsText) ) ).end() );
             std::stringstream packageNameAndVersionReversed{};
             char delimiter = '-';
             bool stillSearchingForFirstDelimiterOccurence = true;
 
             //find the first dash '-' in the reversed filename and append everything after
-            for (auto character : pkgFilenameAsText) {
+            for (auto character : packageFilenameAsText) {
                 if (character != delimiter && stillSearchingForFirstDelimiterOccurence) {
                     continue;
                 }
@@ -170,6 +171,10 @@ int main() {
                 stillSearchingForFirstDelimiterOccurence = false;
                 packageNameAndVersionReversed << character;
             }
+
+            // reverse the package filename back - by getting the filename as string again?
+            (*(const_cast<std::string*>(&packageFilenameAsText)))
+                    .assign( packageFile.path().filename().string() );
 
             auto packageNameAndVersion = packageNameAndVersionReversed.str();
             std::reverse(packageNameAndVersion.begin(), packageNameAndVersion.end());
@@ -209,7 +214,7 @@ int main() {
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
                         packageAbsolutePathAsText,
-                        std::move(packageFilenameAsText),
+                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ),
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
@@ -220,8 +225,8 @@ int main() {
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
                 auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(
-                        std::move(packageAbsolutePathAsText),
-                        std::move(packageFilenameAsText));
+                        std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ),
+                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
@@ -301,8 +306,7 @@ int main() {
     for (const auto& partlyDownloadedPackageFile : partlyDownloadedPackageFiles) {
             const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
             const std::string& to = pathToDuplicateFilesDirectoryAsText +
-                    partlyDownloadedPackageFile->getFilename(); // TODO 'getFilename()' will be always empty - pass by value with 'std::move'
-                                                                // or deduce the filename in 'SimpleInstallationPackageFile::getFilename()' function
+                    partlyDownloadedPackageFile->getFilename();
             std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
             std::filesystem::rename(from, to);
     }

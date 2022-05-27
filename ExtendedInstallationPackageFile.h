@@ -26,6 +26,7 @@ public:
 
 private:
     std::string absolutePath;
+//    std::unique_ptr<AbsolutePath> absolutePath;
     std::string filename;
     const PackageName& relatedPackageName;
     std::unique_ptr<PackageVersion> packageVersionOfPackageFile;
