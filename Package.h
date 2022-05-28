@@ -4,9 +4,7 @@
 #include "PackageName.h"
 #include "PackageVersion.h"
 
-#include <string>
 #include <vector>
-#include <ostream>
 
 class Package {
 public:

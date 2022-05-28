@@ -1,10 +1,9 @@
 #include "IgnoredPackageName.h"
 #include "Package.h"
-//#include "PackageComparator.h"
+#include "SimpleInstallationPackageFile.h"
 
 #include "alpm.h"
 #include "alpm_list.h"
-#include "SimpleInstallationPackageFile.h"
 
 #include <filesystem>
 #include <fstream>

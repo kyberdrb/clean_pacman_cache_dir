@@ -7,10 +7,6 @@
 #include "PackageName.h"
 #include "PackageVersion.h"
 
-#include <memory>
-#include <ostream>
-#include <string>
-
 class SimpleInstallationPackageFile {
 public:
     explicit SimpleInstallationPackageFile(std::string absolutePath, std::string filename);

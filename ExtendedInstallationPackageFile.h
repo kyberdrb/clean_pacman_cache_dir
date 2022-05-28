@@ -3,10 +3,6 @@
 #include "PackageName.h"
 #include "PackageVersion.h"
 
-#include <memory>
-#include <ostream>
-#include <string>
-
 class ExtendedInstallationPackageFile {
 public:
     ExtendedInstallationPackageFile(std::string absolutePath, std::string filename, const PackageName& relatedPackageName, std::unique_ptr<PackageVersion> relatedPackageVersion);
