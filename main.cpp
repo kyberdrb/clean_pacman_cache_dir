@@ -201,7 +201,7 @@ int main() {
                 }
 
                 // For debugging purposes
-//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName());
+//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().string());
 
                 // if the key WAS found,
                 //  - infer the package version from the compound package name and version,

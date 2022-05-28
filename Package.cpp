@@ -23,10 +23,6 @@ const PackageName& Package::getName() const {
     return *(this->name);
 }
 
-const PackageVersion& Package::getLocallyInstalledVersion() const {
-    return *(this->locallyInstalledVersion);
-}
-
 bool Package::isPackageNameEmpty() const {
     return this->name->empty();
 }

@@ -16,8 +16,6 @@ public:
 
     const PackageName& getName() const;
 
-    const PackageVersion& getLocallyInstalledVersion() const;
-
     bool isPackageNameEmpty() const;
 
     bool hasStillSomethingInPackageName() const;
@@ -55,7 +53,8 @@ public:
     }
 
     friend bool operator<(const std::unique_ptr<Package>& package, const std::unique_ptr<Package>& anotherPackage) {
-        return package->name < anotherPackage->name; // Delegate comparison to overloaded 'operator<' defined as 'friend bool operator<(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)' in 'PackageName' class
+        // Delegate comparison to overloaded 'operator<' defined as 'friend bool operator<(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)' in 'PackageName' class
+        return package->name < anotherPackage->name;
     }
 
 private:

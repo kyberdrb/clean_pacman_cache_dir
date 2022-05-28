@@ -3222,6 +3222,35 @@ struct PackageComparatorPredicate {
             ```
     - PlantUML: Label on relations - https://plantuml.com/class-diagram#4a705b44651caa59
     - PlantUML: Notes and stereotypes - https://plantuml.com/class-diagram#59c91a18bcc97bb0
+    - https://duckduckgo.com/?q=aggregation+association+lifetime&t=ffab&ia=web
+    - https://github-wiki-see.page/m/sukhoi1/Patterns-UML/wiki/000.-UML-Object-Lifetime%3A-Aggregation%2C-Composition%2C-Association
+    - https://github.com/sukhoi1/Patterns-UML/wiki/000.-UML-Object-Lifetime:-Aggregation%2C-Composition%2C-Association
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+uml+reference+member+association+aggregation&ia=web
+    - https://stackoverflow.com/questions/25779394/c-association-aggregation-and-composition
+    - https://stackoverflow.com/questions/25779394/c-association-aggregation-and-composition/25914787#25914787
+        - **I'm going to ignore Aggregation. It is not a very clearly defined concept and in my opinion it causes more confusion than it is worth. Composition and Association are quite enough, Craig Larman told me so. It might not be the answer your instructor was looking for but it is unlikely to be implemented in C++ any differently to Association anyway.**
+    - https://stackoverflow.com/questions/9640885/uml-aggregation-vs-association
+    - https://stackoverflow.com/questions/9640885/uml-aggregation-vs-association/9643017#9643017
+        - **Rumbaugh's statement is the most telling and Uncle Bob's good advice. As I've said elsewhere, Aggregation is semantically so weak as to offer nothing practically beneficial. It only has one valid corner case (acyclicity of recursive relationships) however few people know and understand that. So you end up having to point out in comments anyway.**  
+        **I just don't use it. And have never felt any loss. Stick with simple binary associations and focus on what really matters - getting the cardinality and naming right.** You'll get far more from that than trying to decide the undecidable association vs. aggregation.
+        - ---
+        - **Composition** - the lifetime/lifecycle of an instance created from a class and the member variable/attribute within the instance are bound,  
+        i. e. when the instance gets freed from the memory, the member variable gets freed as well,  
+        e. g. an `unique_ptr` member or a raw pointer member that is deleted in the destructor of the encapsulating class
+        - **Association** - the lifetime/lifecycle of an instance created from a class and the member variable/attribute within the instance are independent,  
+        i. e. when the instance gets freed from the memory, the member variable gets freed as well,  
+        e. g.
+            - a `weak_ptr` member 
+            - or a reference member 
+            - or a pointer member that is ommitted from deletion in the destructor of the encapsulating class
+        - ---
+    - https://stackoverflow.com/questions/9640885/uml-aggregation-vs-association/9641001#9641001
+        - Maybe this can help you ...
+
+            > The difference is one of implication. Aggregation denotes whole/part relationships whereas associations do not. **However**, there is not likely to be much difference in the way that the two relationships are implemented. That is, **it would be very difficult to look at the code and determine whether a particular relationship ought to be aggregation or association. For this reason, it is pretty safe to ignore the aggregation relationship altogether.**  
+            **[So the implementation of the _aggregeation_ and _association_ in the code is very similar, if not identical, therefore we can safely ommit aggregation and use only composition and association to make it easier for ourselves and others to understand our class diagrams.]**
+            
+            [Robert C. Martin | UML]
 - C++ specific
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web

@@ -10,7 +10,8 @@ class IgnoredPackageName {
     - name : string
 }
 
-main *-u-> "ignoredPackageNames\n0..*" IgnoredPackageName
+main .u.> IgnoredPackageName : "<- creates one temporary IgnoredPackageName instance"
+main *-u-> "ignoredPackageNames ->\n0..*" IgnoredPackageName
 
 class Package {
     + Package(\
@@ -33,19 +34,20 @@ class Package {
         \n        pathToDirectoryForOtherVersionsOfPackageFiles : string)\
         \n    : void
 
-    - std::unique_ptr<PackageName> name;
-    - std::unique_ptr<PackageVersion> locallyInstalledVersion;
-    - std::string architecture;
-    - bool isIgnored;
+    - std::unique_ptr<PackageName> name
+    - std::unique_ptr<PackageVersion> locallyInstalledVersion
+    - std::string architecture
+    - bool isIgnored
 
     - installationPackageFilesForDifferentPackageVersions :\
         \n    std::vector<PackageFile>>
 }
 
-main *-r-> "installedPackages\n0..*" Package
-Package *--> PackageName
-Package *--> PackageVersion
-Package *---> "^ installationPackageFilesForDifferentPackageVersions\n0..*" PackageFile
+main ..> Package : "<- creates one temporary Package instance"
+main *---> "installedPackages ->\n0..*" Package
+Package *--> "0..*" PackageName
+Package *--> "0..*" PackageVersion
+Package *--> "installationPackageFilesForDifferentPackageVersions ↓\n0..*" PackageFile
 
 class PackageFile {
     + PackageFile(absolutePath : string)
@@ -58,17 +60,29 @@ class PackageFile {
     + getFilename() : string
     + getRelatedPackageName() : PackageName
     + getRelatedPackageVersion() : PackageVersion
-    - absolutePath : AbsolutePath;
-    - filename : Filename;
-    - relatedPackageName : PackageName;
-    - relatedPackageVersion : PackageVersion;
+    - absolutePath : AbsolutePath
+    - filename : Filename
+    - relatedPackageName : PackageName
+    - relatedPackageVersion : PackageVersion
     - type : ExtendedInstallationPackageFileType
 }
 
-main *--> "partiallyDownloadedPackageFiles ->\n0..*" PackageFile
-main *--> "<- packageFilesRelatedToMissingPackages\n0..*" PackageFile
-PackageFile o-r-> "relatedPackageName\n1" PackageName : " references ""PackageName"" from ""Package"""
-PackageFile *--> "relatedPackageVersion 1 ->" PackageVersion
+main ..> PackageFile : "<- creates one temporary PackageFile instance"
+main *--> "partiallyDownloadedPackageFiles\n0..*\n" PackageFile
+main *--> "packageFilesRelatedToMissingPackages\n0..*\n" PackageFile
+
+PackageFile -l-> "relatedPackageName ->\n1" PackageName : " references ""PackageName"" from ""Package"""
+/'
+The relationship between 'PackageFile' and 'PackageName'
+ can also be modelled with 'shared_ptr' packageName member
+ in Package and referenced to a 'weak_ptr' relatedPackageName
+ member in PackageFile but I'll leave this as is now,
+ because 'unique_ptr' with reference has less overhead
+ than 'shared_ptr' with 'weak_ptr'
+ because of the reference counting feature of 'shared_ptr'
+'/
+
+PackageFile *-u-> "relatedPackageVersion 1 ->" PackageVersion
 
 class PackageName {
     + PackageName(name : string)
@@ -78,10 +92,10 @@ class PackageName {
     + pop_back() : void
     + string() : string
 
-    - name : string;
+    - name : string
 }
 
-main *--> PackageName
+main ..> PackageName : "<- creates one temporary PackageName instance"
 
 class PackageVersion {
     + PackageVersion(\
@@ -89,8 +103,9 @@ class PackageVersion {
     + empty() : bool
     + getVersion() : string
 
-    - version : string;
+    - version : string
 }
 
-main *--> PackageVersion
+main ..> PackageVersion : "<- creates one temporary PackageVersion instance"
+
 @enduml
