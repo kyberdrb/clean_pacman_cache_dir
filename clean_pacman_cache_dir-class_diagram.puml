@@ -10,7 +10,7 @@ class IgnoredPackageName {
     - name : string
 }
 
-main .u.> IgnoredPackageName : "<- creates one temporary IgnoredPackageName instance"
+main .u.> IgnoredPackageName : "<- creates an instance of IgnoredPackageName\nto be moved from place of \nto place of composition"
 main *-u-> "ignoredPackageNames ->\n0..*" IgnoredPackageName
 
 class Package {
@@ -40,20 +40,36 @@ class Package {
     - bool isIgnored
 
     - installationPackageFilesForDifferentPackageVersions :\
-        \n    std::vector<PackageFile>>
+        \n    std::vector<ExtendedInstallationPackageFile>>
 }
 
-main ..> Package : "<- creates one temporary Package instance"
+main ..> Package : "<- creates an instance of Package\nto be moved from place of \nto place of composition"
 main *---> "installedPackages ->\n0..*" Package
 Package *--> "0..*" PackageName
 Package *--> "0..*" PackageVersion
-Package *--> "installationPackageFilesForDifferentPackageVersions ↓\n0..*" PackageFile
+Package *--> "installationPackageFilesForDifferentPackageVersions ↴\n0..*" ExtendedInstallationPackageFile
 
-class PackageFile {
-    + PackageFile(absolutePath : string)
-    + PackageFile(\
-        \n    filname : string,\
-        \n    absolutePath : string,\
+class SimpleInstallationPackageFile {
+    + SimpleInstallationPackageFile(\
+        \n    absolutePath : string)
+    + getAbsolutePath() : AbsolutePath
+    + getFilename() : Filename
+    - absolutePath : AbsolutePath
+    - filename : Filename
+    - type : SimpleInstallationPackageFileType
+}
+
+main *--> "partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
+main *--> "<- packageFilesRelatedToMissingPackages\n0..*" SimpleInstallationPackageFile
+
+SimpleInstallationPackageFile *--> "1" AbsolutePath
+SimpleInstallationPackageFile *--> "1" Filename
+SimpleInstallationPackageFile ..> SimpleInstallationPackageFileType
+
+class ExtendedInstallationPackageFile {
+    + ExtendedInstallationPackageFile(\
+        \n    absolutePath : AbsolutePath,\
+        \n    filname : Filename,\
         \n    relatedPackageName : PackageName,\
         \n    relatedPackageVersion : PackageVersion)
     + getAbsolutePath() : string
@@ -67,11 +83,12 @@ class PackageFile {
     - type : ExtendedInstallationPackageFileType
 }
 
-main ..> PackageFile : "<- creates one temporary PackageFile instance"
-main *--> "partiallyDownloadedPackageFiles\n0..*\n" PackageFile
-main *--> "packageFilesRelatedToMissingPackages\n0..*\n" PackageFile
+main ..> ExtendedInstallationPackageFile : "<- creates an instance of ExtendedInstallationPackageFile\nto be moved from place of \nto place of composition"
 
-PackageFile -l-> "relatedPackageName ->\n1" PackageName : " references ""PackageName"" from ""Package"""
+ExtendedInstallationPackageFile *--> "1" AbsolutePath
+ExtendedInstallationPackageFile *--> "1" Filename
+
+ExtendedInstallationPackageFile -l-> "relatedPackageName ->\n1" PackageName : "<- references ""PackageName"" from ""Package"""
 /'
 The relationship between 'PackageFile' and 'PackageName'
  can also be modelled with 'shared_ptr' packageName member
@@ -82,7 +99,8 @@ The relationship between 'PackageFile' and 'PackageName'
  because of the reference counting feature of 'shared_ptr'
 '/
 
-PackageFile *-u-> "relatedPackageVersion 1 ->" PackageVersion
+ExtendedInstallationPackageFile *-u-> "relatedPackageVersion 1 ->" PackageVersion
+ExtendedInstallationPackageFile ..> ExtendedInstallationPackageFileType
 
 class PackageName {
     + PackageName(name : string)
@@ -95,7 +113,7 @@ class PackageName {
     - name : string
 }
 
-main ..> PackageName : "<- creates one temporary PackageName instance"
+main ..> PackageName : "<- creates an instance of PackageName\nto be moved from place of \nto place of composition"
 
 class PackageVersion {
     + PackageVersion(\
@@ -106,6 +124,31 @@ class PackageVersion {
     - version : string
 }
 
-main ..> PackageVersion : "<- creates one temporary PackageVersion instance"
+main ..> PackageVersion : "<- creates an instance of PackageVersion\nto be moved from place of \nto place of composition"
 
+class AbsolutePath {
+    + AbsolutePath(absolutePath : string)
+    + getAbsolutePath() : string
+    - absolutePath : string
+}
+
+main ..> AbsolutePath : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+
+class Filename {
+    + Filename(filename : string)
+    + getFilename() : string
+    - filename : string
+}
+
+main ..> Filename : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+
+enum SimpleInstallationPackageFileType {
+    PARTIALLY_DOWNLOADED
+    MISSING_LOCALLY_INSTALLED_PACKAGE
+}
+
+enum ExtendedInstallationPackageFileType {
+    FOR_LOCALLY_INSTALLED_PACKAGE
+    FOR_DIFFERENT_VERSION_THAN_LOCALLY_INSTALLED
+}
 @enduml

@@ -23,5 +23,7 @@ public:
 
 private:
     std::string absolutePath;
+//    std::unique_ptr<AbsolutePath> absolutePath;
     std::string filename;
+//    std::unique_ptr<Filename> filename;
 };

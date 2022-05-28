@@ -3251,6 +3251,10 @@ struct PackageComparatorPredicate {
             **[So the implementation of the _aggregeation_ and _association_ in the code is very similar, if not identical, therefore we can safely ommit aggregation and use only composition and association to make it easier for ourselves and others to understand our class diagrams.]**
             
             [Robert C. Martin | UML]
+    - https://duckduckgo.com/?q=plantuml+invisible+node+layout&t=ffab&ia=web
+    - https://dzone.com/articles/plantuml-pleasantness-layout-elements-with-hidden
+    - https://duckduckgo.com/?t=ffab&q=plantuml+invisible+class&ia=web
+    - https://stackoverflow.com/questions/56447433/plantuml-how-to-control-the-alignment-of-classes-of-the-same-rank
 - C++ specific
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web

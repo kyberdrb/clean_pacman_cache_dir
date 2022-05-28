@@ -18,10 +18,10 @@ class PackageFile {
     + getFilename() : string
     + getRelatedPackageName() : PackageName
     + getRelatedPackageVersion() : PackageVersion
-    - absolutePath : AbsolutePath;
-    - filename : Filename;
-    - relatedPackageName : PackageName;
-    - relatedPackageVersion : PackageVersion;
+    - absolutePath : AbsolutePath
+    - filename : Filename
+    - relatedPackageName : PackageName
+    - relatedPackageVersion : PackageVersion
     - type : ExtendedInstallationPackageFileType
 }
 
@@ -55,8 +55,8 @@ class SimpleInstallationPackageFile {
         \n    absolutePath : string)
     + getAbsolutePath() : AbsolutePath
     + getFilename() : Filename
-    - absolutePath : AbsolutePath;
-    - filename : Filename;
+    - absolutePath : AbsolutePath
+    - filename : Filename
     - type : SimpleInstallationPackageFileType
 }
 
@@ -74,7 +74,7 @@ class Filename {
 
 SimpleInstallationPackageFile *-- AbsolutePath
 SimpleInstallationPackageFile *-- Filename
-SimpleInstallationPackageFile .. SimpleInstallationPackageFileType
+SimpleInstallationPackageFile ..> SimpleInstallationPackageFileType
 
 class InstallationPackageFileForPackageWithDifferentVersionThanLocallyInstalledOne {
     + InstallationPackageFileForPackageWithDifferentVersionThanLocallyInstalledOne(\
@@ -111,14 +111,14 @@ class ExtendedInstallationPackageFile {
     + getFilename() : string
     + getRelatedPackageName() : PackageName
     + getRelatedPackageVersion() : PackageVersion
-    - absolutePath : AbsolutePath;
-    - filename : Filename;
-    - relatedPackageName : PackageName;
-    - relatedPackageVersion : PackageVersion;
+    - absolutePath : AbsolutePath
+    - filename : Filename
+    - relatedPackageName : PackageName
+    - relatedPackageVersion : PackageVersion
     - type : ExtendedInstallationPackageFileType
 }
 
 ExtendedInstallationPackageFile *-- AbsolutePath
 ExtendedInstallationPackageFile *-- Filename
-ExtendedInstallationPackageFile .. ExtendedInstallationPackageFileType
+ExtendedInstallationPackageFile ..> ExtendedInstallationPackageFileType
 @enduml
