@@ -26,7 +26,8 @@ public:
 
     void addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
 
-    void movePackageFilesForDifferentVersionsToSeparateDir(const std::string& pathToDirectoryForOtherVersionsOfPackageFiles);
+    void movePackageFilesForDifferentVersionsToSeparateDir(
+            const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles);
 
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
         out << *(package.name) << "\t";

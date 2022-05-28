@@ -43,10 +43,10 @@ class Package {
         \n    std::vector<ExtendedInstallationPackageFile>>
 }
 
-main ..> Package : "<- creates an instance of Package\nto be moved from place of \nto place of composition"
-main *---> "installedPackages ->\n0..*" Package
-Package *--> "0..*" PackageName
-Package *--> "0..*" PackageVersion
+main ..> "1..*" Package : "<- creates an instance of Package\nto be moved from place of \nto place of composition"
+main *---> "installedPackages ->\n1..*" Package
+Package *--> "1..*" PackageName
+Package *--> "1..*" PackageVersion
 Package *--> "installationPackageFilesForDifferentPackageVersions ↴\n0..*" ExtendedInstallationPackageFile
 
 class SimpleInstallationPackageFile {
@@ -59,8 +59,9 @@ class SimpleInstallationPackageFile {
     - type : SimpleInstallationPackageFileType
 }
 
-main *--> "partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
-main *--> "<- packageFilesRelatedToMissingPackages\n0..*" SimpleInstallationPackageFile
+main ...> "0..*" SimpleInstallationPackageFile : "<- creates an instance of SimpleInstallationPackageFile\nto be moved from place of \nto place of composition"
+main *--> "               <- partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
+main *--> "packageFilesRelatedToMissingPackages\n                       0..* ->\n" SimpleInstallationPackageFile
 
 SimpleInstallationPackageFile *--> "1" AbsolutePath
 SimpleInstallationPackageFile *--> "1" Filename
@@ -72,7 +73,7 @@ class ExtendedInstallationPackageFile {
         \n    filname : Filename,\
         \n    relatedPackageName : PackageName,\
         \n    relatedPackageVersion : PackageVersion)
-    + getAbsolutePath() : string
+    + getAbsolutePath() : AbsolutePath
     + getFilename() : string
     + getRelatedPackageName() : PackageName
     + getRelatedPackageVersion() : PackageVersion
@@ -83,7 +84,7 @@ class ExtendedInstallationPackageFile {
     - type : ExtendedInstallationPackageFileType
 }
 
-main ..> ExtendedInstallationPackageFile : "<- creates an instance of ExtendedInstallationPackageFile\nto be moved from place of \nto place of composition"
+main ..> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ExtendedInstallationPackageFile\nto be moved from place of \nto place of composition"
 
 ExtendedInstallationPackageFile *--> "1" AbsolutePath
 ExtendedInstallationPackageFile *--> "1" Filename
@@ -113,7 +114,7 @@ class PackageName {
     - name : string
 }
 
-main ..> PackageName : "<- creates an instance of PackageName\nto be moved from place of \nto place of composition"
+main ..> "0..*" PackageName : "<- creates an instance of PackageName\nto be moved from place of \nto place of composition"
 
 class PackageVersion {
     + PackageVersion(\
@@ -124,7 +125,7 @@ class PackageVersion {
     - version : string
 }
 
-main ..> PackageVersion : "<- creates an instance of PackageVersion\nto be moved from place of \nto place of composition"
+main ..> "0..*" PackageVersion : "<- creates an instance of PackageVersion\nto be moved from place of \nto place of composition"
 
 class AbsolutePath {
     + AbsolutePath(absolutePath : string)
@@ -132,7 +133,7 @@ class AbsolutePath {
     - absolutePath : string
 }
 
-main ..> AbsolutePath : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+main ..> "0..*" AbsolutePath : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
 
 class Filename {
     + Filename(filename : string)
@@ -140,7 +141,7 @@ class Filename {
     - filename : string
 }
 
-main ..> Filename : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+main ..> "0..*" Filename : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
 
 enum SimpleInstallationPackageFileType {
     PARTIALLY_DOWNLOADED

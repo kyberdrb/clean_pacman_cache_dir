@@ -140,7 +140,9 @@ int main() {
         const auto& packageFilenameAsText = packageFile.path().filename().string();
 
         if (packageFileExtension == ".part") {
-            auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(packageAbsolutePathAsText, packageFilenameAsText);
+            auto packageAbsolutePath = std::make_unique<AbsolutePath>(
+                    std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
+            auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(std::move(packageAbsolutePath), packageFilenameAsText);
             partiallyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
             continue;
         }
@@ -171,7 +173,7 @@ int main() {
                 packageNameAndVersionReversed << character;
             }
 
-            // reverse the package filename back - by getting the filename as string again?
+            // reverse the package filename back - by getting the filename as getAbsolutePath again?
             (*(const_cast<std::string*>(&packageFilenameAsText)))
                     .assign( packageFile.path().filename().string() );
 
@@ -199,20 +201,23 @@ int main() {
                     continue;
                 }
 
-                // For debugging purposes
-//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().string());
-
                 // if the key WAS found,
                 //  - infer the package version from the compound package name and version,
                 //  - create a package file with filename, absolute path and package version
                 //     and add it to the matching locally installed package
                 //  - break out of the loop
+
+                // For debugging purposes
+//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
+
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
+                auto packageAbsolutePath = std::make_unique<AbsolutePath>(
+                        std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
-                        packageAbsolutePathAsText,
+                        std::move(packageAbsolutePath),
                         std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ),
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
@@ -222,9 +227,12 @@ int main() {
             }
 
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
+            auto packageAbsolutePath = std::make_unique<AbsolutePath>(
+                    std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
+
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
                 auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(
-                        std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ),
+                        std::move(packageAbsolutePath),
                         std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
@@ -298,24 +306,26 @@ int main() {
             pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
     std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
+    auto pathToDuplicateFilesDirectory = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
+
     for (const auto& installedPackage : installedPackages) {
-        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir(pathToDuplicateFilesDirectoryAsText);
+        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( *(pathToDuplicateFilesDirectory) );
     }
 
     for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
-            const std::string& from = partlyDownloadedPackageFile->getAbsolutePath();
-            const std::string& to = pathToDuplicateFilesDirectoryAsText +
-                    partlyDownloadedPackageFile->getFilename();
-            std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
-            std::filesystem::rename(from, to);
+        const AbsolutePath& from = partlyDownloadedPackageFile->getAbsolutePath();
+        const auto to = std::make_unique<AbsolutePath>(
+                pathToDuplicateFilesDirectoryAsText + partlyDownloadedPackageFile->getFilename());
+        std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << *(to) << "\n\n";
+        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
     }
 
     for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
-        const std::string& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
-        const std::string& to = pathToDuplicateFilesDirectoryAsText +
-                packageFilesRelatedToMissingPackage->getFilename();
-        std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
-            std::filesystem::rename(from, to);
+        const AbsolutePath& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
+        const auto to = std::make_unique<AbsolutePath>(
+                pathToDuplicateFilesDirectoryAsText + packageFilesRelatedToMissingPackage->getFilename());
+        std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << *(to) << "\n\n";
+        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
     }
 
     // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges

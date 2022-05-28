@@ -69,11 +69,12 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstall
     }
 }
 
-void Package::movePackageFilesForDifferentVersionsToSeparateDir(const std::string& pathToDirectoryForOtherVersionsOfPackageFiles) {
+void Package::movePackageFilesForDifferentVersionsToSeparateDir(
+        const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles)
+{
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
-        const std::string& from = packageFileForDeletion->getAbsolutePath();
-        const std::string& to = pathToDirectoryForOtherVersionsOfPackageFiles +
-                packageFileForDeletion->getFilename();
+        const std::string& from = packageFileForDeletion->getAbsolutePath().getAbsolutePath();
+        const std::string& to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
         std::cout << "Locally installed package:                    " <<
                   *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture << "\n";
         std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";

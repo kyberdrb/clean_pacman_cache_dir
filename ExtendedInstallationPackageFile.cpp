@@ -4,19 +4,24 @@
 
 #include "ExtendedInstallationPackageFile.h"
 
-ExtendedInstallationPackageFile::ExtendedInstallationPackageFile(std::string absolutePath, std::string filename, const PackageName& relatedPackageName, std::unique_ptr<PackageVersion> packageVersionOfPackageFile) :
+ExtendedInstallationPackageFile::ExtendedInstallationPackageFile(
+        std::unique_ptr<AbsolutePath> absolutePath,
+        std::string filename,
+        const PackageName& relatedPackageName,
+        std::unique_ptr<PackageVersion> packageVersionOfPackageFile)
+:
         absolutePath(std::move(absolutePath)),
         filename(std::move(filename)),
         relatedPackageName(relatedPackageName),
-        packageVersionOfPackageFile(std::move(packageVersionOfPackageFile))
+        relatedPackageVersion(std::move(packageVersionOfPackageFile))
 {}
 
 const std::string& ExtendedInstallationPackageFile::getFilename() const {
     return this->filename;
 }
 
-const std::string& ExtendedInstallationPackageFile::getAbsolutePath() const {
-    return this->absolutePath;
+const AbsolutePath& ExtendedInstallationPackageFile::getAbsolutePath() const {
+    return *(this->absolutePath);
 }
 
 const PackageName& ExtendedInstallationPackageFile::getRelatedPackageName() const {
@@ -24,5 +29,5 @@ const PackageName& ExtendedInstallationPackageFile::getRelatedPackageName() cons
 }
 
 const PackageVersion& ExtendedInstallationPackageFile::getRelatedPackageVersion() const {
-    return *(this->packageVersionOfPackageFile);
+    return *(this->relatedPackageVersion);
 }

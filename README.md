@@ -3089,7 +3089,7 @@ struct PackageComparatorPredicate {
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+reverse+string&ia=web
     - https://www.journaldev.com/35816/reverse-string-c-plus-plus
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+find+occurrence+character&ia=web
-    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substring+extract+index+position&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+getAbsolutePath+substring+extract+index+position&ia=web
     - https://www.educba.com/c-plus-plus-substring/
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+string+substr&ia=web
     - https://www.cplusplus.com/reference/string/string/substr/
