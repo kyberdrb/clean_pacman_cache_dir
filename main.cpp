@@ -317,6 +317,7 @@ int main() {
         const AbsolutePath& from = partlyDownloadedPackageFile->getAbsolutePath();
         const auto to = std::make_unique<AbsolutePath>(
                 *(pathToDuplicateFilesDirectory) + partlyDownloadedPackageFile->getFilename());
+
         std::cout << "Moving partially downloaded package file\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
 
         FileMover::move(from, *(to));
@@ -326,6 +327,7 @@ int main() {
         const AbsolutePath& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
         const auto to = std::make_unique<AbsolutePath>(
                 *(pathToDuplicateFilesDirectory) + packageFilesRelatedToMissingPackage->getFilename());
+
         std::cout << "Moving package file related to missing package\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
 
         FileMover::move(from, *(to));

@@ -75,7 +75,7 @@ void Package::movePackageFilesForDifferentVersionsToSeparateDir(
 {
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
         const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();
-        auto to = std::make_unique<AbsolutePath>(
+        const auto to = std::make_unique<AbsolutePath>(
                 absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename());
 
         std::cout << "Locally installed package:\t" <<
