@@ -28,6 +28,9 @@ public:
 
     void movePackageFilesForDifferentVersionsToSeparateDir(
             const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles);
+//    void movePackageFilesForDifferentVersionsToSeparateDir(
+//            const std::string& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles);
+//    void movePackageFilesForDifferentVersionsToSeparateDir();
 
     friend std::ostream& operator<<(std::ostream& out, const Package& package) {
         out << *(package.name) << "\t";

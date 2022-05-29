@@ -310,6 +310,8 @@ int main() {
 
     for (const auto& installedPackage : installedPackages) {
         installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( *(pathToDuplicateFilesDirectory) );
+//        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( pathToDuplicateFilesDirectoryAsText );
+//        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir();
     }
 
     for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
@@ -317,7 +319,17 @@ int main() {
         const auto to = std::make_unique<AbsolutePath>(
                 pathToDuplicateFilesDirectoryAsText + partlyDownloadedPackageFile->getFilename());
         std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << *(to) << "\n\n";
-        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
+
+//        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
+
+        try {
+            std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
+        } catch (const std::filesystem::__cxx11::filesystem_error& ex) {
+            std::cout << ex.what() << "\n";
+
+            std::cout << "Error: Insufficient permissions to move files." << "\n";
+            std::cout << "Please, run this program with elevated priviledges as 'sudo' or 'root' user.\n---\n";
+        }
     }
 
     for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
@@ -325,7 +337,17 @@ int main() {
         const auto to = std::make_unique<AbsolutePath>(
                 pathToDuplicateFilesDirectoryAsText + packageFilesRelatedToMissingPackage->getFilename());
         std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << *(to) << "\n\n";
-        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
+
+//        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
+
+        try {
+            std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
+        } catch (const std::filesystem::__cxx11::filesystem_error& ex) {
+            std::cout << ex.what() << "\n";
+
+            std::cout << "Error: Insufficient permissions to move files." << "\n";
+            std::cout << "Please, run this program with elevated priviledges as 'sudo' or 'root' user.\n---\n";
+        }
     }
 
     // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
