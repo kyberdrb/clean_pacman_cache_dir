@@ -3,6 +3,7 @@
 //
 
 #include "Package.h"
+#include "FileMover.h"
 
 #include <filesystem>
 #include <iostream>
@@ -71,41 +72,17 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstall
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(
         const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles)
-//void Package::movePackageFilesForDifferentVersionsToSeparateDir(
-//        const std::string& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles)
-//void Package::movePackageFilesForDifferentVersionsToSeparateDir()
 {
-    // TODO document leak: looks like there is a memory leak in 'std::filesystem' library
-//    std::filesystem::rename("/var/cache/pacman/pkg/gtk4-1:4.6.4-1-x86_64.pkg.tar.zst", "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/gtk4-1:4.6.4-1-x86_64.pkg.tar.zst");
-//
-//    try {
-//        std::filesystem::rename("/var/cache/pacman/pkg/gtk4-1:4.6.4-1-x86_64.pkg.tar.zst", "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/gtk4-1:4.6.4-1-x86_64.pkg.tar.zst");
-//    } catch (const std::filesystem::__cxx11::filesystem_error& ex) {
-//        std::cout << ex.what() << "\n";
-//
-//        std::cout << "Error: Insufficient permissions to move files." << "\n";
-//        std::cout << "Please, run this program with elevated priviledges as 'sudo' or 'root' user." << "\n";
-//        exit(1);
-//    }
-
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
-        const std::string& from = packageFileForDeletion->getAbsolutePath().getAbsolutePath();
+        const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();
+        auto to = std::make_unique<AbsolutePath>(
+                absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename());
 
-//        std::string absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles =
-//                "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
-
-        const std::string& to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
-        std::cout << "Locally installed package:                    " <<
+        std::cout << "Locally installed package:\t" <<
                   *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture << "\n";
-        std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << to << "\n\n";
+        std::cout << "Moving package file\t\t" << from << "\n";
+        std::cout << "to separate directory\t\t" << *(to) << "\n\n";
 
-        try {
-            std::filesystem::rename(from, to);
-        } catch (const std::filesystem::__cxx11::filesystem_error& ex) {
-            std::cout << ex.what() << "\n";
-
-            std::cout << "Error: Insufficient permissions to move files." << "\n";
-            std::cout << "Please, run this program with elevated priviledges as 'sudo' or 'root' user.\n---\n";
-        }
+        FileMover::move(from, *(to));
     }
 }

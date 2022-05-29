@@ -1,3 +1,4 @@
+#include "FileMover.h"
 #include "IgnoredPackageName.h"
 #include "Package.h"
 #include "SimpleInstallationPackageFile.h"
@@ -310,44 +311,24 @@ int main() {
 
     for (const auto& installedPackage : installedPackages) {
         installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( *(pathToDuplicateFilesDirectory) );
-//        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( pathToDuplicateFilesDirectoryAsText );
-//        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir();
     }
 
     for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
         const AbsolutePath& from = partlyDownloadedPackageFile->getAbsolutePath();
         const auto to = std::make_unique<AbsolutePath>(
-                pathToDuplicateFilesDirectoryAsText + partlyDownloadedPackageFile->getFilename());
-        std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << *(to) << "\n\n";
+                *(pathToDuplicateFilesDirectory) + partlyDownloadedPackageFile->getFilename());
+        std::cout << "Moving partially downloaded package file\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
 
-//        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
-
-        try {
-            std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
-        } catch (const std::filesystem::__cxx11::filesystem_error& ex) {
-            std::cout << ex.what() << "\n";
-
-            std::cout << "Error: Insufficient permissions to move files." << "\n";
-            std::cout << "Please, run this program with elevated priviledges as 'sudo' or 'root' user.\n---\n";
-        }
+        FileMover::move(from, *(to));
     }
 
     for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
         const AbsolutePath& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
         const auto to = std::make_unique<AbsolutePath>(
-                pathToDuplicateFilesDirectoryAsText + packageFilesRelatedToMissingPackage->getFilename());
-        std::cout << "Moving package file\t\t" << from << "\nto separate directory\t" << *(to) << "\n\n";
+                *(pathToDuplicateFilesDirectory) + packageFilesRelatedToMissingPackage->getFilename());
+        std::cout << "Moving package file related to missing package\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
 
-//        std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
-
-        try {
-            std::filesystem::rename(from.getAbsolutePath(), to->getAbsolutePath() );
-        } catch (const std::filesystem::__cxx11::filesystem_error& ex) {
-            std::cout << ex.what() << "\n";
-
-            std::cout << "Error: Insufficient permissions to move files." << "\n";
-            std::cout << "Please, run this program with elevated priviledges as 'sudo' or 'root' user.\n---\n";
-        }
+        FileMover::move(from, *(to));
     }
 
     // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges

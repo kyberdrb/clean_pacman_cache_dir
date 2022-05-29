@@ -49,6 +49,16 @@ Package *--> "1..*" PackageName
 Package *--> "1..*" PackageVersion
 Package *--> "installationPackageFilesForDifferentPackageVersions ->\n0..*" ExtendedInstallationPackageFile
 
+class FileMover {
+    + {static} move(\
+    \n    from : AbsolutePath\
+    \n    to : AbsolutePath) \
+    \n: void
+}
+
+Package ..> FileMover
+main ..> FileMover
+
 class SimpleInstallationPackageFile {
     + SimpleInstallationPackageFile(\
         \n    absolutePath : string)
