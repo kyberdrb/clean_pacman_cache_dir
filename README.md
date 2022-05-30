@@ -3129,6 +3129,10 @@ struct PackageComparatorPredicate {
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+std+filesystem+remove+directory&ia=web
     - https://en.cppreference.com/w/cpp/filesystem/remove
     - https://techoverflow.net/2019/04/21/how-to-recursively-delete-directory-using-c17-filesystem-library/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+memory+leak+filesystem&ia=web
+        - `rename()` in `std::filesystem` leads to memory leak (thanks Valgrind ;) ) if we don't catch the `filesystem_error` exception which is thrown when we don't have the permissions to rename/move a file or when the source file doesn't exist
+    - Possible memory leak in filesystem::copy() #66  - https://github.com/boostorg/filesystem/issues/66
+    - https://stackoverflow.com/questions/36019855/memory-leak-in-directory-iterator-of-boost-filesystem
 - own projects
     - duplicate_finder - TODO add Github link
     - EmployeeManagementSystem - TODO add Github link
@@ -3255,6 +3259,7 @@ struct PackageComparatorPredicate {
     - https://dzone.com/articles/plantuml-pleasantness-layout-elements-with-hidden
     - https://duckduckgo.com/?t=ffab&q=plantuml+invisible+class&ia=web
     - https://stackoverflow.com/questions/56447433/plantuml-how-to-control-the-alignment-of-classes-of-the-same-rank
+    - https://www.w3schools.com/charsets/ref_utf_arrows.asp
 - C++ specific
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
@@ -3312,6 +3317,16 @@ struct PackageComparatorPredicate {
     - https://en.cppreference.com/w/cpp/algorithm/for_each
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
     - https://www.geeksforgeeks.org/difference-between-argument-and-parameter-in-c-c-with-examples/
+    - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference
+    - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference/2522311#2522311
+        - The standard practice for exceptions in C++ is ...
+
+            > Throw by value, catch by reference
+
+            in order to accurately catch the derived exceptions, not only their base classes
+    - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference/2522311#comment2519675_2522311
+        - To this I would add: **always catch [exceptions] by const reference, and ensure your exception types have const-correct accessors.**
+    - https://duckduckgo.com/?q=c%2B%2B+memory+profiler+consumption&t=ffab&ia=webs
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
