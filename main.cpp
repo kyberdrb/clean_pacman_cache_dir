@@ -1,4 +1,3 @@
-#include "FileMover.h"
 #include "IgnoredPackageName.h"
 #include "Package.h"
 #include "SimpleInstallationPackageFile.h"
@@ -147,7 +146,8 @@ int main() {
 
             auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(
                     std::move(packageAbsolutePath),
-                    std::move(packageFilename));
+                    std::move(packageFilename),
+                    SimpleInstallationPackageFileType::PARTIALLY_DOWNLOADED);
 
             partiallyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
             continue;
@@ -244,7 +244,8 @@ int main() {
 
                 auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(
                         std::move(packageAbsolutePath),
-                        std::move(packageFilename));
+                        std::move(packageFilename),
+                        SimpleInstallationPackageFileType::MISSING_LOCALLY_INSTALLED_PACKAGE);
 
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
@@ -317,28 +318,18 @@ int main() {
             pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
     std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
-    auto pathToDuplicateFilesDirectory = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
+    auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
 
     for (const auto& installedPackage : installedPackages) {
-        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( *(pathToDuplicateFilesDirectory) );
+        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( *(directoryForInstallationPackageFilesForDeletion) );
     }
 
-    for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
-        const AbsolutePath& from = partlyDownloadedPackageFile->getAbsolutePath();
-        const auto to = *(pathToDuplicateFilesDirectory) + partlyDownloadedPackageFile->getFilename();
-
-        std::cout << "Moving partially downloaded package file\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
-
-        FileMover::move(from, *(to));
+    for (const auto& partiallyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
+        partiallyDownloadedPackageFile->moveToSeparateDirectoryForDeletion(*(directoryForInstallationPackageFilesForDeletion));
     }
 
     for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
-        const AbsolutePath& from = packageFilesRelatedToMissingPackage->getAbsolutePath();
-        const auto to = *(pathToDuplicateFilesDirectory) + packageFilesRelatedToMissingPackage->getFilename();
-
-        std::cout << "Moving package file related to missing package\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
-
-        FileMover::move(from, *(to));
+        packageFilesRelatedToMissingPackage->moveToSeparateDirectoryForDeletion(*(directoryForInstallationPackageFilesForDeletion));
     }
 
     // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges

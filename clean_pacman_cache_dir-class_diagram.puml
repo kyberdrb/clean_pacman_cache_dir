@@ -31,7 +31,7 @@ class Package {
     + addPackageFileToDeletionCandidates(\
         \n    packageRelatedPackageFile : PackageFile) : void
     + movePackageFilesForDifferentVersionsToSeparateDir(\
-        \n        pathToDirectoryForOtherVersionsOfPackageFiles : string)\
+        \n        pathToDirectoryForOtherVersionsOfPackageFiles : AbsolutePath)\
         \n    : void
 
     - std::unique_ptr<PackageName> name
@@ -64,9 +64,12 @@ class SimpleInstallationPackageFile {
         \n    absolutePath : string)
     + getAbsolutePath() : AbsolutePath
     + getFilename() : Filename
+    + moveToSeparateDirectoryForDeletion(\
+    \n    directoryForInstallationPackageFilesForDeletion : AbsolutePath)\
+    \n: void
     - absolutePath : AbsolutePath
     - filename : Filename
-    - type : SimpleInstallationPackageFileType
+    - reasonForDeletion : SimpleInstallationPackageFileType
 }
 
 main ...> "0..*" SimpleInstallationPackageFile : "<- creates an instance of SimpleInstallationPackageFile\nto be moved from place of \nto place of composition"
@@ -75,7 +78,7 @@ main *--> "packageFilesRelatedToMissingPackages\n                       0..* ->\
 
 SimpleInstallationPackageFile *--> "1" AbsolutePath
 SimpleInstallationPackageFile *--> "1" Filename
-SimpleInstallationPackageFile ..> SimpleInstallationPackageFileType
+SimpleInstallationPackageFile --> SimpleInstallationPackageFileType
 
 class ExtendedInstallationPackageFile {
     + ExtendedInstallationPackageFile(\
@@ -91,7 +94,6 @@ class ExtendedInstallationPackageFile {
     - filename : Filename
     - relatedPackageName : PackageName
     - relatedPackageVersion : PackageVersion
-    - type : ExtendedInstallationPackageFileType
 }
 
 main ..> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ExtendedInstallationPackageFile\nto be moved from place of \nto place of composition"
@@ -111,7 +113,6 @@ The relationship between 'PackageFile' and 'PackageName'
 '/
 
 ExtendedInstallationPackageFile *-u-> "relatedPackageVersion 1 ->" PackageVersion
-ExtendedInstallationPackageFile ..> ExtendedInstallationPackageFileType
 
 class PackageName {
     + PackageName(name : string)
@@ -160,8 +161,5 @@ enum SimpleInstallationPackageFileType {
     MISSING_LOCALLY_INSTALLED_PACKAGE
 }
 
-enum ExtendedInstallationPackageFileType {
-    FOR_LOCALLY_INSTALLED_PACKAGE
-    FOR_DIFFERENT_VERSION_THAN_LOCALLY_INSTALLED
-}
+main ..> SimpleInstallationPackageFileType
 @enduml
