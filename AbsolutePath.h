@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <string>
+#include "Filename.h"
 
 class AbsolutePath {
 public:
@@ -17,8 +17,9 @@ public:
         return out;
     }
 
-    std::string operator+(const std::string& suffix) const{
-        return this->path + suffix;
+    // TODO return a unique_ptr to AbsolutePath instead of a string?
+    std::string operator+(const Filename& filename) const{
+        return this->path + filename.getFilename();
     }
 
 private:

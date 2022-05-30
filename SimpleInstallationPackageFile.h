@@ -12,20 +12,19 @@ class SimpleInstallationPackageFile {
 public:
     explicit SimpleInstallationPackageFile(
             std::unique_ptr<AbsolutePath> absolutePath,
-            std::string filename);
+            std::unique_ptr<Filename> filename);
 
     const AbsolutePath& getAbsolutePath() const;
-    const std::string& getFilename() const;
+    const Filename& getFilename() const;
 
-    friend std::ostream& operator<<(std::ostream& out, const SimpleInstallationPackageFile& packageFilename) {
-        out << packageFilename.filename;
+    friend std::ostream& operator<<(std::ostream& out, const SimpleInstallationPackageFile& simpleInstallationPackageFile) {
+        out << *(simpleInstallationPackageFile.filename);
         out << "\t";
-        out << *(packageFilename.absolutePath);
+        out << *(simpleInstallationPackageFile.absolutePath);
         return out;
     }
 
 private:
     std::unique_ptr<AbsolutePath> absolutePath;
-    std::string filename;
-//    std::unique_ptr<Filename> filename;
+    std::unique_ptr<Filename> filename;
 };

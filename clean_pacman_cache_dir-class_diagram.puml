@@ -47,7 +47,7 @@ main ..> "1..*" Package : "<- creates an instance of Package\nto be moved from p
 main *---> "installedPackages ->\n1..*" Package
 Package *--> "1..*" PackageName
 Package *--> "1..*" PackageVersion
-Package *--> "installationPackageFilesForDifferentPackageVersions ->\n0..*" ExtendedInstallationPackageFile
+Package *--> "installationPackageFilesForDifferentPackageVersions ↴\n0..*" ExtendedInstallationPackageFile
 
 class FileMover {
     + {static} move(\
@@ -144,11 +144,12 @@ class AbsolutePath {
 }
 
 main ..> "0..*" AbsolutePath : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+AbsolutePath ..> "1" Filename
 
 class Filename {
     + Filename(filename : string)
     + getFilename() : string
-    - filename : string
+    - nameOfFile : string
 }
 
 main ..> "0..*" Filename : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"

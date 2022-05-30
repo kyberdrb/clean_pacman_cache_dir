@@ -143,7 +143,12 @@ int main() {
         if (packageFileExtension == ".part") {
             auto packageAbsolutePath = std::make_unique<AbsolutePath>(
                     std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
-            auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(std::move(packageAbsolutePath), packageFilenameAsText);
+            auto packageFilename = std::make_unique<Filename>(packageFilenameAsText); // TODO consider to make it shared to avoid copies of packageFilenameAsText?
+
+            auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(
+                    std::move(packageAbsolutePath),
+                    std::move(packageFilename));
+
             partiallyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
             continue;
         }
@@ -216,10 +221,12 @@ int main() {
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
                 auto packageAbsolutePath = std::make_unique<AbsolutePath>(
                         std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
+                auto packageFilename = std::make_unique<Filename>(
+                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
                         std::move(packageAbsolutePath),
-                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ),
+                        std::move(packageFilename),
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
@@ -232,9 +239,12 @@ int main() {
                     std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
 
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
+                auto packageFilename = std::make_unique<Filename>(
+                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
+
                 auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(
                         std::move(packageAbsolutePath),
-                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
+                        std::move(packageFilename));
 
                 packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }

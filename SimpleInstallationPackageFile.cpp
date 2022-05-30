@@ -6,7 +6,7 @@
 
 SimpleInstallationPackageFile::SimpleInstallationPackageFile(
         std::unique_ptr<AbsolutePath> absolutePath,
-        std::string filename)
+        std::unique_ptr<Filename> filename)
 :
         absolutePath(std::move(absolutePath)),
         filename(std::move(filename))
@@ -16,6 +16,6 @@ const AbsolutePath& SimpleInstallationPackageFile::getAbsolutePath() const {
     return *(this->absolutePath);
 }
 
-const std::string& SimpleInstallationPackageFile::getFilename() const {
-    return this->filename;
+const Filename& SimpleInstallationPackageFile::getFilename() const {
+    return *(this->filename);
 }
