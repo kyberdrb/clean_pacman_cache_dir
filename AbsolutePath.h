@@ -6,6 +6,8 @@
 
 #include "Filename.h"
 
+#include <memory>
+
 class AbsolutePath {
 public:
     explicit AbsolutePath(std::string absolutePath);
@@ -17,9 +19,8 @@ public:
         return out;
     }
 
-    // TODO return a unique_ptr to AbsolutePath instead of a string?
-    std::string operator+(const Filename& filename) const{
-        return this->path + filename.getFilename();
+    std::unique_ptr<AbsolutePath> operator+(const Filename& filename) const {
+        return std::make_unique<AbsolutePath>(this->path + filename.getFilename());
     }
 
 private:

@@ -140,6 +140,7 @@ main ..> "0..*" PackageVersion : "<- creates an instance of PackageVersion\nto b
 class AbsolutePath {
     + AbsolutePath(absolutePath : string)
     + getAbsolutePath() : string
+    + operator+(filename : Filename) : AbsolutePath
     - absolutePath : string
 }
 
