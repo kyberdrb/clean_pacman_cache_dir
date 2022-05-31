@@ -1,0 +1,87 @@
+@startuml
+
+'Proposed solutions to avoid assigning reference member attributes to temporary values in single-argument constructor:
+' - Inheritance/Implementation of interface - a class with only pure virtual functions with commonfunctions
+'   - overkill/not necessary - I don't use them in one container, neither I want to complicate my code with abstractions for simplicity and understandability
+' - Splitting one 'PackageFile'
+'   - to two classes
+'   - then encapsulate the 'string' type 'filname' and 'absolutePath' member variables to custom defined classes 'Filename' and 'AbsolutePath' for expressivenes
+'   - Accepted solution
+
+class Package {
+    + Package(\
+        \n    packageName : PackageName,\
+        \n    locallyInstalledVersion : PackageVersion\
+        \n    architecture : string\
+        \n    isIgnored : bool)
+    + Package(inferredPackageName : PackageName)
+    + getName() : PackageName
+    + getLocallyInstalledVersion() : PackageVersion
+    + isPackageNameEmpty() : bool
+    + hasStillSomethingInPackageName() : bool
+    + getNextInferredPackageNameCandidate() : void
+    + getStartingPositionForPackageVersion() : uint_fast8_t
+    + getNumberOfInstallationPackageFilesForDifferentVersions()\
+        \n    : uint_fast16_t
+    + addPackageFileToDeletionCandidates(\
+        \n    packageRelatedPackageFile : PackageFile) : void
+    + movePackageFilesForDifferentVersionsToSeparateDir(\
+        \n        pathToDirectoryForOtherVersionsOfPackageFiles : AbsolutePath)\
+        \n    : void
+
+    - std::unique_ptr<PackageName> name
+    - std::unique_ptr<PackageVersion> locallyInstalledVersion
+    - std::string architecture
+    - bool isIgnored
+
+    - installationPackageFilesForDifferentPackageVersions :\
+        \n    std::vector<ExtendedInstallationPackageFile>>
+}
+
+'Analysis
+
+interface Package_2nd_version {
+    + operator<<() [for terminal printing]
+    + operator<()\
+    \n    [for ""find"" in ""std::set"" for unique_ptr\
+    \n     and reference_wrapper argument types]
+}
+
+class LocallyInstalledPackage {
+    + Package(\
+    \n    packageName : PackageName,\
+    \n    locallyInstalledVersion : PackageVersion,\
+    \n    architecture : string,\
+    \n    isIgnored : bool)
+    + getName() : PackageName
+    + getNumberOfInstallationPackageFilesForDifferentVersions() : uint_fast16_t
+    + addPackageFileToDeletionCandidates(\
+    \n    packageRelatedPackageFile : ExtendedInstallationPackageFile)\
+    \n: bool
+    + movePackageFilesForDifferentVersionsToSeparateDir(\
+        \n    absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles : AbsolutePath)\
+        \n: void
+    - name : PackageName
+    - locallyInstalledVersion : PackageVersion
+    - architecture : string
+    - isIgnored : bool
+
+    - installationPackageFilesForDifferentPackageVersions\
+    \n: vector<ExtendedInstallationPackageFile>
+}
+
+Package_2nd_version <|- LocallyInstalledPackage
+
+class PackageWithInferredName {
+    + Package(inferredPackageName : PackageName)
+    + hasStillSomethingInPackageName() : bool
+    '+ operator<() [for ""find"" in ""std::set""]
+    + getNextInferredPackageNameCandidate() : void
+    + getStartingPositionForPackageVersion() : uint_fast8_t
+    + isPackageNameEmpty() : bool
+    - name : PackageName
+}
+
+Package_2nd_version <|- PackageWithInferredName
+
+@enduml

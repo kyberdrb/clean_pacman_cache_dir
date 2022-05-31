@@ -113,9 +113,9 @@ int main() {
 //        assert(packageNameAsText == "");
 
         auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
-        auto pkg = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
+        auto locallyInstalledPackage = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 
-        installedPackages.emplace(std::move(pkg));
+        installedPackages.emplace(std::move(locallyInstalledPackage));
     }
 
     free(err);
@@ -189,8 +189,8 @@ int main() {
             packageNameAndVersion.pop_back();
 
             std::string inferredPackageNameAsText = packageNameAndVersion;
-            auto packageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsText));
-            auto packageWithInferredName = std::make_unique<Package>(std::move(packageName));
+            auto inferredPackageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsText));
+            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageName));
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
