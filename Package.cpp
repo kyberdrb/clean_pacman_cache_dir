@@ -51,7 +51,7 @@ uint_fast16_t Package::getNumberOfInstallationPackageFilesForDifferentVersions()
     return this->installationPackageFilesForDifferentPackageVersions.size();
 }
 
-void Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile) {
+bool Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile) {
     bool isPackageNamesMatching =
             *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
 
@@ -67,7 +67,10 @@ void Package::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstall
 
     if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {
         this->installationPackageFilesForDifferentPackageVersions.emplace_back(std::move(packageRelatedPackageFile));
+        return true;
     }
+
+    return false;
 }
 
 void Package::movePackageFilesForDifferentVersionsToSeparateDir(

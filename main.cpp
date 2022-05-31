@@ -130,6 +130,7 @@ int main() {
 
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
+    std::set<std::reference_wrapper<Package>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
     std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
@@ -230,7 +231,12 @@ int main() {
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
-                iteratorPointingToMatchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+                bool wasInstallationPackageFileAdded = iteratorPointingToMatchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+
+                if (wasInstallationPackageFileAdded) {
+                    packagesWithInstallationPackageFilesForDifferentVersions.emplace(*(iteratorPointingToMatchingPackage->get()));
+                }
+
                 break;
             }
 
@@ -266,27 +272,23 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF INSTALLED PACKAGES THAT HAVE AT LEAST ONE RELATED INSTALLATION PACKAGE FILE FOR DIFFERENT VERSION THAN THE LOCALLY INSTALLED ONE\n\n";
 
-    uint_fast16_t numberOfPackagesWithInstallationPackageFilesForOtherVersions = 0;
+    std::cout << "Found " << packagesWithInstallationPackageFilesForDifferentVersions.size()
+        << " installed packages with installation package files for other than locally installed version\n\n";
+
     uint_fast16_t numberOfInstallationPackageFilesForOtherVersions = 0;
 
-    for (const auto& package : installedPackages) {
+    for (const auto package : packagesWithInstallationPackageFilesForDifferentVersions) {
+        std::cout << package << "\n";
+
         uint_fast16_t numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage =
-                package->getNumberOfInstallationPackageFilesForDifferentVersions();
+            package.get().getNumberOfInstallationPackageFilesForDifferentVersions();
 
-        if (numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage > 0) {
-            std::cout << *package << "\n";
-
-            numberOfPackagesWithInstallationPackageFilesForOtherVersions++;
-            numberOfInstallationPackageFilesForOtherVersions += numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage;
-        }
+        numberOfInstallationPackageFilesForOtherVersions += numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage;
     }
 
     std::cout << "\n";
-    std::cout << "Found " << numberOfPackagesWithInstallationPackageFilesForOtherVersions
-            << " installed packages with installation package files for other than locally installed version\n";
-
     std::cout << "Found " << numberOfInstallationPackageFilesForOtherVersions
-            << " installation package files for different version than the locally installed\n\n";
+        << " installation package files for different version than the locally installed\n";
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
@@ -320,8 +322,8 @@ int main() {
 
     auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
 
-    for (const auto& installedPackage : installedPackages) {
-        installedPackage->movePackageFilesForDifferentVersionsToSeparateDir( *(directoryForInstallationPackageFilesForDeletion) );
+    for (const auto& installedPackage : packagesWithInstallationPackageFilesForDifferentVersions) {
+        installedPackage.get().movePackageFilesForDifferentVersionsToSeparateDir( *(directoryForInstallationPackageFilesForDeletion) );
     }
 
     for (const auto& partiallyDownloadedPackageFile : partiallyDownloadedPackageFiles) {

@@ -24,7 +24,7 @@ public:
 
     uint_fast16_t getNumberOfInstallationPackageFilesForDifferentVersions() const;
 
-    void addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
+    bool addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
 
     void movePackageFilesForDifferentVersionsToSeparateDir(
             const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles);
@@ -54,6 +54,10 @@ public:
     friend bool operator<(const std::unique_ptr<Package>& package, const std::unique_ptr<Package>& anotherPackage) {
         // Delegate comparison to overloaded 'operator<' defined as 'friend bool operator<(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)' in 'PackageName' class
         return package->name < anotherPackage->name;
+    }
+
+    friend bool operator<(const std::reference_wrapper<Package>& package, const std::reference_wrapper<Package>& anotherPackage) {
+        return package.get().name < anotherPackage.get().name;
     }
 
 private:

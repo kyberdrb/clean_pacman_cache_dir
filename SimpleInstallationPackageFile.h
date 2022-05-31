@@ -28,6 +28,10 @@ public:
         return out;
     }
 
+    friend bool operator<(const std::unique_ptr<SimpleInstallationPackageFile>& simpleInstallationPackageFile, const std::unique_ptr<SimpleInstallationPackageFile>& anotherSimpleInstallationPackageFile) {
+        return simpleInstallationPackageFile->filename < anotherSimpleInstallationPackageFile->filename;
+    }
+
 private:
     std::unique_ptr<AbsolutePath> absolutePath;
     std::unique_ptr<Filename> filename;
