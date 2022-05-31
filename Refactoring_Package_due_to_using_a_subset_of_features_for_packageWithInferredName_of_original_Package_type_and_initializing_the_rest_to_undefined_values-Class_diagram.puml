@@ -8,7 +8,7 @@
 '   - then encapsulate the 'string' type 'filname' and 'absolutePath' member variables to custom defined classes 'Filename' and 'AbsolutePath' for expressivenes
 '   - Accepted solution
 
-class Package {
+class Package__the_original_one_before_refactoring {
     + Package(\
         \n    packageName : PackageName,\
         \n    locallyInstalledVersion : PackageVersion\
@@ -40,7 +40,7 @@ class Package {
 
 'Analysis
 
-interface Package_2nd_version {
+interface Package__after_refactoring {
     + operator<<() [for terminal printing]
     + operator<()\
     \n    [for ""find"" in ""std::set"" for unique_ptr\
@@ -70,7 +70,7 @@ class LocallyInstalledPackage {
     \n: vector<ExtendedInstallationPackageFile>
 }
 
-Package_2nd_version <|- LocallyInstalledPackage
+Package__after_refactoring <|- LocallyInstalledPackage
 
 class PackageWithInferredName {
     + Package(inferredPackageName : PackageName)
@@ -82,6 +82,6 @@ class PackageWithInferredName {
     - name : PackageName
 }
 
-Package_2nd_version <|- PackageWithInferredName
+Package__after_refactoring <|- PackageWithInferredName
 
 @enduml
