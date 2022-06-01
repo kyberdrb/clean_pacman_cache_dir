@@ -13,7 +13,30 @@
 
 //#include <cassert>
 
+#include "Package__refactored__.h"
+#include "PackageWithInferredName__refactored__.h"
+#include "LocallyInstalledPackage__refactored__.h"
+void testPolymorphism() {
+    auto locallyInstalledPackageAuto = std::make_unique<LocallyInstalledPackage__refactored__>();
+    locallyInstalledPackageAuto->commonFunction();
+    locallyInstalledPackageAuto->functionOnlyInLocallyInstalledPackage__refactored__();
+
+    std::cout << "---\n";
+
+    std::unique_ptr<LocallyInstalledPackage__refactored__> locallyInstalledPackageExact = std::make_unique<LocallyInstalledPackage__refactored__>();
+    locallyInstalledPackageExact->commonFunction();
+    locallyInstalledPackageExact->functionOnlyInLocallyInstalledPackage__refactored__();
+
+    std::cout << "---\n";
+
+    std::unique_ptr<Package__refactored__> locallyInstalledPackageAbstract = std::make_unique<LocallyInstalledPackage__refactored__>();
+    locallyInstalledPackageAbstract->commonFunction();
+//    locallyInstalledPackageAbstract->functionOnlyInLocallyInstalledPackage__refactored__(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage__refactored__' in 'Package__refactored__'
+}
+
 int main() {
+    testPolymorphism();
+
     // FIND IGNORED PACKAGES PART - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
 
     // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
@@ -91,7 +114,13 @@ int main() {
         alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
+        // TODO instead of copying and moving 'packageNameAsText' to instances of 'Package' class
+        // (or derived 'Package' classes?)
+        //  create 'PackageName' instances by moving 'packageNameAsText' into it,
+        //  store 'PackageName' instances in a collection ('std::set'?)
+        //  and then only copy reference to specific package to various 'Package' instances
         std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
+
         std::string locallyInstalledVersionAsText = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 

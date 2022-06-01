@@ -40,11 +40,13 @@ class Package__the_original_one_before_refactoring {
 
 'Analysis
 
-interface Package__after_refactoring {
+interface Package__refactored__ {
     + operator<<() [for terminal printing]
+    + {abstract} streamOutputOperator()
     + operator<()\
     \n    [for ""find"" in ""std::set"" for unique_ptr\
     \n     and reference_wrapper argument types]
+    + {abstract} lessThanOperator()
 }
 
 class LocallyInstalledPackage {
@@ -70,7 +72,7 @@ class LocallyInstalledPackage {
     \n: vector<ExtendedInstallationPackageFile>
 }
 
-Package__after_refactoring <|- LocallyInstalledPackage
+Package__refactored__ <|- LocallyInstalledPackage
 
 class PackageWithInferredName {
     + Package(inferredPackageName : PackageName)
@@ -82,6 +84,6 @@ class PackageWithInferredName {
     - name : PackageName
 }
 
-Package__after_refactoring <|- PackageWithInferredName
+Package__refactored__ <|- PackageWithInferredName
 
 @enduml
