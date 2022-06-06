@@ -15,6 +15,6 @@ public:
     }
 
     void functionOnlyInPackageWithInferredName__refactored__() {
-        std::cout << "Function only in LocallyInstalledPackage__refactored__" << "\n";
+        std::cout << "Function only in PackageWithInferredName__refactored__" << "\n";
     }
 };

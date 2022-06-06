@@ -32,6 +32,24 @@ void testPolymorphism() {
     std::unique_ptr<Package__refactored__> locallyInstalledPackageAbstract = std::make_unique<LocallyInstalledPackage__refactored__>();
     locallyInstalledPackageAbstract->commonFunction();
 //    locallyInstalledPackageAbstract->functionOnlyInLocallyInstalledPackage__refactored__(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage__refactored__' in 'Package__refactored__'
+
+    std::cout << "===\n";
+
+    auto packageWithInferredNameAuto = std::make_unique<PackageWithInferredName__refactored__>();
+    packageWithInferredNameAuto->commonFunction();
+    packageWithInferredNameAuto->functionOnlyInPackageWithInferredName__refactored__();
+
+    std::cout << "---\n";
+
+    std::unique_ptr<PackageWithInferredName__refactored__> packageWithInferredNameExact = std::make_unique<PackageWithInferredName__refactored__>();
+    packageWithInferredNameExact->commonFunction();
+    packageWithInferredNameExact->functionOnlyInPackageWithInferredName__refactored__();
+
+    std::cout << "---\n";
+
+    std::unique_ptr<Package__refactored__> packageWithInferredNameGeneralized = std::make_unique<PackageWithInferredName__refactored__>();
+    packageWithInferredNameGeneralized->commonFunction();
+//    packageWithInferredNameGeneralized->functionOnlyInPackageWithInferredName__refactored__(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage__refactored__' in 'Package__refactored__'
 }
 
 int main() {
@@ -118,6 +136,7 @@ int main() {
         // (or derived 'Package' classes?)
         //  create 'PackageName' instances by moving 'packageNameAsText' into it,
         //  store 'PackageName' instances in a collection ('std::set'?)
+        //  or a temporary variable? (std::unique_ptr<Filename>)
         //  and then only copy reference to specific package to various 'Package' instances
         std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
 
@@ -166,13 +185,18 @@ int main() {
 
     for (const auto& packageFile : std::filesystem::directory_iterator(pacmanCacheDirPath)) {
         const auto& packageFileExtension = packageFile.path().extension().string();
+
         const auto& packageAbsolutePathAsText = packageFile.path().string();
+//        auto packageAbsolutePath = std::make_unique<AbsolutePath>(
+//                std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
+
         const auto& packageFilenameAsText = packageFile.path().filename().string();
+//        auto packageFilename = std::make_unique<Filename>(std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
         if (packageFileExtension == ".part") {
             auto packageAbsolutePath = std::make_unique<AbsolutePath>(
                     std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
-            auto packageFilename = std::make_unique<Filename>(packageFilenameAsText); // TODO consider to make it shared to avoid copies of packageFilenameAsText?
+            auto packageFilename = std::make_unique<Filename>(packageFilenameAsText); // TODO consider to make it shared to avoid copies of packageFilenameAsText? Or make it just a temporary unique_ptr that I move?
 
             auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(
                     std::move(packageAbsolutePath),
