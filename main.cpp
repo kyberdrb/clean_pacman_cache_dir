@@ -161,7 +161,10 @@ int main() {
 //        assert(packageNameAsText == "");
 
         auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
+
         auto locallyInstalledPackage = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
+        // TODO refactor to construct 'LocallyInstalledPackage' unique pointer
+//        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 
         installedPackages.emplace(std::move(locallyInstalledPackage));
     }
@@ -178,7 +181,10 @@ int main() {
 
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
+
     std::set<std::reference_wrapper<Package>> packagesWithInstallationPackageFilesForDifferentVersions;
+    // TODO refactor to hold 'LocallyInstalledPackage' reference_wrappers
+//    std::set<std::reference_wrapper<LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
     std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
@@ -187,15 +193,12 @@ int main() {
         const auto& packageFileExtension = packageFile.path().extension().string();
 
         const auto& packageAbsolutePathAsText = packageFile.path().string();
-        auto packageAbsolutePath = std::make_unique<AbsolutePath>(
-                std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) ); // Maybe declare the unique_ptr variables before the loop and then reassign them with 'reset()'?
+        auto packageAbsolutePath = std::make_unique<AbsolutePath>(std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
 
         const auto& packageFilenameAsText = packageFile.path().filename().string();
-//        auto packageFilename = std::make_unique<Filename>(std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
+        auto packageFilename = std::make_unique<Filename>(std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
         if (packageFileExtension == ".part") {
-            auto packageFilename = std::make_unique<Filename>(packageFilenameAsText); // TODO consider to make it shared to avoid copies of packageFilenameAsText? Or make it just a temporary unique_ptr that I move?
-
             auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(
                     std::move(packageAbsolutePath),
                     std::move(packageFilename),
@@ -211,37 +214,13 @@ int main() {
 //        }
 
         if (packageFile.is_regular_file()) {
-            // strip the extensions and architecture from package filename leaving only package name and package version
-            //  I couldn't find out how to do first-match or non-greedy replace with regex_replace,
-            //  so I'm writing my own algorithm
-            std::reverse(
-                    ( *(const_cast<std::string*>(&packageFilenameAsText) ) ).begin(),
-                    ( *(const_cast<std::string*>(&packageFilenameAsText) ) ).end() );
-            std::stringstream packageNameAndVersionReversed{};
-            char delimiter = '-';
-            bool stillSearchingForFirstDelimiterOccurence = true;
-
-            //find the first dash '-' in the reversed filename and append everything after
-            for (auto character : packageFilenameAsText) {
-                if (character != delimiter && stillSearchingForFirstDelimiterOccurence) {
-                    continue;
-                }
-
-                stillSearchingForFirstDelimiterOccurence = false;
-                packageNameAndVersionReversed << character;
-            }
-
-            // reverse the package filename back - by getting the filename as getAbsolutePath again?
-            (*(const_cast<std::string*>(&packageFilenameAsText)))
-                    .assign( packageFile.path().filename().string() );
-
-            auto packageNameAndVersion = packageNameAndVersionReversed.str();
-            std::reverse(packageNameAndVersion.begin(), packageNameAndVersion.end());
-            packageNameAndVersion.pop_back();
-
-            std::string inferredPackageNameAsText = packageNameAndVersion;
+            auto packageNameAndVersionAsText = packageFilename->extractPackageNameAndVersion();
+            std::string inferredPackageNameAsText = packageNameAndVersionAsText;
             auto inferredPackageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsText));
+
             auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageName));
+            // TODO refactor to use 'PackageWithInferredName' - the derived class of 'Package' base class
+//            auto packageWithInferredName = std::make_unique<PackageWithInferredName>(std::move(inferredPackageName));
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
@@ -269,11 +248,8 @@ int main() {
 //                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
 
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
-                auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
+                auto inferredPackageVersionAsText = packageNameAndVersionAsText.substr(startingPositionForPackageVersion);
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
-
-                auto packageFilename = std::make_unique<Filename>(
-                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
                         std::move(packageAbsolutePath),
@@ -283,6 +259,9 @@ int main() {
 
                 bool wasInstallationPackageFileAdded = iteratorPointingToMatchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
 
+                // if the package file was added to the deletion candidates for the particular package,
+                //  save the reference to the package file for generating only
+                //  and faster deleting of the package files by iterating only packages that have at least one package file for deletion
                 if (wasInstallationPackageFileAdded) {
                     packagesWithInstallationPackageFilesForDifferentVersions.emplace(*(iteratorPointingToMatchingPackage->get()));
                 }
@@ -293,9 +272,6 @@ int main() {
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
 
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
-                auto packageFilename = std::make_unique<Filename>(
-                        std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
-
                 auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(
                         std::move(packageAbsolutePath),
                         std::move(packageFilename),

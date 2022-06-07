@@ -3327,6 +3327,13 @@ struct PackageComparatorPredicate {
     - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference/2522311#comment2519675_2522311
         - To this I would add: **always catch [exceptions] by const reference, and ensure your exception types have const-correct accessors.**
     - https://duckduckgo.com/?q=c%2B%2B+memory+profiler+consumption&t=ffab&ia=webs
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+no+matching+function+for+call+to+swap&ia=web
+    - https://stackoverflow.com/questions/28761802/sort-no-matching-function-for-call-to-swap/28761803#28761803
+        - It turns out it's a very simple problem, but not very obvious to spot (and the error message doesn't do a very good job in helping out either):
+
+            Remove the const declaration on run() - voilá.
+
+            [I was modifying a member variable in a `const` member function. Removing the `const` ness of the function allowed the compiler to modify member variables, i. e. calling the `swap` function]
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
