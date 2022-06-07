@@ -187,15 +187,13 @@ int main() {
         const auto& packageFileExtension = packageFile.path().extension().string();
 
         const auto& packageAbsolutePathAsText = packageFile.path().string();
-//        auto packageAbsolutePath = std::make_unique<AbsolutePath>(
-//                std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
+        auto packageAbsolutePath = std::make_unique<AbsolutePath>(
+                std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) ); // Maybe declare the unique_ptr variables before the loop and then reassign them with 'reset()'?
 
         const auto& packageFilenameAsText = packageFile.path().filename().string();
 //        auto packageFilename = std::make_unique<Filename>(std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
         if (packageFileExtension == ".part") {
-            auto packageAbsolutePath = std::make_unique<AbsolutePath>(
-                    std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
             auto packageFilename = std::make_unique<Filename>(packageFilenameAsText); // TODO consider to make it shared to avoid copies of packageFilenameAsText? Or make it just a temporary unique_ptr that I move?
 
             auto partlyDownloadedPackageFile= std::make_unique<SimpleInstallationPackageFile>(
@@ -273,8 +271,7 @@ int main() {
                 auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersion.substr(startingPositionForPackageVersion);
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
-                auto packageAbsolutePath = std::make_unique<AbsolutePath>(
-                        std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
+
                 auto packageFilename = std::make_unique<Filename>(
                         std::move( *(const_cast<std::string*>(&packageFilenameAsText) ) ) );
 
@@ -294,8 +291,6 @@ int main() {
             }
 
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
-            auto packageAbsolutePath = std::make_unique<AbsolutePath>(
-                    std::move( *(const_cast<std::string*>(&packageAbsolutePathAsText) ) ) );
 
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
                 auto packageFilename = std::make_unique<Filename>(
