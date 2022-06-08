@@ -29,6 +29,11 @@ public:
         return packageName->name < otherPackageName->name;
     }
 
+    bool operator<(const PackageName& anotherPackage) const {
+        return PackageName::name < anotherPackage.name;
+//        return this->name < anotherPackage.name;
+    }
+
     bool operator==(const PackageName& anotherPackageName) const {
         return PackageName::name == anotherPackageName.name;
     }

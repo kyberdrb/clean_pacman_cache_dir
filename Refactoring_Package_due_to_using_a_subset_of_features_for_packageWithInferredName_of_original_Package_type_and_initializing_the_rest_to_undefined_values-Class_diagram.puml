@@ -42,11 +42,11 @@ class Package__the_original_one_before_refactoring {
 
 interface Package__refactored__ {
     + operator<<() [for terminal printing]
-    + {abstract} streamOutputOperator()
+    # {abstract} streamOutputOperator()
     + operator<()\
     \n    [for ""find"" in ""std::set"" for unique_ptr\
     \n     and reference_wrapper argument types]
-    + {abstract} lessThanOperator()
+    # {abstract} lessThanOperator()
 }
 
 class LocallyInstalledPackage {

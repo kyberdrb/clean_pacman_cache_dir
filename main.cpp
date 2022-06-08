@@ -13,43 +13,43 @@
 
 //#include <cassert>
 
-#include "Package__refactored__.h"
-#include "PackageWithInferredName__refactored__.h"
-#include "LocallyInstalledPackage__refactored__.h"
+#include "Package_refactored_.h"
+#include "PackageWithInferredName_refactored_.h"
+#include "LocallyInstalledPackage_refactored_.h"
 void testPolymorphism() {
-    auto locallyInstalledPackageAuto = std::make_unique<LocallyInstalledPackage__refactored__>();
+    auto locallyInstalledPackageAuto = std::make_unique<LocallyInstalledPackage_refactored_>();
     locallyInstalledPackageAuto->commonFunction();
-    locallyInstalledPackageAuto->functionOnlyInLocallyInstalledPackage__refactored__();
+    locallyInstalledPackageAuto->functionOnlyInLocallyInstalledPackage_refactored_();
 
     std::cout << "---\n";
 
-    std::unique_ptr<LocallyInstalledPackage__refactored__> locallyInstalledPackageExact = std::make_unique<LocallyInstalledPackage__refactored__>();
+    std::unique_ptr<LocallyInstalledPackage_refactored_> locallyInstalledPackageExact = std::make_unique<LocallyInstalledPackage_refactored_>();
     locallyInstalledPackageExact->commonFunction();
-    locallyInstalledPackageExact->functionOnlyInLocallyInstalledPackage__refactored__();
+    locallyInstalledPackageExact->functionOnlyInLocallyInstalledPackage_refactored_();
 
     std::cout << "---\n";
 
-    std::unique_ptr<Package__refactored__> locallyInstalledPackageAbstract = std::make_unique<LocallyInstalledPackage__refactored__>();
+    std::unique_ptr<Package_refactored_> locallyInstalledPackageAbstract = std::make_unique<LocallyInstalledPackage_refactored_>();
     locallyInstalledPackageAbstract->commonFunction();
-//    locallyInstalledPackageAbstract->functionOnlyInLocallyInstalledPackage__refactored__(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage__refactored__' in 'Package__refactored__'
+//    locallyInstalledPackageAbstract->functionOnlyInLocallyInstalledPackage_refactored_(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage_refactored_' in 'Package__refactored__'
 
     std::cout << "===\n";
 
-    auto packageWithInferredNameAuto = std::make_unique<PackageWithInferredName__refactored__>();
+    auto packageWithInferredNameAuto = std::make_unique<PackageWithInferredName_refactored_>();
     packageWithInferredNameAuto->commonFunction();
-    packageWithInferredNameAuto->functionOnlyInPackageWithInferredName__refactored__();
+    packageWithInferredNameAuto->functionOnlyInPackageWithInferredName_refactored_();
 
     std::cout << "---\n";
 
-    std::unique_ptr<PackageWithInferredName__refactored__> packageWithInferredNameExact = std::make_unique<PackageWithInferredName__refactored__>();
+    std::unique_ptr<PackageWithInferredName_refactored_> packageWithInferredNameExact = std::make_unique<PackageWithInferredName_refactored_>();
     packageWithInferredNameExact->commonFunction();
-    packageWithInferredNameExact->functionOnlyInPackageWithInferredName__refactored__();
+    packageWithInferredNameExact->functionOnlyInPackageWithInferredName_refactored_();
 
     std::cout << "---\n";
 
-    std::unique_ptr<Package__refactored__> packageWithInferredNameGeneralized = std::make_unique<PackageWithInferredName__refactored__>();
+    std::unique_ptr<Package_refactored_> packageWithInferredNameGeneralized = std::make_unique<PackageWithInferredName_refactored_>();
     packageWithInferredNameGeneralized->commonFunction();
-//    packageWithInferredNameGeneralized->functionOnlyInPackageWithInferredName__refactored__(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage__refactored__' in 'Package__refactored__'
+//    packageWithInferredNameGeneralized->functionOnlyInPackageWithInferredName_refactored_(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage_refactored_' in 'Package__refactored__'
 }
 
 int main() {
@@ -117,6 +117,9 @@ int main() {
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
     std::set<std::unique_ptr<Package>> installedPackages{};
+    // TODO refactor to store abstract 'Package' unique pointers
+//    std::set<std::unique_ptr<Package_refactored_>> installedPackages{};
+
 //    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages{};
 //    std::set<std::unique_ptr<Package>, std::greater<std::unique_ptr<Package>>> installedPackages{};
 
@@ -164,6 +167,7 @@ int main() {
 
         auto locallyInstalledPackage = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
         // TODO refactor to construct 'LocallyInstalledPackage' unique pointer
+//        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage_refactored_>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 //        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 
         installedPackages.emplace(std::move(locallyInstalledPackage));
@@ -184,6 +188,7 @@ int main() {
 
     std::set<std::reference_wrapper<Package>> packagesWithInstallationPackageFilesForDifferentVersions;
     // TODO refactor to hold 'LocallyInstalledPackage' reference_wrappers
+//    std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_>> packagesWithInstallationPackageFilesForDifferentVersions;
 //    std::set<std::reference_wrapper<LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
@@ -220,6 +225,7 @@ int main() {
 
             auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageName));
             // TODO refactor to use 'PackageWithInferredName' - the derived class of 'Package' base class
+//            auto packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageName));
 //            auto packageWithInferredName = std::make_unique<PackageWithInferredName>(std::move(inferredPackageName));
 
             while ( packageWithInferredName->hasStillSomethingInPackageName() ) {

@@ -1,0 +1,71 @@
+//
+// Created by laptop on 6/8/22.
+//
+
+//
+// Created by laptop on 4/9/22.
+//
+
+#include "LocallyInstalledPackage_refactored_.h"
+
+#include "FileMover.h"
+
+#include <filesystem>
+#include <iostream>
+
+LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(std::unique_ptr<PackageName> packageName, std::unique_ptr<PackageVersion> locallyInstalledVersion, std::string architecture, bool isIgnored) :
+        name(std::move(packageName)),
+        locallyInstalledVersion(std::move(locallyInstalledVersion)),
+        architecture(std::move(architecture)),
+        isIgnored(isIgnored)
+{}
+
+const PackageName& LocallyInstalledPackage_refactored_::getName() const {
+    return *(this->name);
+}
+
+uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackageFilesForDifferentVersions() const {
+    return this->installationPackageFilesForDifferentPackageVersions.size();
+}
+
+bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile) {
+    bool isPackageNamesMatching =
+            *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
+
+    bool isPackageVersionDifferent =
+            *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
+
+    // For debugging purposes
+//    if (isPackageVersionDifferent) {
+//        std::cerr << "this is what I was waiting for..." << "\n";
+//    }
+
+    bool isPackageNonignored = !this->isIgnored;
+
+    if ( isPackageNamesMatching && isPackageVersionDifferent && isPackageNonignored) {
+        this->installationPackageFilesForDifferentPackageVersions.emplace_back(std::move(packageRelatedPackageFile));
+        return true;
+    }
+
+    return false;
+}
+
+void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsToSeparateDir(
+        const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles)
+{
+    for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
+        const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();
+        const auto to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
+
+        std::cout << "Locally installed package details:\t" <<
+                  *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
+
+        std::cout << "Details of deleted package file:\t" <<
+                  packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n";
+
+        std::cout << "Moving package file\t\t" << from << "\n";
+        std::cout << "to separate directory\t\t" << *(to) << "\n\n";
+
+        FileMover::move(from, *(to));
+    }
+}
