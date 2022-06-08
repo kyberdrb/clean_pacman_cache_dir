@@ -16,7 +16,6 @@
 #include "Package_refactored_.h"
 #include "PackageWithInferredName_refactored_.h"
 #include "LocallyInstalledPackage_refactored_.h"
-#include "PackageComparator.h"
 
 void testPolymorphism() {
     auto locallyInstalledPackageAuto = std::make_unique<LocallyInstalledPackage_refactored_>();
@@ -240,7 +239,7 @@ int main() {
             std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageName));
 //            auto packageWithInferredName = std::make_unique<PackageWithInferredName>(std::move(inferredPackageName));
 
-            PackageWithInferredName_refactored_* packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
+            auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
 
             while ( packageWithInferredNameExact->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
