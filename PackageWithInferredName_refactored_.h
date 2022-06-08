@@ -64,6 +64,10 @@ protected:
         return *(this->name) < anotherPackage->getName();
     }
 
+    bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) override {
+        return *(this->name) < anotherPackage.get().getName();
+    }
+
 private:
     std::unique_ptr<PackageName> nameAndVersion;
     std::unique_ptr<PackageName> name;

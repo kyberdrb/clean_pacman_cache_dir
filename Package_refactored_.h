@@ -32,10 +32,10 @@ protected:
     virtual bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const = 0;
 
 public:
-//    friend bool operator<(const std::reference_wrapper<Package_refactored_>& package, const std::reference_wrapper<Package_refactored_>& anotherPackage) {
-//        return package.get().lessThanOperator(anotherPackage);
-//    }
+    friend bool operator<(const std::reference_wrapper<Package_refactored_>& package, const std::reference_wrapper<Package_refactored_>& anotherPackage) {
+        return package.get().lessThanOperator(anotherPackage);
+    }
 
 protected:
-//    virtual bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) = 0;
+    virtual bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) = 0;
 };

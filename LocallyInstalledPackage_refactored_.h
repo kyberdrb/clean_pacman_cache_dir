@@ -78,7 +78,7 @@ protected:
             out
                     << *(this->locallyInstalledVersion) << "\t"
                     << this->architecture << "\t"
-                    << "isthis->gnored: " << this->isIgnored << "\t"
+                    << "isPackageIgnored: " << this->isIgnored << "\t"
                     << *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
 
             if ( ! (this->installationPackageFilesForDifferentPackageVersions.empty() ) ) {
@@ -94,6 +94,10 @@ protected:
 
     bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const override {
         return *(this->name) < anotherPackage->getName();
+    }
+
+    bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) override {
+        return *(this->name) < anotherPackage.get().getName();
     }
 
 private:

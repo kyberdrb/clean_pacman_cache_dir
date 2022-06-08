@@ -16,6 +16,8 @@
 #include "Package_refactored_.h"
 #include "PackageWithInferredName_refactored_.h"
 #include "LocallyInstalledPackage_refactored_.h"
+#include "PackageComparator.h"
+
 void testPolymorphism() {
     auto locallyInstalledPackageAuto = std::make_unique<LocallyInstalledPackage_refactored_>();
     locallyInstalledPackageAuto->commonFunction();
@@ -116,11 +118,15 @@ int main() {
     //     than the local one],
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-    std::set<std::unique_ptr<Package>> installedPackages{};
+//    std::set<std::unique_ptr<Package>> installedPackages{};
     // TODO refactor to store abstract 'Package' unique pointers
-//    std::set<std::unique_ptr<Package_refactored_>> installedPackages{};
+    std::set<std::unique_ptr<Package_refactored_>> installedPackages{};
 
 //    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages{};
+    // TODO refactor to store abstract 'Package' unique pointers
+//    std::set<std::unique_ptr<Package_refactored_>, PackageComparator> installedPackages{};
+
+
 //    std::set<std::unique_ptr<Package>, std::greater<std::unique_ptr<Package>>> installedPackages{};
 
     // Transparent functor 'std::greater' didn't work: no element was found
@@ -165,9 +171,9 @@ int main() {
 
         auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
 
-        auto locallyInstalledPackage = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
+//        auto locallyInstalledPackage = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
         // TODO refactor to construct 'LocallyInstalledPackage' unique pointer
-//        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage_refactored_>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
+        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage_refactored_>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 //        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
 
         installedPackages.emplace(std::move(locallyInstalledPackage));
@@ -186,9 +192,10 @@ int main() {
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
 
-    std::set<std::reference_wrapper<Package>> packagesWithInstallationPackageFilesForDifferentVersions;
+//    std::set<std::reference_wrapper<Package>> packagesWithInstallationPackageFilesForDifferentVersions;
     // TODO refactor to hold 'LocallyInstalledPackage' reference_wrappers
-//    std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_>> packagesWithInstallationPackageFilesForDifferentVersions;
+    std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_>> packagesWithInstallationPackageFilesForDifferentVersions;
+//    std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_*>> packagesWithInstallationPackageFilesForDifferentVersions;
 //    std::set<std::reference_wrapper<LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
@@ -219,16 +226,23 @@ int main() {
 //        }
 
         if (packageFile.is_regular_file()) {
+            // TODO delegate functionality for 'packageNameAndVersionAsText' to instance of type 'PackageWithInferredName_refactored_'
             auto packageNameAndVersionAsText = packageFilename->extractPackageNameAndVersion();
             std::string inferredPackageNameAsText = packageNameAndVersionAsText;
+
+            // TODO replace above two lines with below one line to ommit one copy
+//            const std::string& inferredPackageNameAsText = packageFilename->extractPackageNameAndVersion();
+
             auto inferredPackageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsText));
 
-            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageName));
+//            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageName));
             // TODO refactor to use 'PackageWithInferredName' - the derived class of 'Package' base class
-//            auto packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageName));
+            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageName));
 //            auto packageWithInferredName = std::make_unique<PackageWithInferredName>(std::move(inferredPackageName));
 
-            while ( packageWithInferredName->hasStillSomethingInPackageName() ) {
+            PackageWithInferredName_refactored_* packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
+
+            while ( packageWithInferredNameExact->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
                 auto iteratorPointingToMatchingPackage = installedPackages.find(packageWithInferredName);
 
@@ -240,7 +254,7 @@ int main() {
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
                 bool packageWithInferredNameIsMissing = iteratorPointingToMatchingPackage == installedPackages.end();
                 if (packageWithInferredNameIsMissing) {
-                    packageWithInferredName->getNextInferredPackageNameCandidate();
+                    packageWithInferredNameExact->getNextInferredPackageNameCandidate();
                     continue;
                 }
 
@@ -253,8 +267,12 @@ int main() {
                 // For debugging purposes
 //                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
 
-                auto startingPositionForPackageVersion = packageWithInferredName->getStartingPositionForPackageVersion();
+                auto startingPositionForPackageVersion = packageWithInferredNameExact->getStartingPositionForPackageVersion();
                 auto inferredPackageVersionAsText = packageNameAndVersionAsText.substr(startingPositionForPackageVersion);
+                // TODO replace above two line with below one line to delegate functionality to instance of 'PackageWithInferredName'
+                //   i. e. 'packageWithInferredNameExact'
+//                auto inferredPackageVersionAsText = packageWithInferredNameExact->extractPackageVersion();
+
                 auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
@@ -263,19 +281,22 @@ int main() {
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
-                bool wasInstallationPackageFileAdded = iteratorPointingToMatchingPackage->get()->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+                bool wasInstallationPackageFileAdded = dynamic_cast<LocallyInstalledPackage_refactored_*>(iteratorPointingToMatchingPackage->get())->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
 
                 // if the package file was added to the deletion candidates for the particular package,
                 //  save the reference to the package file for generating only
                 //  and faster deleting of the package files by iterating only packages that have at least one package file for deletion
                 if (wasInstallationPackageFileAdded) {
-                    packagesWithInstallationPackageFilesForDifferentVersions.emplace(*(iteratorPointingToMatchingPackage->get()));
+
+                    packagesWithInstallationPackageFilesForDifferentVersions.emplace(
+                            *(dynamic_cast<LocallyInstalledPackage_refactored_*>(iteratorPointingToMatchingPackage->get() ) )
+                    );
                 }
 
                 break;
             }
 
-            bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredName->isPackageNameEmpty();
+            bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredNameExact->isPackageNameEmpty();
 
             if (hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage) {
                 auto packageFileForMissingPackage = std::make_unique<SimpleInstallationPackageFile>(

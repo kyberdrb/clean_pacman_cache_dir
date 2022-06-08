@@ -16,7 +16,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif()
 
 # For lambda predicate
-add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h SimpleInstallationPackageFile.cpp SimpleInstallationPackageFile.h AbsolutePath.cpp AbsolutePath.h FileMover.cpp FileMover.h Filename.cpp Filename.h SimpleInstallationPackageFileType.h Package_refactored_.h LocallyInstalledPackage_refactored_.h PackageWithInferredName_refactored_.h PackageWithInferredName_refactored_.cpp LocallyInstalledPackage_refactored_.cpp)
+add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h SimpleInstallationPackageFile.cpp SimpleInstallationPackageFile.h AbsolutePath.cpp AbsolutePath.h FileMover.cpp FileMover.h Filename.cpp Filename.h SimpleInstallationPackageFileType.h Package_refactored_.h LocallyInstalledPackage_refactored_.h PackageWithInferredName_refactored_.h PackageWithInferredName_refactored_.cpp LocallyInstalledPackage_refactored_.cpp PackageComparator.h)
 
 # For comparator functor predicate
 #add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h IgnoredPackageNamesEqualityComparator.h)
