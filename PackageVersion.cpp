@@ -8,10 +8,6 @@ PackageVersion::PackageVersion(std::string packageVersionAsText) :
         version(std::move(packageVersionAsText))
 {}
 
-bool PackageVersion::empty() const {
-    return this->version.empty();
-}
-
 const std::string& PackageVersion::getVersion() const {
     return PackageVersion::version;
 }

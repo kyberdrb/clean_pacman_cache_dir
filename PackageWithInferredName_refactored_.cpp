@@ -10,13 +10,11 @@
 
 #include "FileMover.h"
 
-#include <filesystem>
 #include <iostream>
 
-PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> inferredPackageNameAndVersion) :
-        nameAndVersion(std::move(inferredPackageNameAndVersion) ),
-        name(std::make_unique<PackageName>(this->nameAndVersion->string() ) ),
-        locallyInstalledVersion(std::make_unique<PackageVersion>(std::string{}) )
+PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion) :
+        nameAndVersion(std::move(extractedPackageNameAndVersion) ),
+        name(std::make_unique<PackageName>(this->nameAndVersion->string() ) )
 {}
 
 const PackageName& PackageWithInferredName_refactored_::getName() const {
@@ -28,13 +26,13 @@ bool PackageWithInferredName_refactored_::isPackageNameEmpty() const {
 }
 
 bool PackageWithInferredName_refactored_::hasStillSomethingInPackageName() const {
-    return ! isPackageNameEmpty();
+    return !(isPackageNameEmpty());
 }
 
 void PackageWithInferredName_refactored_::getNextInferredPackageNameCandidate() {
-    for (int i = this->name->size() - 1; i >= 0; --i) {
+    for (int position = this->name->size() - 1; position >= 0; --position) {
         char delimiter = '-';
-        bool weFoundDelimiterCharacter = this->name->at(i) == delimiter;
+        bool weFoundDelimiterCharacter = this->name->at(position) == delimiter;
         this->name->pop_back();
         if (weFoundDelimiterCharacter) {
             break;

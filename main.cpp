@@ -1,5 +1,6 @@
 #include "IgnoredPackageName.h"
-#include "Package.h"
+#include "LocallyInstalledPackage_refactored_.h"
+#include "PackageWithInferredName_refactored_.h"
 #include "SimpleInstallationPackageFile.h"
 
 #include "alpm.h"
@@ -13,49 +14,7 @@
 
 //#include <cassert>
 
-#include "Package_refactored_.h"
-#include "PackageWithInferredName_refactored_.h"
-#include "LocallyInstalledPackage_refactored_.h"
-
-void testPolymorphism() {
-    auto locallyInstalledPackageAuto = std::make_unique<LocallyInstalledPackage_refactored_>();
-    locallyInstalledPackageAuto->commonFunction();
-    locallyInstalledPackageAuto->functionOnlyInLocallyInstalledPackage_refactored_();
-
-    std::cout << "---\n";
-
-    std::unique_ptr<LocallyInstalledPackage_refactored_> locallyInstalledPackageExact = std::make_unique<LocallyInstalledPackage_refactored_>();
-    locallyInstalledPackageExact->commonFunction();
-    locallyInstalledPackageExact->functionOnlyInLocallyInstalledPackage_refactored_();
-
-    std::cout << "---\n";
-
-    std::unique_ptr<Package_refactored_> locallyInstalledPackageAbstract = std::make_unique<LocallyInstalledPackage_refactored_>();
-    locallyInstalledPackageAbstract->commonFunction();
-//    locallyInstalledPackageAbstract->functionOnlyInLocallyInstalledPackage_refactored_(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage_refactored_' in 'Package__refactored__'
-
-    std::cout << "===\n";
-
-    auto packageWithInferredNameAuto = std::make_unique<PackageWithInferredName_refactored_>();
-    packageWithInferredNameAuto->commonFunction();
-    packageWithInferredNameAuto->functionOnlyInPackageWithInferredName_refactored_();
-
-    std::cout << "---\n";
-
-    std::unique_ptr<PackageWithInferredName_refactored_> packageWithInferredNameExact = std::make_unique<PackageWithInferredName_refactored_>();
-    packageWithInferredNameExact->commonFunction();
-    packageWithInferredNameExact->functionOnlyInPackageWithInferredName_refactored_();
-
-    std::cout << "---\n";
-
-    std::unique_ptr<Package_refactored_> packageWithInferredNameGeneralized = std::make_unique<PackageWithInferredName_refactored_>();
-    packageWithInferredNameGeneralized->commonFunction();
-//    packageWithInferredNameGeneralized->functionOnlyInPackageWithInferredName_refactored_(); // Compilation error: No member named 'functionOnlyInLocallyInstalledPackage_refactored_' in 'Package__refactored__'
-}
-
 int main() {
-    testPolymorphism();
-
     // FIND IGNORED PACKAGES PART - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
 
     // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
@@ -117,19 +76,7 @@ int main() {
     //     than the local one],
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-//    std::set<std::unique_ptr<Package>> installedPackages{};
-    // TODO refactor to store abstract 'Package' unique pointers
     std::set<std::unique_ptr<Package_refactored_>> installedPackages{};
-
-//    std::set<std::unique_ptr<Package>, PackageComparator> installedPackages{};
-    // TODO refactor to store abstract 'Package' unique pointers
-//    std::set<std::unique_ptr<Package_refactored_>, PackageComparator> installedPackages{};
-
-
-//    std::set<std::unique_ptr<Package>, std::greater<std::unique_ptr<Package>>> installedPackages{};
-
-    // Transparent functor 'std::greater' didn't work: no element was found
-//    std::set<std::unique_ptr<Package>, std::greater<>> installedPackages{};
 
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);
@@ -140,19 +87,13 @@ int main() {
         alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
         listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
 
-        // TODO instead of copying and moving 'packageNameAsText' to instances of 'Package' class
-        // (or derived 'Package' classes?)
-        //  create 'PackageName' instances by moving 'packageNameAsText' into it,
-        //  store 'PackageName' instances in a collection ('std::set'?)
-        //  or a temporary variable? (std::unique_ptr<Filename>)
-        //  and then only copy reference to specific package to various 'Package' instances
         std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
 
         std::string locallyInstalledVersionAsText = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
         bool isIgnored = false;
-        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(packageNameAsText);
+        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameAsText));
 
         // For debugging purposes - if the argument is passed by value to a function, which accepts the argument as a value
         //  the argument is __copied__ from the calling to the receiving function
@@ -162,7 +103,7 @@ int main() {
             isIgnored = true;
         }
 
-        auto packageName = std::make_unique<PackageName>(std::move(packageNameAsText));
+        auto packageName = std::make_unique<PackageName>(ignoredPackageNameCandidate->moveNameFromThisInstance());
 
         // For debugging purposes - if the argument is passed by value with 'std::move' to a function, which accepts the argument as a value
         //  the argument is __moved__ from the calling to the receiving function
@@ -170,10 +111,11 @@ int main() {
 
         auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
 
-//        auto locallyInstalledPackage = std::make_unique<Package>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
-        // TODO refactor to construct 'LocallyInstalledPackage' unique pointer
-        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage_refactored_>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
-//        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage>(std::move(packageName), std::move(locallyInstalledVersion), architecture, isIgnored);
+        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage_refactored_>(
+                std::move(packageName),
+                std::move(locallyInstalledVersion),
+                architecture,
+                isIgnored);
 
         installedPackages.emplace(std::move(locallyInstalledPackage));
     }
@@ -190,12 +132,7 @@ int main() {
 
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
-
-//    std::set<std::reference_wrapper<Package>> packagesWithInstallationPackageFilesForDifferentVersions;
-    // TODO refactor to hold 'LocallyInstalledPackage' reference_wrappers
     std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_>> packagesWithInstallationPackageFilesForDifferentVersions;
-//    std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_*>> packagesWithInstallationPackageFilesForDifferentVersions;
-//    std::set<std::reference_wrapper<LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
     std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
@@ -229,6 +166,8 @@ int main() {
 
             auto inferredPackageNameAndVersion = std::make_unique<PackageNameAndVersion>(std::move(inferredPackageNameAsText));
 
+            // TODO move refactor parameter type in constructor of 'PackageWithInferredName_refactored_' to 'std::string'
+            //  and then use constructor delegation described above function 'getName' function in 'Package_refactored_'
             std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAndVersion));
 
             auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
@@ -328,7 +267,7 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF PARTLY DOWNLOADED PACKAGE FILES\n\n";
+    std::cout << "LIST OF PARTIALLY DOWNLOADED INSTALLATION PACKAGE FILES\n\n";
 
     std::cout << "Found " << partiallyDownloadedPackageFiles.size() << " partly downloaded package files\n\n";
 
@@ -338,7 +277,7 @@ int main() {
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";
-    std::cout << "LIST OF PACKAGE FILES RELATED TO MISSING PACKAGES\n\n";
+    std::cout << "LIST OF INSTALLATION PACKAGE FILES RELATED TO MISSING PACKAGES\n\n";
 
     std::cout << "Found " << packageFilesRelatedToMissingPackages.size() << " package files related to missing packages\n\n";
 

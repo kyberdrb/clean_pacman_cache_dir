@@ -10,14 +10,18 @@
 
 #include "FileMover.h"
 
-#include <filesystem>
 #include <iostream>
 
-LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(std::unique_ptr<PackageName> packageName, std::unique_ptr<PackageVersion> locallyInstalledVersion, std::string architecture, bool isIgnored) :
-        name(std::move(packageName)),
-        locallyInstalledVersion(std::move(locallyInstalledVersion)),
-        architecture(std::move(architecture)),
-        isIgnored(isIgnored)
+LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(
+    std::unique_ptr<PackageName> packageName,
+    std::unique_ptr<PackageVersion> locallyInstalledVersion,
+    std::string architecture,
+    bool isIgnored)
+:
+    name(std::move(packageName)),
+    locallyInstalledVersion(std::move(locallyInstalledVersion)),
+    architecture(std::move(architecture)),
+    isIgnored(isIgnored)
 {}
 
 const PackageName& LocallyInstalledPackage_refactored_::getName() const {
@@ -28,12 +32,11 @@ uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackag
     return this->installationPackageFilesForDifferentPackageVersions.size();
 }
 
-bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile) {
-    bool isPackageNamesMatching =
-            *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
-
-    bool isPackageVersionDifferent =
-            *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
+bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(
+        std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile)
+{
+    bool isPackageNamesMatching = *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
+    bool isPackageVersionDifferent = *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
     // For debugging purposes
 //    if (isPackageVersionDifferent) {
@@ -57,14 +60,24 @@ void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsTo
         const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();
         const auto to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
 
-        std::cout << "Locally installed package - info:\t\t" <<
-                  *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
+        std::cout
+            << "Info about the locally installed package:\n"
+            << "\t" << *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
 
-        std::cout << "Installation package file for deletion- info:\t" <<
-                  packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n";
+        std::cout
+            << "Info about the installation package file for deletion:\n"
+            << "\t" << packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n";
 
-        std::cout << "Moving package file\t\t" << from << "\n";
-        std::cout << "to separate directory\t\t" << *(to) << "\n\n";
+        std::cout << "\n";
+
+        // TODO maybe abstract duplicate code from here and from 'moveToSeparateDirectoryForDeletion' in 'SimpleInstallationPackageFile.cpp'
+        //  to a separate class 'TerminalPrinter'? for example?
+        //TerminalPrinter::printInstallationPackageFileInfoBeforeDeletion(from, *(to));
+        std::cout
+            << "Moving package file:\n"
+            << "\t" << from << "\n"
+            << "to separate directory:\n"
+            << "\t" << *(to) << "\n\n";
 
         FileMover::move(from, *(to));
     }

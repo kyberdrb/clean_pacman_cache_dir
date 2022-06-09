@@ -8,8 +8,6 @@
 
 class Package_refactored_ {
 public:
-    virtual void commonFunction() = 0;
-
     virtual ~Package_refactored_() = default;
 
     friend std::ostream& operator<<(std::ostream& out, const Package_refactored_& package) {

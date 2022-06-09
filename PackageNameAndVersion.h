@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <ostream>
 
 class PackageNameAndVersion {
 public:
@@ -14,6 +15,8 @@ public:
     const std::string& string() const;
 
     std::string substr(uint_fast8_t fromPosition);
+
+    friend std::ostream& operator<<(std::ostream& out, const PackageNameAndVersion& version);
 
 private:
     std::string nameAndVersion;

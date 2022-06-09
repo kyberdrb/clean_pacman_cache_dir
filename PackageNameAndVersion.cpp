@@ -15,3 +15,8 @@ const std::string& PackageNameAndVersion::string() const {
 std::string PackageNameAndVersion::substr(uint_fast8_t fromPosition) {
     return this->nameAndVersion.substr(fromPosition);
 }
+
+std::ostream& operator<<(std::ostream& out, const PackageNameAndVersion& version) {
+    out << "nameAndVersion: " << version.nameAndVersion;
+    return out;
+}
