@@ -34,7 +34,7 @@ public:
 
     uint_fast8_t getStartingPositionForPackageVersion() const;
 
-
+    std::unique_ptr<PackageVersion> extractPackageVersion();
 
 //    friend bool operator<(const std::unique_ptr<PackageWithInferredName_refactored_>& package, const std::unique_ptr<PackageWithInferredName_refactored_>& anotherPackage) {
 //        // Delegate comparison to overloaded 'operator<' defined as 'friend bool operator<(const std::unique_ptr<PackageName>& packageName, const std::unique_ptr<PackageName>& otherPackageName)' in 'PackageName' class

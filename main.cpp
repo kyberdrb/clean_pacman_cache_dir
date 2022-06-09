@@ -266,13 +266,7 @@ int main() {
                 // For debugging purposes
 //                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
 
-                auto startingPositionForPackageVersion = packageWithInferredNameExact->getStartingPositionForPackageVersion();
-                auto inferredPackageVersionAsText = packageNameAndVersionAsText.substr(startingPositionForPackageVersion);
-                // TODO replace above two line with below one line to delegate functionality to instance of 'PackageWithInferredName'
-                //   i. e. 'packageWithInferredNameExact'
-//                auto inferredPackageVersionAsText = packageWithInferredNameExact->extractPackageVersion();
-
-                auto inferredPackageVersion = std::make_unique<PackageVersion>(inferredPackageVersionAsText);
+                auto inferredPackageVersion = packageWithInferredNameExact->extractPackageVersion();
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
                         std::move(packageAbsolutePath),

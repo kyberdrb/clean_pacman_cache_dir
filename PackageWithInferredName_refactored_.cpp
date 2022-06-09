@@ -42,6 +42,16 @@ void PackageWithInferredName_refactored_::getNextInferredPackageNameCandidate() 
     }
 }
 
+std::unique_ptr<PackageVersion> PackageWithInferredName_refactored_::extractPackageVersion() {
+    auto startingPositionForPackageVersion = this->getStartingPositionForPackageVersion();
+
+    // TODO change member variable 'nameAndVersion' from 'PackageName' to a new type 'PackageNameAndVersion'
+    //  to make the difference in usage and meaning clearer
+    auto inferredPackageVersionAsText = this->nameAndVersion->string().substr(startingPositionForPackageVersion);
+
+    return std::make_unique<PackageVersion>(inferredPackageVersionAsText);
+}
+
 uint_fast8_t PackageWithInferredName_refactored_::getStartingPositionForPackageVersion() const {
     return this->name->size() + 1;
 }
