@@ -57,10 +57,10 @@ void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsTo
         const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();
         const auto to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
 
-        std::cout << "Locally installed package details:\t" <<
+        std::cout << "Locally installed package - info:\t\t" <<
                   *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
 
-        std::cout << "Details of deleted package file:\t" <<
+        std::cout << "Installation package file for deletion- info:\t" <<
                   packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n";
 
         std::cout << "Moving package file\t\t" << from << "\n";

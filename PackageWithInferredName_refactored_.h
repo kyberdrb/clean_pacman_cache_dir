@@ -6,6 +6,7 @@
 
 #include "Package_refactored_.h"
 #include "PackageVersion.h"
+#include "PackageNameAndVersion.h"
 
 #include <iostream>
 
@@ -22,7 +23,7 @@ public:
     // For testing purposes
     PackageWithInferredName_refactored_() = default;
 
-    explicit PackageWithInferredName_refactored_(std::unique_ptr<PackageName> inferredPackageName);
+    explicit PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> inferredPackageNameAndVersion);
 
     const PackageName& getName() const override;
 
@@ -69,7 +70,8 @@ protected:
     }
 
 private:
-    std::unique_ptr<PackageName> nameAndVersion;
+//    std::unique_ptr<PackageName> nameAndVersion;
+    std::unique_ptr<PackageNameAndVersion> nameAndVersion;
     std::unique_ptr<PackageName> name;
     std::unique_ptr<PackageVersion> locallyInstalledVersion;
 };

@@ -225,19 +225,11 @@ int main() {
 //        }
 
         if (packageFile.is_regular_file()) {
-            // TODO delegate functionality for 'packageNameAndVersionAsText' to instance of type 'PackageWithInferredName_refactored_'
-            auto packageNameAndVersionAsText = packageFilename->extractPackageNameAndVersion();
-            std::string inferredPackageNameAsText = packageNameAndVersionAsText;
+            std::string inferredPackageNameAsText = packageFilename->extractPackageNameAndVersion();
 
-            // TODO replace above two lines with below one line to ommit one copy
-//            const std::string& inferredPackageNameAsText = packageFilename->extractPackageNameAndVersion();
+            auto inferredPackageNameAndVersion = std::make_unique<PackageNameAndVersion>(std::move(inferredPackageNameAsText));
 
-            auto inferredPackageName = std::make_unique<PackageName>(std::move(inferredPackageNameAsText));
-
-//            auto packageWithInferredName = std::make_unique<Package>(std::move(inferredPackageName));
-            // TODO refactor to use 'PackageWithInferredName' - the derived class of 'Package' base class
-            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageName));
-//            auto packageWithInferredName = std::make_unique<PackageWithInferredName>(std::move(inferredPackageName));
+            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAndVersion));
 
             auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
 

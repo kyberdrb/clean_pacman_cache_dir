@@ -13,8 +13,8 @@
 #include <filesystem>
 #include <iostream>
 
-PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageName> packageNameAndVersion) :
-        nameAndVersion(std::move(packageNameAndVersion) ),
+PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> inferredPackageNameAndVersion) :
+        nameAndVersion(std::move(inferredPackageNameAndVersion) ),
         name(std::make_unique<PackageName>(this->nameAndVersion->string() ) ),
         locallyInstalledVersion(std::make_unique<PackageVersion>(std::string{}) )
 {}
@@ -44,12 +44,8 @@ void PackageWithInferredName_refactored_::getNextInferredPackageNameCandidate() 
 
 std::unique_ptr<PackageVersion> PackageWithInferredName_refactored_::extractPackageVersion() {
     auto startingPositionForPackageVersion = this->getStartingPositionForPackageVersion();
-
-    // TODO change member variable 'nameAndVersion' from 'PackageName' to a new type 'PackageNameAndVersion'
-    //  to make the difference in usage and meaning clearer
-    auto inferredPackageVersionAsText = this->nameAndVersion->string().substr(startingPositionForPackageVersion);
-
-    return std::make_unique<PackageVersion>(inferredPackageVersionAsText);
+    auto inferredPackageVersionAsText = this->nameAndVersion->substr(startingPositionForPackageVersion);
+    return std::make_unique<PackageVersion>(std::move(inferredPackageVersionAsText));
 }
 
 uint_fast8_t PackageWithInferredName_refactored_::getStartingPositionForPackageVersion() const {

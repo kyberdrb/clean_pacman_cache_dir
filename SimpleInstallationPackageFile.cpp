@@ -31,9 +31,9 @@ void SimpleInstallationPackageFile::moveToSeparateDirectoryForDeletion(const Abs
     const auto to = directoryForInstallationPackageFilesForDeletion + this->getFilename();
 
     if (this->reasonForDeletion == SimpleInstallationPackageFileType::PARTIALLY_DOWNLOADED) {
-        std::cout << "Moving partially downloaded package file\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
+        std::cout << "Moving partially downloaded installation package file\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
     } else if (this->reasonForDeletion == SimpleInstallationPackageFileType::MISSING_LOCALLY_INSTALLED_PACKAGE) {
-        std::cout << "Moving package file related to missing package\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
+        std::cout << "Moving installation package file related to missing package\t" << from << "\nto separate directory\t\t\t\t" << *(to) << "\n\n";
     }
 
     FileMover::move(from, *(to));
