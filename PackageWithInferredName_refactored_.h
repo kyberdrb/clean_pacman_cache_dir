@@ -12,11 +12,11 @@
 
 class PackageWithInferredName_refactored_ : public Package_refactored_ {
 public:
-    explicit PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion);
-//    explicit PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText);
+//    explicit PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion);
+    explicit PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText);
 
     // TODO remove after delegation to the base class 'Package_refactored_'
-    const PackageName& getName() const override;
+//    const PackageName& getName() const override;
 
     bool isPackageNameEmpty() const;
 
@@ -30,24 +30,25 @@ protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
             << *(this->nameAndVersion) << "\t"
-            << *(this->name);
+//            << *(this->name);
+            << Package_refactored_::getName();
 
         return out;
     }
 
     bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const override {
-        return *(this->name) < anotherPackage->getName();
+        return Package_refactored_::getName() < anotherPackage->getName();
     }
 
     bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) override {
-        return *(this->name) < anotherPackage.get().getName();
+        return Package_refactored_::getName() < anotherPackage.get().getName();
     }
 
 private:
     std::unique_ptr<PackageNameAndVersion> nameAndVersion;
 
     // TODO remove after delegation to the base class 'Package_refactored_'
-    std::unique_ptr<PackageName> name;
+//    std::unique_ptr<PackageName> name;
 
     uint_fast8_t getStartingPositionForPackageVersion() const;
 };

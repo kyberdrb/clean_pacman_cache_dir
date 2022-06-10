@@ -12,20 +12,20 @@
 
 #include <iostream>
 
-PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion) :
-        nameAndVersion(std::move(extractedPackageNameAndVersion) ),
-        name(std::make_unique<PackageName>(this->nameAndVersion->string() ) )
-{}
-
-//PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText) :
-//        Package(std::make_unique<PackageName>(std::move(extractedPackageNameAndVersionAsText) ) ),
-//        nameAndVersion(Package_refactored_::getName() )
+//PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion) :
+//        nameAndVersion(std::move(extractedPackageNameAndVersion) ),
+//        name(std::make_unique<PackageName>(this->nameAndVersion->string() ) )
 //{}
 
+PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText) :
+        Package_refactored_(std::make_unique<PackageName>(std::move(extractedPackageNameAndVersionAsText) ) ),
+        nameAndVersion(std::make_unique<PackageNameAndVersion>(Package_refactored_::getName().string() ) )
+{}
+
 // TODO remove after delegation to the base class 'Package_refactored_'
-const PackageName& PackageWithInferredName_refactored_::getName() const {
-    return *(this->name);
-}
+//const PackageName& PackageWithInferredName_refactored_::getName() const {
+//    return *(this->name);
+//}
 
 bool PackageWithInferredName_refactored_::isPackageNameEmpty() const {
     return this->name->empty();

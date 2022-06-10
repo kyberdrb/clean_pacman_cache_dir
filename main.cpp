@@ -164,13 +164,16 @@ int main() {
         if (packageFile.is_regular_file()) {
             std::string inferredPackageNameAsText = packageFilename->extractPackageNameAndVersion();
 
-            auto inferredPackageNameAndVersion = std::make_unique<PackageNameAndVersion>(std::move(inferredPackageNameAsText));
-            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAndVersion));
+//            auto inferredPackageNameAndVersion = std::make_unique<PackageNameAndVersion>(std::move(inferredPackageNameAsText));
+//            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAndVersion));
             // TODO move refactor parameter type in constructor of 'PackageWithInferredName_refactored_' to 'std::string'
             //  and then use constructor delegation described above function 'getName' function in 'Package_refactored_'
-            //std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAsText));
+            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAsText));
 
             auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
+
+            // For debugging purposes
+//            assert(packageWithInferredNameExact != nullptr);
 
             while ( packageWithInferredNameExact->hasStillSomethingInPackageName() ) {
                 // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
@@ -205,7 +208,12 @@ int main() {
                         iteratorPointingToMatchingPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
-                bool wasInstallationPackageFileAdded = dynamic_cast<LocallyInstalledPackage_refactored_*>(iteratorPointingToMatchingPackage->get())->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+                auto locallyInstalledPackageRefactored = dynamic_cast<LocallyInstalledPackage_refactored_*>(iteratorPointingToMatchingPackage->get());
+
+                // For debugging purposes
+//                assert(locallyInstalledPackageRefactored != nullptr);
+
+                bool wasInstallationPackageFileAdded = locallyInstalledPackageRefactored->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
 
                 // if the package file was added to the deletion candidates for the particular package,
                 //  save the reference to the package file for generating only
@@ -213,7 +221,7 @@ int main() {
                 if (wasInstallationPackageFileAdded) {
 
                     packagesWithInstallationPackageFilesForDifferentVersions.emplace(
-                            *(dynamic_cast<LocallyInstalledPackage_refactored_*>(iteratorPointingToMatchingPackage->get() ) )
+                            *locallyInstalledPackageRefactored
                     );
                 }
 

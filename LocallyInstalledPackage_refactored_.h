@@ -20,7 +20,7 @@ public:
         bool isIgnored);
 
     // TODO remove after delegation to the base class 'Package_refactored_'
-    const PackageName& getName() const override;
+//    const PackageName& getName() const override;
 
     uint_fast16_t getNumberOfInstallationPackageFilesForDifferentVersions() const;
 
@@ -32,11 +32,13 @@ public:
 protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
-            << *(this->name) << "\t"
+//            << *(this->name) << "\t"
+            << Package_refactored_::getName() << "\t"
             << *(this->locallyInstalledVersion) << "\t"
             << this->architecture << "\t"
             << "isPackageIgnored: " << this->isIgnored << "\t"
-            << *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
+//            << *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
+            << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
 
         if ( ! (this->installationPackageFilesForDifferentPackageVersions.empty() ) ) {
             for (const auto& packageRelatedFile: this->installationPackageFilesForDifferentPackageVersions) {
@@ -49,16 +51,16 @@ protected:
     }
 
     bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const override {
-        return *(this->name) < anotherPackage->getName();
+        return Package_refactored_::getName() < anotherPackage->getName();
     }
 
     bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) override {
-        return *(this->name) < anotherPackage.get().getName();
+        return Package_refactored_::getName() < anotherPackage.get().getName();
     }
 
 private:
     // TODO remove after delegation to the base class 'Package_refactored_'
-    std::unique_ptr<PackageName> name;
+//    std::unique_ptr<PackageName> name;
 
     std::unique_ptr<PackageVersion> locallyInstalledVersion;
     std::string architecture;

@@ -8,7 +8,7 @@
 
 class Package_refactored_ {
 public:
-//    explicit Package_refactored_(std::unique_ptr<PackageName> packageName);
+    explicit Package_refactored_(std::unique_ptr<PackageName> packageName);
 
     virtual ~Package_refactored_() = default;
 
@@ -24,10 +24,10 @@ public:
         return package->lessThanOperator(anotherPackage);
     }
 
-    virtual const PackageName& getName() const = 0;
+//    virtual const PackageName& getName() const = 0;
     // TODO maybe move 'std::unique_ptr<PackageName>' attribute here - to this abstract class, to centralize duplicate code?
     //  Then in constructors of derived classes use constructor delegation to initialize the instance of this abstract class
-//    const PackageName& Package_refactored_::getName() const;
+    const PackageName& getName() const;
 
 protected:
     virtual bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const = 0;
@@ -40,6 +40,6 @@ public:
 protected:
     virtual bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) = 0;
 
-//private:
-//    std::unique_ptr<PackageName> name;
+protected:
+    std::unique_ptr<PackageName> name;
 };

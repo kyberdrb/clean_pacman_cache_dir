@@ -18,16 +18,16 @@ LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(
     std::string architecture,
     bool isIgnored)
 :
-    name(std::move(packageName)),
+    Package_refactored_(std::move(packageName)),
     locallyInstalledVersion(std::move(locallyInstalledVersion)),
     architecture(std::move(architecture)),
     isIgnored(isIgnored)
 {}
 
 // TODO remove after delegation to the base class 'Package_refactored_'
-const PackageName& LocallyInstalledPackage_refactored_::getName() const {
-    return *(this->name);
-}
+//const PackageName& LocallyInstalledPackage_refactored_::getName() const {
+//    return *(this->name);
+//}
 
 uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackageFilesForDifferentVersions() const {
     return this->installationPackageFilesForDifferentPackageVersions.size();
@@ -36,7 +36,8 @@ uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackag
 bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(
         std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile)
 {
-    bool isPackageNamesMatching = *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
+//    bool isPackageNamesMatching = *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
+    bool isPackageNamesMatching = Package_refactored_::getName() == packageRelatedPackageFile->getRelatedPackageName();
     bool isPackageVersionDifferent = *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
     // For debugging purposes
@@ -63,7 +64,8 @@ void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsTo
 
         std::cout
             << "Info about the locally installed package:\n"
-            << "\t" << *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
+//            << "\t" << *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
+            << "\t" << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "\n";
 
         std::cout
             << "Info about the installation package file for deletion:\n"
