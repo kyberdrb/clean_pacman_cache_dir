@@ -13,7 +13,9 @@
 class PackageWithInferredName_refactored_ : public Package_refactored_ {
 public:
     explicit PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion);
+//    explicit PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText);
 
+    // TODO remove after delegation to the base class 'Package_refactored_'
     const PackageName& getName() const override;
 
     bool isPackageNameEmpty() const;
@@ -43,6 +45,8 @@ protected:
 
 private:
     std::unique_ptr<PackageNameAndVersion> nameAndVersion;
+
+    // TODO remove after delegation to the base class 'Package_refactored_'
     std::unique_ptr<PackageName> name;
 
     uint_fast8_t getStartingPositionForPackageVersion() const;

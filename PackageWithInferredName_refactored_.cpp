@@ -17,6 +17,12 @@ PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::un
         name(std::make_unique<PackageName>(this->nameAndVersion->string() ) )
 {}
 
+//PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText) :
+//        Package(std::make_unique<PackageName>(std::move(extractedPackageNameAndVersionAsText) ) ),
+//        nameAndVersion(Package_refactored_::getName() )
+//{}
+
+// TODO remove after delegation to the base class 'Package_refactored_'
 const PackageName& PackageWithInferredName_refactored_::getName() const {
     return *(this->name);
 }

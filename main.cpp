@@ -165,10 +165,10 @@ int main() {
             std::string inferredPackageNameAsText = packageFilename->extractPackageNameAndVersion();
 
             auto inferredPackageNameAndVersion = std::make_unique<PackageNameAndVersion>(std::move(inferredPackageNameAsText));
-
+            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAndVersion));
             // TODO move refactor parameter type in constructor of 'PackageWithInferredName_refactored_' to 'std::string'
             //  and then use constructor delegation described above function 'getName' function in 'Package_refactored_'
-            std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAndVersion));
+            //std::unique_ptr<Package_refactored_> packageWithInferredName = std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAsText));
 
             auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
 

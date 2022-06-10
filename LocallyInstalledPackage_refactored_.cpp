@@ -24,6 +24,7 @@ LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(
     isIgnored(isIgnored)
 {}
 
+// TODO remove after delegation to the base class 'Package_refactored_'
 const PackageName& LocallyInstalledPackage_refactored_::getName() const {
     return *(this->name);
 }
