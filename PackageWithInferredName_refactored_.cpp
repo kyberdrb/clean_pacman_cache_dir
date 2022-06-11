@@ -12,21 +12,10 @@
 
 #include <iostream>
 
-// TODO remove after delegation to the base class 'Package_refactored_'
-//PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion) :
-//        nameAndVersion(std::move(extractedPackageNameAndVersion) ),
-//        name(std::make_unique<PackageName>(this->nameAndVersion->string() ) )
-//{}
-
 PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText) :
         Package_refactored_(std::make_unique<PackageName>(std::move(extractedPackageNameAndVersionAsText) ) ),
         nameAndVersion(std::make_unique<PackageNameAndVersion>(Package_refactored_::getName().string() ) )
 {}
-
-// TODO remove after delegation to the base class 'Package_refactored_'
-//const PackageName& PackageWithInferredName_refactored_::getName() const {
-//    return *(this->name);
-//}
 
 bool PackageWithInferredName_refactored_::isPackageNameEmpty() const {
     return this->name->empty();
@@ -37,7 +26,9 @@ bool PackageWithInferredName_refactored_::hasStillSomethingInPackageName() const
 }
 
 void PackageWithInferredName_refactored_::getNextInferredPackageNameCandidate() {
-    for (int position = this->name->size() - 1; position >= 0; --position) {
+    // When variale 'position' is of type 'auto' or 'unsigned' decimal type
+    //  it causes 'out_of_range' exception when command '--position' underflows
+    for (int32_t position = this->name->size() - 1; position >= 0; --position) {
         char delimiter = '-';
         bool weFoundDelimiterCharacter = this->name->at(position) == delimiter;
         this->name->pop_back();

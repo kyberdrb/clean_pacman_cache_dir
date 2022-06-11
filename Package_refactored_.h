@@ -12,6 +12,8 @@ public:
 
     virtual ~Package_refactored_() = default;
 
+    const PackageName& getName() const;
+
     friend std::ostream& operator<<(std::ostream& out, const Package_refactored_& package) {
         return package.streamOutputOperator(out);
     }
@@ -23,11 +25,6 @@ public:
     friend bool operator<(const std::unique_ptr<Package_refactored_>& package, const std::unique_ptr<Package_refactored_>& anotherPackage) {
         return package->lessThanOperator(anotherPackage);
     }
-
-//    virtual const PackageName& getName() const = 0;
-    // TODO maybe move 'std::unique_ptr<PackageName>' attribute here - to this abstract class, to centralize duplicate code?
-    //  Then in constructors of derived classes use constructor delegation to initialize the instance of this abstract class
-    const PackageName& getName() const;
 
 protected:
     virtual bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const = 0;

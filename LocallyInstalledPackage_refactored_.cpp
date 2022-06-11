@@ -24,11 +24,6 @@ LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(
     isIgnored(isIgnored)
 {}
 
-// TODO remove after delegation to the base class 'Package_refactored_'
-//const PackageName& LocallyInstalledPackage_refactored_::getName() const {
-//    return *(this->name);
-//}
-
 uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackageFilesForDifferentVersions() const {
     return this->installationPackageFilesForDifferentPackageVersions.size();
 }
@@ -36,9 +31,6 @@ uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackag
 bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(
         std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile)
 {
-    // TODO remove after delegation to the base class 'Package_refactored_'
-//    bool isPackageNamesMatching = *(this->name) == packageRelatedPackageFile->getRelatedPackageName();
-
     bool isPackageNamesMatching = Package_refactored_::getName() == packageRelatedPackageFile->getRelatedPackageName();
     bool isPackageVersionDifferent = *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
@@ -66,10 +58,6 @@ void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsTo
 
         std::cout
             << "Info about the locally installed package:\n"
-
-            // TODO remove after delegation to the base class 'Package_refactored_'
-//            << "\t" << *(this->name) << "-" << *(this->locallyInstalledVersion) << "\n";
-
             << "\t" << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "\n";
 
         std::cout

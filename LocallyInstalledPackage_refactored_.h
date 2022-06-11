@@ -19,9 +19,6 @@ public:
         std::string architecture,
         bool isIgnored);
 
-    // TODO remove after delegation to the base class 'Package_refactored_'
-//    const PackageName& getName() const override;
-
     uint_fast16_t getNumberOfInstallationPackageFilesForDifferentVersions() const;
 
     bool addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
@@ -32,18 +29,10 @@ public:
 protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
-
-            // TODO remove after delegation to the base class 'Package_refactored_'
-//            << *(this->name) << "\t"
-
             << Package_refactored_::getName() << "\t"
             << *(this->locallyInstalledVersion) << "\t"
             << this->architecture << "\t"
             << "isPackageIgnored: " << this->isIgnored << "\t"
-
-            // TODO remove after delegation to the base class 'Package_refactored_'
-//            << *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
-
             << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
 
         if ( ! (this->installationPackageFilesForDifferentPackageVersions.empty() ) ) {
@@ -65,9 +54,6 @@ protected:
     }
 
 private:
-    // TODO remove after delegation to the base class 'Package_refactored_'
-//    std::unique_ptr<PackageName> name;
-
     std::unique_ptr<PackageVersion> locallyInstalledVersion;
     std::string architecture;
     bool isIgnored;
