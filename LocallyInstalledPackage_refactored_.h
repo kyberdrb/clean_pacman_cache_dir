@@ -32,12 +32,18 @@ public:
 protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
+
+            // TODO remove after delegation to the base class 'Package_refactored_'
 //            << *(this->name) << "\t"
+
             << Package_refactored_::getName() << "\t"
             << *(this->locallyInstalledVersion) << "\t"
             << this->architecture << "\t"
             << "isPackageIgnored: " << this->isIgnored << "\t"
+
+            // TODO remove after delegation to the base class 'Package_refactored_'
 //            << *(this->name) << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
+
             << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
 
         if ( ! (this->installationPackageFilesForDifferentPackageVersions.empty() ) ) {

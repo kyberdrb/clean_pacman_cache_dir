@@ -12,7 +12,9 @@
 
 class PackageWithInferredName_refactored_ : public Package_refactored_ {
 public:
+    // TODO remove after delegation to the base class 'Package_refactored_'
 //    explicit PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion);
+
     explicit PackageWithInferredName_refactored_(std::string extractedPackageNameAndVersionAsText);
 
     // TODO remove after delegation to the base class 'Package_refactored_'
@@ -30,7 +32,10 @@ protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
             << *(this->nameAndVersion) << "\t"
+
+           // TODO remove after delegation to the base class 'Package_refactored_'
 //            << *(this->name);
+
             << Package_refactored_::getName();
 
         return out;

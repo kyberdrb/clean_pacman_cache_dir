@@ -12,6 +12,7 @@
 
 #include <iostream>
 
+// TODO remove after delegation to the base class 'Package_refactored_'
 //PackageWithInferredName_refactored_::PackageWithInferredName_refactored_(std::unique_ptr<PackageNameAndVersion> extractedPackageNameAndVersion) :
 //        nameAndVersion(std::move(extractedPackageNameAndVersion) ),
 //        name(std::make_unique<PackageName>(this->nameAndVersion->string() ) )
