@@ -40,14 +40,43 @@ class Package__the_original_one_before_refactoring {
 
 'Analysis
 
-interface Package__refactored__ {
-    + operator<<() [for terminal printing]
-    # {abstract} streamOutputOperator()
-    + operator<()\
-    \n    [for ""find"" in ""std::set"" for unique_ptr\
-    \n     and reference_wrapper argument types]
-    # {abstract} lessThanOperator()
+'TODO make >>> abstract <<< from the 'class Package_refactored_' ?
+class Package_refactored_ {
+public:
+    + Package_refactored_(packageName : PackageName)
+    + {abstract} ~Package_refactored_()
+
+    + getName() : PackageName
+
+    + operator<<(out : ostream, package : Package_refactored_) : ostream
+    # {abstract} streamOutputOperator(out : ostream) : ostream
+
+    + operator<(package : Package_refactored_, anotherPackage : Package_refactored_) : bool
+    # {abstract} lessThanOperator(Package_refactored_ anotherPackage) : bool
+
+    # name : PackageName
 }
+
+note left of Package_refactored_: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package_refactored_"" class
+
+Package_refactored_ *-r-> "1" PackageName
+
+class PackageWithInferredName_refactored_ {
+    + PackageWithInferredName_refactored_(extractedPackageNameAndVersionAsText : string)
+    + isPackageNameEmpty() : bool
+    + hasStillSomethingInPackageName() : bool
+    + getNextInferredPackageNameCandidate() : void
+    + extractPackageVersion() : PackageVersion
+    # ostream streamOutputOperator(out : ostream)
+    # lessThanOperator(anotherPackage : Package_refactored_) : bool
+
+    - nameAndVersion : PackageNameAndVersion
+    - getStartingPositionForPackageVersion() : uint_fast8_t
+}
+
+Package_refactored_ <|-d- PackageWithInferredName_refactored_
+
+note bottom of PackageWithInferredName_refactored_: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package_refactored_"" base class
 
 class LocallyInstalledPackage {
     + Package(\
@@ -72,18 +101,5 @@ class LocallyInstalledPackage {
     \n: vector<ExtendedInstallationPackageFile>
 }
 
-Package__refactored__ <|- LocallyInstalledPackage
-
-class PackageWithInferredName {
-    + Package(inferredPackageName : PackageName)
-    + hasStillSomethingInPackageName() : bool
-    '+ operator<() [for ""find"" in ""std::set""]
-    + getNextInferredPackageNameCandidate() : void
-    + getStartingPositionForPackageVersion() : uint_fast8_t
-    + isPackageNameEmpty() : bool
-    - name : PackageName
-}
-
-Package__refactored__ <|- PackageWithInferredName
-
+Package_refactored_ <|-d- LocallyInstalledPackage
 @enduml
