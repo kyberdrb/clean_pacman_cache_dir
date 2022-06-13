@@ -75,6 +75,8 @@ class PackageWithInferredName_refactored_ {
 }
 
 Package_refactored_ <|-d- PackageWithInferredName_refactored_
+PackageWithInferredName_refactored_ ..> PackageVersion
+PackageWithInferredName_refactored_ *--> PackageNameAndVersion
 
 note bottom of PackageWithInferredName_refactored_: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package_refactored_"" base class
 
