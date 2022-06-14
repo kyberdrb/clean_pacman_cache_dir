@@ -10,10 +10,10 @@
 
 class Package__the_original_one_before_refactoring {
     + Package(\
-        \n    packageName : PackageName,\
-        \n    locallyInstalledVersion : PackageVersion\
-        \n    architecture : string\
-        \n    isIgnored : bool)
+      \n    packageName : PackageName,\
+      \n    locallyInstalledVersion : PackageVersion\
+      \n    architecture : string\
+      \n    isIgnored : bool)
     + Package(inferredPackageName : PackageName)
     + getName() : PackageName
     + getLocallyInstalledVersion() : PackageVersion
@@ -22,27 +22,26 @@ class Package__the_original_one_before_refactoring {
     + getNextInferredPackageNameCandidate() : void
     + getStartingPositionForPackageVersion() : uint_fast8_t
     + getNumberOfInstallationPackageFilesForDifferentVersions()\
-        \n    : uint_fast16_t
+      \n    : uint_fast16_t
     + addPackageFileToDeletionCandidates(\
-        \n    packageRelatedPackageFile : PackageFile) : void
+      \n    packageRelatedPackageFile : PackageFile) : void
     + movePackageFilesForDifferentVersionsToSeparateDir(\
-        \n        pathToDirectoryForOtherVersionsOfPackageFiles : AbsolutePath)\
-        \n    : void
+      \n        pathToDirectoryForOtherVersionsOfPackageFiles : AbsolutePath)\
+      \n    : void
 
-    - std::unique_ptr<PackageName> name
-    - std::unique_ptr<PackageVersion> locallyInstalledVersion
-    - std::string architecture
+    - PackageName name
+    - PackageVersion locallyInstalledVersion
+    - string architecture
     - bool isIgnored
 
     - installationPackageFilesForDifferentPackageVersions :\
-        \n    std::vector<ExtendedInstallationPackageFile>>
+      \n    vector<ExtendedInstallationPackageFile>>
 }
 
 'Analysis
 
 'TODO make >>> abstract <<< from the 'class Package_refactored_' ?
 class Package_refactored_ {
-public:
     + Package_refactored_(packageName : PackageName)
     + {abstract} ~Package_refactored_()
 
@@ -59,7 +58,7 @@ public:
 
 note left of Package_refactored_: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package_refactored_"" class
 
-Package_refactored_ *-r-> "1" PackageName
+Package_refactored_ *-l-> "name\n1" PackageName
 
 class PackageWithInferredName_refactored_ {
     + PackageWithInferredName_refactored_(extractedPackageNameAndVersionAsText : string)
@@ -74,34 +73,44 @@ class PackageWithInferredName_refactored_ {
     - getStartingPositionForPackageVersion() : uint_fast8_t
 }
 
-Package_refactored_ <|-d- PackageWithInferredName_refactored_
-PackageWithInferredName_refactored_ ..> PackageVersion
-PackageWithInferredName_refactored_ *--> PackageNameAndVersion
+Package_refactored_ <|-u- PackageWithInferredName_refactored_
+PackageWithInferredName_refactored_ .u.> "1" Package_refactored_
+PackageWithInferredName_refactored_ .d.> "1" PackageVersion
+PackageWithInferredName_refactored_ *-d-> "nameAndVersion\n1" PackageNameAndVersion
 
 note bottom of PackageWithInferredName_refactored_: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package_refactored_"" base class
 
-class LocallyInstalledPackage {
-    + Package(\
-    \n    packageName : PackageName,\
-    \n    locallyInstalledVersion : PackageVersion,\
-    \n    architecture : string,\
-    \n    isIgnored : bool)
-    + getName() : PackageName
-    + getNumberOfInstallationPackageFilesForDifferentVersions() : uint_fast16_t
+class LocallyInstalledPackage_refactored_ {
+    + LocallyInstalledPackage_refactored_(\
+      \n    PackageName packageName,\
+      \n    PackageVersion locallyInstalledVersion,\
+      \n    string architecture,\
+      \n    bool isIgnored)
+    + getNumberOfInstallationPackageFilesForDifferentVersions()\
+      \n: uint_fast16_t
     + addPackageFileToDeletionCandidates(\
-    \n    packageRelatedPackageFile : ExtendedInstallationPackageFile)\
-    \n: bool
+      \n    ExtendedInstallationPackageFile packageRelatedPackageFile)\
+      \n: bool
     + movePackageFilesForDifferentVersionsToSeparateDir(\
-        \n    absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles : AbsolutePath)\
-        \n: void
-    - name : PackageName
+      \n    absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles\
+      \n        AbsolutePath)\
+      \n: void
+
+    # streamOutputOperator(ostream out) : ostream
+    # lessThanOperator(anotherPackage : Package_refactored_) : bool
+
     - locallyInstalledVersion : PackageVersion
     - architecture : string
     - isIgnored : bool
-
     - installationPackageFilesForDifferentPackageVersions\
-    \n: vector<ExtendedInstallationPackageFile>
+      \n    : vector<ExtendedInstallationPackageFile>
 }
 
-Package_refactored_ <|-d- LocallyInstalledPackage
+note bottom of LocallyInstalledPackage_refactored_: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package_refactored_"" base class
+
+Package_refactored_ <|-u- LocallyInstalledPackage_refactored_
+LocallyInstalledPackage_refactored_ .u.> "1" Package_refactored_
+LocallyInstalledPackage_refactored_ *-d-> "locallyInstalledVersion\n1" PackageVersion
+LocallyInstalledPackage_refactored_ *---> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
+LocallyInstalledPackage_refactored_ ...> "1" AbsolutePath
 @enduml
