@@ -20,4 +20,3 @@ add_executable(clean_pacman_cache_dir main.cpp ExtendedInstallationPackageFile.c
 
 # For comparator functor predicate
 #add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h IgnoredPackageNamesEqualityComparator.h)
-

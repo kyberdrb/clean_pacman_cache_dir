@@ -10,7 +10,7 @@ class IgnoredPackageName {
     - name : string
 }
 
-main .u.> IgnoredPackageName : "<- creates an instance of IgnoredPackageName\nto be moved from place of \nto place of composition"
+main .u.> IgnoredPackageName : "<- creates an instance of ""IgnoredPackageName""\nto be moved from place of creation\nto place of composition"
 main *-u-> "ignoredPackageNames ->\n0..*" IgnoredPackageName
 
 abstract class Package {
@@ -32,7 +32,7 @@ note left of Package: function ""operator<""\nand virtual function ""lessThanOpe
 
 Package *-l-> "name\n1" PackageName
 
-main *-> "installedPackages\n1..*" Package : "<- creates an instance of derived classes\nfrom ""Package"" base class\nto be moved from place of \nto place of composition"
+main *-> "installedPackages\n1..*" Package : "<- creates an instance of derived classes\nfrom ""Package"" base class\nto be moved from place of creation\nto place of composition"
 
 class PackageWithInferredName {
     + PackageWithInferredName(extractedPackageNameAndVersionAsText : string)
@@ -100,7 +100,7 @@ class FileMover {
 }
 
 LocallyInstalledPackage ..> FileMover
-main ..> FileMover
+main ..> "1" FileMover : "move installation package files from\n""<- packagesWithInstallationPackageFilesForDifferentVersions"",\n""partiallyDownloadedPackageFiles""\nand ""packageFilesRelatedToMissingPackages"""
 
 class SimpleInstallationPackageFile {
     + SimpleInstallationPackageFile(\
@@ -115,12 +115,12 @@ class SimpleInstallationPackageFile {
     - reasonForDeletion : SimpleInstallationPackageFileType
 }
 
-main ...> "0..*" SimpleInstallationPackageFile : "<- creates an instance of SimpleInstallationPackageFile\nto be moved from place of \nto place of composition"
-main *--> "               <- partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
-main *--> "packageFilesRelatedToMissingPackages\n                       0..* ->\n" SimpleInstallationPackageFile
+main ...> "0..*" SimpleInstallationPackageFile : "<- creates an instance of ""SimpleInstallationPackageFile""\nto be moved from place of creation\nto place of composition"
+main *--> "partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
+main *--> "packageFilesRelatedToMissingPackages\n0..*" SimpleInstallationPackageFile
 
 SimpleInstallationPackageFile *--> "1" AbsolutePath
-SimpleInstallationPackageFile *--> "1" Filename
+SimpleInstallationPackageFile *--> "filename\n1" Filename
 SimpleInstallationPackageFile --> SimpleInstallationPackageFileType
 
 class ExtendedInstallationPackageFile {
@@ -139,10 +139,10 @@ class ExtendedInstallationPackageFile {
     - relatedPackageVersion : PackageVersion
 }
 
-main ..> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ExtendedInstallationPackageFile\nto be moved from place of \nto place of composition"
+main ..> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ""ExtendedInstallationPackageFile""\nto be moved from place of creation\nto place of composition"
 
-ExtendedInstallationPackageFile *--> "1" AbsolutePath
-ExtendedInstallationPackageFile *--> "1" Filename
+ExtendedInstallationPackageFile *--> "absolutePath\n1" AbsolutePath
+ExtendedInstallationPackageFile *--> "filename\n1" Filename
 
 ExtendedInstallationPackageFile -l-> "relatedPackageName ->\n1" PackageName : "<- references ""PackageName"" from ""Package"""
 /'
@@ -168,7 +168,7 @@ class PackageName {
     - name : string
 }
 
-main ..> "0..*" PackageName : "<- creates an instance of PackageName\nto be moved from place of \nto place of composition"
+main ..> "0..*" PackageName : "<- creates an instance of ""PackageName""\nto be moved from place of creation\nto place of composition"
 
 class PackageVersion {
     + PackageVersion(\
@@ -179,7 +179,7 @@ class PackageVersion {
     - version : string
 }
 
-main ..> "0..*" PackageVersion : "<- creates an instance of PackageVersion\nto be moved from place of \nto place of composition"
+main ..> "0..*" PackageVersion : "<- creates an instance of ""PackageVersion""\nto be moved from place of creation\nto place of composition"
 
 class PackageNameAndVersion {
     + PackageNameAndVersion(\
@@ -195,6 +195,8 @@ class PackageNameAndVersion {
     - nameAndVersion : string
 }
 
+main .> "0..*" PackageNameAndVersion : "<- creates an instance of ""PackageNameAndVersion""\nto be moved from place of creation\nto place of composition"
+
 class AbsolutePath {
     + AbsolutePath(absolutePath : string)
     + getAbsolutePath() : string
@@ -202,7 +204,7 @@ class AbsolutePath {
     - absolutePath : string
 }
 
-main ..> "0..*" AbsolutePath : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+main ..> "0..*" AbsolutePath : "<- creates an instance of ""AbsolutePath""\nto be moved from place of creation\nto place of composition"
 AbsolutePath ..> "1" Filename
 
 class Filename {
@@ -211,7 +213,7 @@ class Filename {
     - nameOfFile : string
 }
 
-main ..> "0..*" Filename : "<- creates an instance of AbsolutePath\nto be moved from place of \nto place of composition"
+main ..> "0..*" Filename : "<- creates an instance of ""Filename""\nto be moved from place of creation\nto place of composition"
 
 enum SimpleInstallationPackageFileType {
     PARTIALLY_DOWNLOADED
