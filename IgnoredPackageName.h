@@ -11,6 +11,8 @@ class IgnoredPackageName {
 public:
     explicit IgnoredPackageName(std::string ignoredPackageName);
 
+    std::string&& moveNameFromThisInstance();
+
     friend std::ostream& operator<<(std::ostream& out, const IgnoredPackageName& ignoredPackageName) {
         out << ignoredPackageName.name;
         return out;

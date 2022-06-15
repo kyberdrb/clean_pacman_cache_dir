@@ -8,7 +8,7 @@
 #include <iostream>
 
 void FileMover::move(const AbsolutePath& from, const AbsolutePath& to) {
-    // catch 'std::filesystem' exception to prevent memory leaks
+    // catch 'std::filesystem' exception to prevent memory leaks when 'rename' fails
     try {
         std::filesystem::rename(from.getAbsolutePath(), to.getAbsolutePath());
     } catch (const std::filesystem::__cxx11::filesystem_error& ex) {

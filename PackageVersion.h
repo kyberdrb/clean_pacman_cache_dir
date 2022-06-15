@@ -11,8 +11,6 @@ class PackageVersion {
 public:
     explicit PackageVersion(std::string packageVersionAsText);
 
-    bool empty() const;
-
     const std::string& getVersion() const;
 
     friend std::ostream& operator<<(std::ostream& out, const PackageVersion& packageVersion) {

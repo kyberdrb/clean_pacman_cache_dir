@@ -3327,6 +3327,57 @@ struct PackageComparatorPredicate {
     - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference/2522311#comment2519675_2522311
         - To this I would add: **always catch [exceptions] by const reference, and ensure your exception types have const-correct accessors.**
     - https://duckduckgo.com/?q=c%2B%2B+memory+profiler+consumption&t=ffab&ia=webs
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+no+matching+function+for+call+to+swap&ia=web
+    - https://stackoverflow.com/questions/28761802/sort-no-matching-function-for-call-to-swap/28761803#28761803
+        - It turns out it's a very simple problem, but not very obvious to spot (and the error message doesn't do a very good job in helping out either):
+
+            Remove the const declaration on run() - voilá.
+
+            [I was modifying a member variable in a `const` member function. Removing the `const` ness of the function allowed the compiler to modify member variables, i. e. calling the `swap` function]
+
+- Polymorhism, Inheritance and STL (mainly `std::set`)
+    - https://duckduckgo.com/?q=c%2B%2B+find+derived+vector&t=ffab&ia=web
+    - https://stackoverflow.com/questions/11889178/c-can-vectorbase-contain-objects-of-type-derived#11889242
+    - https://duckduckgo.com/?q=c%2B%2B+find+derived+pointer+base+vector&t=ffab&ia=web
+    - https://stackoverflow.com/questions/14945787/how-to-reference-derived-objects-in-a-vector-of-pointers-to-base-class-objects
+    - https://stackoverflow.com/questions/18223036/i-want-a-vector-of-derived-class-pointers-as-base-class-pointers
+    - https://duckduckgo.com/?q=c%2B%2B+vector+of+pointers+to+base+class+std%3A%3Afind&t=ffab&ia=web
+    - https://stackoverflow.com/questions/14003932/vector-of-pointers-of-the-base-class
+    - https://stackoverflow.com/questions/22760062/stdfind-for-vector-containing-pointers
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+pointers+base+class+find&ia=web
+    - https://stackoverflow.com/questions/32596893/c-using-stdfind-on-a-set-of-class-pointers
+    - https://stackoverflow.com/questions/4070304/how-can-i-find-an-element-in-a-set-which-contains-pointers-to-the-elements
+    - https://www.google.com/search?q=c%2B%2B+set+base+pointers+find&source=hp&ei=J5igYuqxHMqI8gKV3Zy4Bw&iflsig=AJiK0e8AAAAAYqCmN7g2axxDLUnZLfmeIUMzCSLIT7h8&ved=0ahUKEwiq4cDN7534AhVKhFwKHZUuB3cQ4dUDCAY&uact=5&oq=c%2B%2B+set+base+pointers+find&gs_lcp=Cgdnd3Mtd2l6EAMyBQghEKABOgsIABCABBCxAxCDAToICAAQgAQQsQM6CAgAELEDEIMBOhEILhCABBCxAxCDARDHARCjAjoRCC4QgAQQsQMQgwEQxwEQ0QM6BQgAEIAEOgYIABAeEBY6CAgAEB4QDxAWOgQIABATOggIABAeEBYQEzoKCAAQHhAPEBYQEzoKCAAQHhAWEAoQEzoICCEQHhAWEB06BAghEBU6CgghEB4QDxAWEB06BwghEAoQoAFQAFiVP2C8QGgAcAB4AIABggGIAd8SkgEFMTYuMTCYAQCgAQE&sclient=gws-wiz
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+base+pointers+find&ia=web
+    - https://www.google.com/search?q=c%2B%2B+find+element+derived&ei=TpigYpLoM4HYsAem3ay4Cw&start=10&sa=N&ved=2ahUKEwiSx6Tg7534AhUBLOwKHaYuC7cQ8NMDegQIARBM&biw=1918&bih=971
+        - **one can find an element in a `std::set` of polymorphic instances, i.e. of pointers to the base class, when the type of the instance is assigned to a variable, that is of the same type that the type of instances in the container - in the case of inheritance, when the `std::set` holds pointers to the common (abstract/virtual) base class, the instance in the `find` function also needs to be of the common (abstract/virtual) base class type**
+    - vectors and derived classes - https://cplusplus.com/forum/general/55651/
+    - vectors and derived classes - https://cplusplus.com/forum/general/55651/#msg299317
+        - ... derived classes in arrays or vectors of base classes is one of the most useful properties of polymorphism. However, the object can't just be of the type, rather it needs to be a pointer of the the base class. The concept of polymorphism is that a pointer of a base class can point to any class that derives from it.
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+set+override+operator%3C+base+derived&ia=web
+    - https://stackoverflow.com/questions/40347810/overriding-an-operator-to-use-the-derived-class-in-c
+    - https://www.google.com/search?q=c%2B%2B+set+override+operator%3C+base+derived&source=hp&ei=U5mgYoDeBMTDgQaO1JyABA&iflsig=AJiK0e8AAAAAYqCnY9cGJB1OliQwhVMn4awjT21i2pbH&ved=0ahUKEwjA06_c8J34AhXEYcAKHQ4qB0AQ4dUDCAY&uact=5&oq=c%2B%2B+set+override+operator%3C+base+derived&gs_lcp=Cgdnd3Mtd2l6EANQAFgAYPsBaABwAHgAgAGaAYgBmgGSAQMwLjGYAQCgAQKgAQE&sclient=gws-wiz
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+no+matching+function+call+to+std+set+find+derived+base&ia=web
+    - https://www.google.com/search?q=c%2B%2B+no+matching+function+call+to+std+set+find+derived+base&source=hp&ei=OJqgYsXjH6iFxc8P_L-HiAc&iflsig=AJiK0e8AAAAAYqCoSMGeKoHqmyxM9M8hOQrZE3EWaVsr&ved=0ahUKEwjF3-PJ8Z34AhWoQvEDHfzfAXEQ4dUDCAY&uact=5&oq=c%2B%2B+no+matching+function+call+to+std+set+find+derived+base&gs_lcp=Cgdnd3Mtd2l6EANQAFgAYOoCaABwAHgAgAF_iAF_kgEDMC4xmAEAoAECoAEB&sclient=gws-wiz
+    - https://www.reddit.com/r/cpp_questions/comments/c0vz4s/no_matching_function_for_call/
+    - https://duckduckgo.com/?q=c%2B%2B+vector+of+polymorphic+objects&t=ffab&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+vector+of+polymorphic+objects+find&t=ffab&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+set+of+polymorphic+objects&t=ffab&ia=web
+    - https://duckduckgo.com/?q=c%2B%2B+set+of+polymorphic+objects+find&t=ffab&ia=web
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+vector+polymorphic+unique_ptr&ia=web
+    - https://stackoverflow.com/questions/13288394/unique-ptr-and-polymorphism
+    - https://duckduckgo.com/?t=ffab&q=dynamic_cast+unique_ptr&ia=web
+    - https://stackoverflow.com/questions/11002641/dynamic-casting-for-unique-ptr
+    - https://duckduckgo.com/?q=c%2B%2B+polymorphism+inheritance+delegate+delegating+constructors&t=ffab&ia=web
+    - https://arne-mertz.de/2015/08/new-c-features-inherited-and-delegating-constructors/
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+inheriting+constructors&ia=web&iax=qa
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+inheriting+constructors&ia=web&iax=qa
+    - https://dotnettutorials.net/lesson/how-cpp-constructors-called-in-inheritance/
+    - https://dotnettutorials.net/lesson/how-cpp-constructors-called-in-inheritance/
+    - https://dotnettutorials.net/lesson/access-specifiers-in-cpp/
+    - http://cplusplus.bordoon.com/inheriting_constructors.html
+    - https://stackoverflow.com/questions/20029883/do-we-inherit-constructors-in-c-whats-is-exact-definition-of-inheriting
+    -
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
