@@ -1,6 +1,6 @@
 #include "IgnoredPackageName.h"
-#include "LocallyInstalledPackage_refactored_.h"
-#include "PackageWithInferredName_refactored_.h"
+#include "LocallyInstalledPackage.h"
+#include "PackageWithInferredName.h"
 #include "SimpleInstallationPackageFile.h"
 
 #include "alpm.h"
@@ -76,7 +76,7 @@ int main() {
     //     than the local one],
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-    std::set<std::unique_ptr<Package_refactored_>> installedPackages{};
+    std::set<std::unique_ptr<Package>> locallyInstalledPackages{};
 
     alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
     alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);
@@ -111,13 +111,13 @@ int main() {
 
         auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
 
-        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage_refactored_>(
+        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage>(
                 std::move(packageName),
                 std::move(locallyInstalledVersion),
                 architecture,
                 isIgnored);
 
-        installedPackages.emplace(std::move(locallyInstalledPackage));
+        locallyInstalledPackages.emplace(std::move(locallyInstalledPackage));
     }
 
     free(err);
@@ -132,7 +132,7 @@ int main() {
 
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
-    std::set<std::reference_wrapper<LocallyInstalledPackage_refactored_>> packagesWithInstallationPackageFilesForDifferentVersions;
+    std::set<std::reference_wrapper<LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
     std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
@@ -164,17 +164,17 @@ int main() {
         if (packageFile.is_regular_file()) {
             std::string inferredPackageNameAsText = packageFilename->extractPackageNameAndVersion();
 
-            std::unique_ptr<Package_refactored_> packageWithInferredName =
-                    std::make_unique<PackageWithInferredName_refactored_>(std::move(inferredPackageNameAsText));
+            std::unique_ptr<Package> packageWithInferredName =
+                    std::make_unique<PackageWithInferredName>(std::move(inferredPackageNameAsText));
 
-            auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName_refactored_*>(packageWithInferredName.get());
+            auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName*>(packageWithInferredName.get());
 
             // For debugging purposes
 //            assert(packageWithInferredNameExact != nullptr);
 
             while ( packageWithInferredNameExact->hasStillSomethingInPackageName() ) {
-                // search for the matching package element in the 'installedPackages' by 'packageWithInferredName'
-                auto iteratorPointingToMatchingPackage = installedPackages.find(packageWithInferredName);
+                // search for the matching package element in the 'locallyInstalledPackages' by 'packageWithInferredName'
+                auto iteratorPointingToMatchingLocallyInstalledPackage = locallyInstalledPackages.find(packageWithInferredName);
 
                 // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
                 //  trying to show the values for STL containers and smartpointer instances.
@@ -182,7 +182,7 @@ int main() {
 //                std::cout << *packageWithInferredName << "\n";
 
                 // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
-                bool packageWithInferredNameIsMissing = iteratorPointingToMatchingPackage == installedPackages.end();
+                bool packageWithInferredNameIsMissing = iteratorPointingToMatchingLocallyInstalledPackage == locallyInstalledPackages.end();
                 if (packageWithInferredNameIsMissing) {
                     packageWithInferredNameExact->getNextInferredPackageNameCandidate();
                     continue;
@@ -195,17 +195,17 @@ int main() {
                 //  - break out of the loop
 
                 // For debugging purposes
-//                assert(iteratorPointingToMatchingPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
+//                assert(iteratorPointingToMatchingLocallyInstalledPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
 
                 auto inferredPackageVersion = packageWithInferredNameExact->extractPackageVersion();
 
                 auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
                         std::move(packageAbsolutePath),
                         std::move(packageFilename),
-                        iteratorPointingToMatchingPackage->get()->getName(),
+                        iteratorPointingToMatchingLocallyInstalledPackage->get()->getName(),
                         std::move(inferredPackageVersion));
 
-                auto locallyInstalledPackageExact = dynamic_cast<LocallyInstalledPackage_refactored_*>(iteratorPointingToMatchingPackage->get());
+                auto locallyInstalledPackageExact = dynamic_cast<LocallyInstalledPackage*>(iteratorPointingToMatchingLocallyInstalledPackage->get());
 
                 // For debugging purposes
 //                assert(locallyInstalledPackageExact != nullptr);
@@ -242,9 +242,9 @@ int main() {
     std::cout << "===============================================\n\n";
     std::cout << "LIST OF ALL INSTALLED PACKAGES WITH RELATED PACKAGE FILES FOR DIFFERENT VERSIONS (IF ANY)\n\n";
 
-    std::cout << "Found " << installedPackages.size() << " installed packages\n\n";
+    std::cout << "Found " << locallyInstalledPackages.size() << " installed packages\n\n";
 
-    for (const auto& package : installedPackages) {
+    for (const auto& package : locallyInstalledPackages) {
         std::cout << *package << "\n";
     }
 

@@ -16,7 +16,7 @@ public:
 
     std::string substr(uint_fast8_t fromPosition);
 
-    friend std::ostream& operator<<(std::ostream& out, const PackageNameAndVersion& version);
+    friend std::ostream& operator<<(std::ostream& out, const PackageNameAndVersion& packageNameAndVersion);
 
 private:
     std::string nameAndVersion;

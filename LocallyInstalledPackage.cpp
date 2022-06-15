@@ -6,32 +6,32 @@
 // Created by laptop on 4/9/22.
 //
 
-#include "LocallyInstalledPackage_refactored_.h"
+#include "LocallyInstalledPackage.h"
 
 #include "FileMover.h"
 
 #include <iostream>
 
-LocallyInstalledPackage_refactored_::LocallyInstalledPackage_refactored_(
+LocallyInstalledPackage::LocallyInstalledPackage(
     std::unique_ptr<PackageName> packageName,
     std::unique_ptr<PackageVersion> locallyInstalledVersion,
     std::string architecture,
     bool isIgnored)
 :
-    Package_refactored_(std::move(packageName)),
-    locallyInstalledVersion(std::move(locallyInstalledVersion)),
-    architecture(std::move(architecture)),
-    isIgnored(isIgnored)
+        Package(std::move(packageName)),
+        locallyInstalledVersion(std::move(locallyInstalledVersion)),
+        architecture(std::move(architecture)),
+        isIgnored(isIgnored)
 {}
 
-uint_fast16_t LocallyInstalledPackage_refactored_::getNumberOfInstallationPackageFilesForDifferentVersions() const {
+uint_fast16_t LocallyInstalledPackage::getNumberOfInstallationPackageFilesForDifferentVersions() const {
     return this->installationPackageFilesForDifferentPackageVersions.size();
 }
 
-bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(
+bool LocallyInstalledPackage::addPackageFileToDeletionCandidates(
         std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile)
 {
-    bool isPackageNamesMatching = Package_refactored_::getName() == packageRelatedPackageFile->getRelatedPackageName();
+    bool isPackageNamesMatching = Package::getName() == packageRelatedPackageFile->getRelatedPackageName();
     bool isPackageVersionDifferent = *(this->locallyInstalledVersion) != packageRelatedPackageFile->getRelatedPackageVersion();
 
     // For debugging purposes
@@ -49,7 +49,7 @@ bool LocallyInstalledPackage_refactored_::addPackageFileToDeletionCandidates(
     return false;
 }
 
-void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsToSeparateDir(
+void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
         const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles)
 {
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
@@ -57,8 +57,8 @@ void LocallyInstalledPackage_refactored_::movePackageFilesForDifferentVersionsTo
         const auto to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
 
         std::cout
-            << "Info about the locally installed package:\n"
-            << "\t" << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "\n";
+                << "Info about the locally installed package:\n"
+                << "\t" << Package::getName() << "-" << *(this->locallyInstalledVersion) << "\n";
 
         std::cout
             << "Info about the installation package file for deletion:\n"

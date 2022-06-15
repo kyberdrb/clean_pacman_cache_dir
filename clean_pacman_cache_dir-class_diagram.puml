@@ -13,41 +13,84 @@ class IgnoredPackageName {
 main .u.> IgnoredPackageName : "<- creates an instance of IgnoredPackageName\nto be moved from place of \nto place of composition"
 main *-u-> "ignoredPackageNames ->\n0..*" IgnoredPackageName
 
-class Package {
-    + Package(\
-        \n    packageName : PackageName,\
-        \n    locallyInstalledVersion : PackageVersion\
-        \n    architecture : string\
-        \n    isIgnored : bool)
-    + Package(inferredPackageName : PackageName)
+abstract class Package {
+    + Package(packageName : PackageName)
+    + {abstract} ~Package()
+
     + getName() : PackageName
-    + getLocallyInstalledVersion() : PackageVersion
+
+    + operator<<(out : ostream, package : Package) : ostream
+    # {abstract} streamOutputOperator(out : ostream) : ostream
+
+    + operator<(package : Package, anotherPackage : Package) : bool
+    # {abstract} lessThanOperator(Package anotherPackage) : bool
+
+    # name : PackageName
+}
+
+note left of Package: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package"" class
+
+Package *-l-> "name\n1" PackageName
+
+main *-> "installedPackages\n1..*" Package : "<- creates an instance of derived classes\nfrom ""Package"" base class\nto be moved from place of \nto place of composition"
+
+class PackageWithInferredName {
+    + PackageWithInferredName(extractedPackageNameAndVersionAsText : string)
     + isPackageNameEmpty() : bool
     + hasStillSomethingInPackageName() : bool
     + getNextInferredPackageNameCandidate() : void
-    + getStartingPositionForPackageVersion() : uint_fast8_t
-    + getNumberOfInstallationPackageFilesForDifferentVersions()\
-        \n    : uint_fast16_t
-    + addPackageFileToDeletionCandidates(\
-        \n    packageRelatedPackageFile : PackageFile) : void
-    + movePackageFilesForDifferentVersionsToSeparateDir(\
-        \n        pathToDirectoryForOtherVersionsOfPackageFiles : AbsolutePath)\
-        \n    : void
+    + extractPackageVersion() : PackageVersion
+    # ostream streamOutputOperator(out : ostream)
+    # lessThanOperator(anotherPackage : Package) : bool
 
-    - std::unique_ptr<PackageName> name
-    - std::unique_ptr<PackageVersion> locallyInstalledVersion
-    - std::string architecture
-    - bool isIgnored
-
-    - installationPackageFilesForDifferentPackageVersions :\
-        \n    std::vector<ExtendedInstallationPackageFile>>
+    - nameAndVersion : PackageNameAndVersion
+    - getStartingPositionForPackageVersion() : uint_fast8_t
 }
 
-main ..> "1..*" Package : "<- creates an instance of Package\nto be moved from place of \nto place of composition"
-main *---> "installedPackages ->\n1..*" Package
-Package *--> "1..*" PackageName
-Package *--> "1..*" PackageVersion
-Package *--> "installationPackageFilesForDifferentPackageVersions ↴\n0..*" ExtendedInstallationPackageFile
+Package <|-u- PackageWithInferredName
+PackageWithInferredName .u.> "1" Package
+PackageWithInferredName .d.> "1" PackageVersion
+PackageWithInferredName *-d-> "nameAndVersion\n1" PackageNameAndVersion
+
+note bottom of PackageWithInferredName: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+
+class LocallyInstalledPackage {
+    + LocallyInstalledPackage(\
+      \n    PackageName packageName,\
+      \n    PackageVersion locallyInstalledVersion,\
+      \n    string architecture,\
+      \n    bool isIgnored)
+    + getNumberOfInstallationPackageFilesForDifferentVersions()\
+      \n: uint_fast16_t
+    + addPackageFileToDeletionCandidates(\
+      \n    ExtendedInstallationPackageFile packageRelatedPackageFile)\
+      \n: bool
+    + movePackageFilesForDifferentVersionsToSeparateDir(\
+      \n    absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles\
+      \n        AbsolutePath)\
+      \n: void
+
+    # streamOutputOperator(ostream out) : ostream
+    # lessThanOperator(anotherPackage : Package) : bool
+
+    - locallyInstalledVersion : PackageVersion
+    - architecture : string
+    - isIgnored : bool
+    - installationPackageFilesForDifferentPackageVersions\
+      \n    : vector<ExtendedInstallationPackageFile>
+}
+
+note bottom of LocallyInstalledPackage: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+
+Package <|-u- LocallyInstalledPackage
+
+main -> "packagesWithInstallationPackageFilesForDifferentVersions\n1..*" LocallyInstalledPackage
+LocallyInstalledPackage *--> "installationPackageFilesForDifferentPackageVersions ↴\n0..*" ExtendedInstallationPackageFile
+
+LocallyInstalledPackage .u.> "1" Package
+LocallyInstalledPackage *-d-> "locallyInstalledVersion\n1" PackageVersion
+LocallyInstalledPackage *---> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
+LocallyInstalledPackage ...> "1" AbsolutePath
 
 class FileMover {
     + {static} move(\
@@ -56,7 +99,7 @@ class FileMover {
     \n: void
 }
 
-Package ..> FileMover
+LocallyInstalledPackage ..> FileMover
 main ..> FileMover
 
 class SimpleInstallationPackageFile {
@@ -137,6 +180,20 @@ class PackageVersion {
 }
 
 main ..> "0..*" PackageVersion : "<- creates an instance of PackageVersion\nto be moved from place of \nto place of composition"
+
+class PackageNameAndVersion {
+    + PackageNameAndVersion(\
+        \n    packageNameAndVersionAsText : string)
+    + string() : string
+    + substr(fromPosition : uint_fast8_t) : string
+    + operator<<(\
+        \n    out : ostream,\
+        \n    packageNameAndVersion\
+        \n        : PackageNameAndVersion)\
+    \n: ostream
+
+    - nameAndVersion : string
+}
 
 class AbsolutePath {
     + AbsolutePath(absolutePath : string)

@@ -4,16 +4,16 @@
 
 #pragma once
 
-#include "Package_refactored_.h"
+#include "Package.h"
 
 #include "ExtendedInstallationPackageFile.h"
 
 #include <iostream>
 #include <vector>
 
-class LocallyInstalledPackage_refactored_ : public Package_refactored_ {
+class LocallyInstalledPackage : public Package {
 public:
-    LocallyInstalledPackage_refactored_(
+    LocallyInstalledPackage(
         std::unique_ptr<PackageName> packageName,
         std::unique_ptr<PackageVersion> locallyInstalledVersion,
         std::string architecture,
@@ -29,11 +29,11 @@ public:
 protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
-            << Package_refactored_::getName() << "\t"
-            << *(this->locallyInstalledVersion) << "\t"
-            << this->architecture << "\t"
-            << "isPackageIgnored: " << this->isIgnored << "\t"
-            << Package_refactored_::getName() << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
+                << Package::getName() << "\t"
+                << *(this->locallyInstalledVersion) << "\t"
+                << this->architecture << "\t"
+                << "isPackageIgnored: " << this->isIgnored << "\t"
+                << Package::getName() << "-" << *(this->locallyInstalledVersion) << "-" << this->architecture;
 
         if ( ! (this->installationPackageFilesForDifferentPackageVersions.empty() ) ) {
             for (const auto& packageRelatedFile: this->installationPackageFilesForDifferentPackageVersions) {
@@ -45,12 +45,12 @@ protected:
         return out;
     }
 
-    bool lessThanOperator(const std::unique_ptr<Package_refactored_>& anotherPackage) const override {
-        return Package_refactored_::getName() < anotherPackage->getName();
+    bool lessThanOperator(const std::unique_ptr<Package>& anotherPackage) const override {
+        return Package::getName() < anotherPackage->getName();
     }
 
-    bool lessThanOperator(const std::reference_wrapper<Package_refactored_>& anotherPackage) override {
-        return Package_refactored_::getName() < anotherPackage.get().getName();
+    bool lessThanOperator(const std::reference_wrapper<Package>& anotherPackage) override {
+        return Package::getName() < anotherPackage.get().getName();
     }
 
 private:

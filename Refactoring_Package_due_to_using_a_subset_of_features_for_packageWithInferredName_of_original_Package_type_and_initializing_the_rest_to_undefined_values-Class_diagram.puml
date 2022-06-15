@@ -40,48 +40,47 @@ class Package__the_original_one_before_refactoring {
 
 'Analysis
 
-'TODO make >>> abstract <<< from the 'class Package_refactored_' ?
-class Package_refactored_ {
-    + Package_refactored_(packageName : PackageName)
-    + {abstract} ~Package_refactored_()
+abstract class Package {
+    + Package(packageName : PackageName)
+    + {abstract} ~Package()
 
     + getName() : PackageName
 
-    + operator<<(out : ostream, package : Package_refactored_) : ostream
+    + operator<<(out : ostream, package : Package) : ostream
     # {abstract} streamOutputOperator(out : ostream) : ostream
 
-    + operator<(package : Package_refactored_, anotherPackage : Package_refactored_) : bool
-    # {abstract} lessThanOperator(Package_refactored_ anotherPackage) : bool
+    + operator<(package : Package, anotherPackage : Package) : bool
+    # {abstract} lessThanOperator(Package anotherPackage) : bool
 
     # name : PackageName
 }
 
-note left of Package_refactored_: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package_refactored_"" class
+note left of Package: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package"" class
 
-Package_refactored_ *-l-> "name\n1" PackageName
+Package *-l-> "name\n1" PackageName
 
-class PackageWithInferredName_refactored_ {
-    + PackageWithInferredName_refactored_(extractedPackageNameAndVersionAsText : string)
+class PackageWithInferredName {
+    + PackageWithInferredName(extractedPackageNameAndVersionAsText : string)
     + isPackageNameEmpty() : bool
     + hasStillSomethingInPackageName() : bool
     + getNextInferredPackageNameCandidate() : void
     + extractPackageVersion() : PackageVersion
     # ostream streamOutputOperator(out : ostream)
-    # lessThanOperator(anotherPackage : Package_refactored_) : bool
+    # lessThanOperator(anotherPackage : Package) : bool
 
     - nameAndVersion : PackageNameAndVersion
     - getStartingPositionForPackageVersion() : uint_fast8_t
 }
 
-Package_refactored_ <|-u- PackageWithInferredName_refactored_
-PackageWithInferredName_refactored_ .u.> "1" Package_refactored_
-PackageWithInferredName_refactored_ .d.> "1" PackageVersion
-PackageWithInferredName_refactored_ *-d-> "nameAndVersion\n1" PackageNameAndVersion
+Package <|-u- PackageWithInferredName
+PackageWithInferredName .u.> "1" Package
+PackageWithInferredName .d.> "1" PackageVersion
+PackageWithInferredName *-d-> "nameAndVersion\n1" PackageNameAndVersion
 
-note bottom of PackageWithInferredName_refactored_: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package_refactored_"" base class
+note bottom of PackageWithInferredName: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
 
-class LocallyInstalledPackage_refactored_ {
-    + LocallyInstalledPackage_refactored_(\
+class LocallyInstalledPackage {
+    + LocallyInstalledPackage(\
       \n    PackageName packageName,\
       \n    PackageVersion locallyInstalledVersion,\
       \n    string architecture,\
@@ -97,7 +96,7 @@ class LocallyInstalledPackage_refactored_ {
       \n: void
 
     # streamOutputOperator(ostream out) : ostream
-    # lessThanOperator(anotherPackage : Package_refactored_) : bool
+    # lessThanOperator(anotherPackage : Package) : bool
 
     - locallyInstalledVersion : PackageVersion
     - architecture : string
@@ -106,11 +105,11 @@ class LocallyInstalledPackage_refactored_ {
       \n    : vector<ExtendedInstallationPackageFile>
 }
 
-note bottom of LocallyInstalledPackage_refactored_: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package_refactored_"" base class
+note bottom of LocallyInstalledPackage: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
 
-Package_refactored_ <|-u- LocallyInstalledPackage_refactored_
-LocallyInstalledPackage_refactored_ .u.> "1" Package_refactored_
-LocallyInstalledPackage_refactored_ *-d-> "locallyInstalledVersion\n1" PackageVersion
-LocallyInstalledPackage_refactored_ *---> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
-LocallyInstalledPackage_refactored_ ...> "1" AbsolutePath
+Package <|-u- LocallyInstalledPackage
+LocallyInstalledPackage .u.> "1" Package
+LocallyInstalledPackage *-d-> "locallyInstalledVersion\n1" PackageVersion
+LocallyInstalledPackage *---> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
+LocallyInstalledPackage ...> "1" AbsolutePath
 @enduml
