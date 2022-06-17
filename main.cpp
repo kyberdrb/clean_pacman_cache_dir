@@ -1,4 +1,8 @@
+// TODO delete import for "IgnoredPackageName.h" because the header "IgnoredPackageNames.h" will already contain it
 #include "IgnoredPackageName.h"
+
+#include "IgnoredPackageNames.h"
+
 #include "LocallyInstalledPackage.h"
 #include "PackageWithInferredName.h"
 #include "SimpleInstallationPackageFile.h"
@@ -7,61 +11,18 @@
 #include "alpm_list.h"
 
 #include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <regex>
 #include <set>
 
 //#include <cassert>
 
 int main() {
     // FIND IGNORED PACKAGES PART - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
+    auto ignoredPackageNames = std::make_unique<IgnoredPackageNames>();
 
-    // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
-    //alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
-
-    std::ifstream pacmanConfigFile;
-
-    // TODO parametrize with argument (maybe use getopt?) - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists; otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages in order to exclude them from deletion
-    pacmanConfigFile.open("/etc/pacman.conf");
-
-    std::string lineWithIgnoredPackages;
-    std::smatch match;
-    std::regex regexForIgnoredPackagesInPacmanConfigFile("^IgnorePkg = ");
-
-    while (std::getline(pacmanConfigFile, lineWithIgnoredPackages)) {
-        bool doesTheLineContainIgnoredPackages = std::regex_search(lineWithIgnoredPackages, match, regexForIgnoredPackagesInPacmanConfigFile);
-        if (doesTheLineContainIgnoredPackages) {
-            break;
-        }
-    }
-
-    // TODO OPTIONAL (assuming no leading spaces/tabs) remove leading and ending blank characters
-    // TODO OPTIONAL (assuming no ending spaces/tabs; only one space delimiting [separating] each package filename) replace multiple spaces or tabs with one space
-
-    // build a list of ignored packages
-
-    auto lineWithIgnoredPackagesWithoutOptionPrefix = regex_replace(lineWithIgnoredPackages, regexForIgnoredPackagesInPacmanConfigFile, "");
-    std::stringstream ignoredPackagesAsStream{lineWithIgnoredPackagesWithoutOptionPrefix};
-    std::string ignoredPackageNameAsText{};
-    char delimiterForIgnoredPackages = ' ';
-
-    std::vector<std::unique_ptr<IgnoredPackageName>> ignoredPackageNames;
-
-    while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPackages)) {
-        auto ignoredPackageName = std::make_unique<IgnoredPackageName>(std::move(ignoredPackageNameAsText));
-        ignoredPackageNames.emplace_back(std::move(ignoredPackageName));
-    }
-
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "LIST OF IGNORED PACKAGES\n\n";
-
-    std::cout << "Found " << ignoredPackageNames.size() << " ignored packages\n\n";
-
-    for (const auto& ignoredPackageName : ignoredPackageNames) {
-        std::cout << *ignoredPackageName  << "\n";
-    }
+    // TODO replace with:
+    //     TerminalPrinter::print(ignoredPackageNames->generateReport());
+        std::cout << ignoredPackageNames->generateReport();
 
     // BUILD LIST OF LOCALLY INSTALLED PACKAGES
 
@@ -92,17 +53,13 @@ int main() {
         std::string locallyInstalledVersionAsText = alpm_pkg_get_version(alpm_pkg);
         std::string architecture = alpm_pkg_get_arch(alpm_pkg);
 
-        bool isIgnored = false;
         auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameAsText));
 
         // For debugging purposes - if the argument is passed by value to a function, which accepts the argument as a value
         //  the argument is __copied__ from the calling to the receiving function
 //        assert(packageNameAsText != "");
 
-        if( std::find(ignoredPackageNames.begin(), ignoredPackageNames.end(), ignoredPackageNameCandidate) != ignoredPackageNames.end() ) {
-            isIgnored = true;
-        }
-
+        bool isIgnored = ignoredPackageNames->isPackageWithGivenNameIgnored(ignoredPackageNameCandidate);
         auto packageName = std::make_unique<PackageName>(ignoredPackageNameCandidate->moveNameFromThisInstance());
 
         // For debugging purposes - if the argument is passed by value with 'std::move' to a function, which accepts the argument as a value
