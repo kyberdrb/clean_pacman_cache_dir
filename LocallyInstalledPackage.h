@@ -63,5 +63,7 @@ private:
     std::string architecture;
     bool isIgnored;
 
+    // TODO make this a 'std::set' to prevent duplicates,
+    //  otherwise an exception might occure when deleting an already deleted installation package file, i. e. a duplicate one
     std::vector<std::unique_ptr<ExtendedInstallationPackageFile>> installationPackageFilesForDifferentPackageVersions;
 };
