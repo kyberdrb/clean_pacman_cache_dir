@@ -67,7 +67,7 @@ void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
         std::cout << "\n";
 
         // TODO maybe abstract duplicate code from here and from 'moveToSeparateDirectoryForDeletion' in 'SimpleInstallationPackageFile.cpp'
-        //  to a separate class 'TerminalPrinter'? for example?
+        //  to a separate class 'TerminalPrinter'? for example? And delegate all 'std::cout' calls to the 'TerminalPrinter' instance?
         //TerminalPrinter::printInstallationPackageFileInfoBeforeDeletion(from, *(to));
         std::cout
             << "Moving package file:\n"

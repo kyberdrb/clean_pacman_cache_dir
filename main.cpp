@@ -1,14 +1,8 @@
-// TODO delete import for "IgnoredPackageName.h" because the header "IgnoredPackageNames.h" will already contain it
-#include "IgnoredPackageName.h"
-
 #include "IgnoredPackageNames.h"
-
-#include "LocallyInstalledPackage.h"
+#include "LocallyInstalledPackages.h"
+#include "PackageNameMissing.h"
 #include "PackageWithInferredName.h"
 #include "SimpleInstallationPackageFile.h"
-
-#include "alpm.h"
-#include "alpm_list.h"
 
 #include <filesystem>
 #include <iostream>
@@ -26,62 +20,7 @@ int main() {
 
     // BUILD LIST OF LOCALLY INSTALLED PACKAGES
 
-    // Assuming that each package has only one locally installed version with possibly multiple related package files for
-    //  multiple versions that the Package will remember within itself
-    //  and not as a value for the Package key.
-    // "Some sets store object that embed their own keys, that is to say that such objects have a subpart that is to be considered as
-    //  a key, like an ID for example, while the object itself is to be considered as a value."
-    //   - https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
-    //  Therefore a 'set' and
-    //   - not a 'multiset' [the embedded key - package name - is unique - only one package name in all different versions of it
-    //     than the local one],
-    //   - not a 'map' [the values are related and contained in the key itself] and
-    //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
-    std::set<std::unique_ptr<Package>> locallyInstalledPackages{};
-
-    alpm_errno_t* err = reinterpret_cast<alpm_errno_t*>(calloc(1, sizeof(alpm_errno_t)));
-    alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", err);
-    alpm_db_t* db_local = alpm_get_localdb(handle);
-    alpm_list_t* listOfAllLocallyInstalledPackages = alpm_db_get_pkgcache(db_local);
-
-    while (listOfAllLocallyInstalledPackages != NULL) {
-        alpm_pkg_t* alpm_pkg = reinterpret_cast<alpm_pkg_t*>(listOfAllLocallyInstalledPackages->data);
-        listOfAllLocallyInstalledPackages = alpm_list_next(listOfAllLocallyInstalledPackages);
-
-        std::string packageNameAsText = alpm_pkg_get_name(alpm_pkg);
-
-        std::string locallyInstalledVersionAsText = alpm_pkg_get_version(alpm_pkg);
-        std::string architecture = alpm_pkg_get_arch(alpm_pkg);
-
-        auto ignoredPackageNameCandidate = std::make_unique<IgnoredPackageName>(std::move(packageNameAsText));
-
-        // For debugging purposes - if the argument is passed by value to a function, which accepts the argument as a value
-        //  the argument is __copied__ from the calling to the receiving function
-//        assert(packageNameAsText != "");
-
-        bool isIgnored = ignoredPackageNames->isPackageWithGivenNameIgnored(ignoredPackageNameCandidate);
-        auto packageName = std::make_unique<PackageName>(ignoredPackageNameCandidate->moveNameFromThisInstance());
-
-        // For debugging purposes - if the argument is passed by value with 'std::move' to a function, which accepts the argument as a value
-        //  the argument is __moved__ from the calling to the receiving function
-//        assert(packageNameAsText == "");
-
-        auto locallyInstalledVersion = std::make_unique<PackageVersion>(std::move(locallyInstalledVersionAsText));
-
-        auto locallyInstalledPackage = std::make_unique<LocallyInstalledPackage>(
-                std::move(packageName),
-                std::move(locallyInstalledVersion),
-                architecture,
-                isIgnored);
-
-        locallyInstalledPackages.emplace(std::move(locallyInstalledPackage));
-    }
-
-    free(err);
-    err = nullptr;
-
-    alpm_release(handle);
-    handle = nullptr;
+    auto locallyInstalledPackages = std::make_unique<LocallyInstalledPackages>(*ignoredPackageNames);
 
     // FIND PACKAGE FILES IN DIFFERENT PACKAGE VERSIONS FOR SAME PACKAGE,
     //  PARTIALLY DOWNLOADED PACKAGE FILES AND
@@ -124,62 +63,67 @@ int main() {
             std::unique_ptr<Package> packageWithInferredName =
                     std::make_unique<PackageWithInferredName>(std::move(inferredPackageNameAsText));
 
-            auto packageWithInferredNameExact = dynamic_cast<PackageWithInferredName*>(packageWithInferredName.get());
+            auto* packageWithInferredNameExact = dynamic_cast<PackageWithInferredName*>(packageWithInferredName.get());
 
             // For debugging purposes
 //            assert(packageWithInferredNameExact != nullptr);
 
             while ( packageWithInferredNameExact->hasStillSomethingInPackageName() ) {
-                // search for the matching package element in the 'locallyInstalledPackages' by 'packageWithInferredName'
-                auto iteratorPointingToMatchingLocallyInstalledPackage = locallyInstalledPackages.find(packageWithInferredName);
+                try {
+                    // search for the matching package element in the 'locallyInstalledPackages' by 'packageWithInferredName'
+                    const Package& matchingLocallyInstalledPackage = locallyInstalledPackages->find(packageWithInferredName);
 
-                // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
-                //  trying to show the values for STL containers and smartpointer instances.
-                //  Instead, it shows an error message saying "Cannot instantiate printer for default visualizer"
-//                std::cout << *packageWithInferredName << "\n";
+                    // if the key WAS found,
+                    //  - infer the package version from the compound package name and version,
+                    //  - create a package file with filename, absolute path and package version
+                    //     and add it to the matching locally installed package
+                    //  - break out of the loop
 
-                // if key was NOT found, strip the coumpound package key by one character - or word  from the end and perform lookup again
-                bool packageWithInferredNameIsMissing = iteratorPointingToMatchingLocallyInstalledPackage == locallyInstalledPackages.end();
-                if (packageWithInferredNameIsMissing) {
+                    // For debugging purposes
+//                    assert(iteratorPointingToMatchingLocallyInstalledPackage.getName().string() == packageWithInferredName->getName().string());
+
+                    auto inferredPackageVersion = packageWithInferredNameExact->extractPackageVersion();
+
+                    auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
+                            std::move(packageAbsolutePath),
+                            std::move(packageFilename),
+                            matchingLocallyInstalledPackage.getName(),
+                            std::move(inferredPackageVersion));
+
+                    const LocallyInstalledPackage& locallyInstalledPackageExact =
+                            *( dynamic_cast<const LocallyInstalledPackage*>(&matchingLocallyInstalledPackage) );
+
+                    // For debugging purposes
+    //                assert(locallyInstalledPackageExact != nullptr);
+
+                    LocallyInstalledPackage& localyInstalledPackageExactModifiable =
+                            *( const_cast<LocallyInstalledPackage*>(&locallyInstalledPackageExact) );
+
+                    bool wasInstallationPackageFileAdded = localyInstalledPackageExactModifiable.addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+
+                    // if the package file was added to the deletion candidates for the particular package,
+                    //  save the reference to the package file for generating only
+                    //  and faster deleting of the package files by iterating only packages that have at least one package file for deletion
+                    if (wasInstallationPackageFileAdded) {
+
+                        packagesWithInstallationPackageFilesForDifferentVersions.emplace(
+                                localyInstalledPackageExactModifiable
+                        );
+                    }
+
+                    break;
+                } catch (const PackageNameMissing& exception) {
+                     // if key was NOT found, strip the compound package key from the end by one word up to the next delimiter
+                     //  and perform lookup again
+
+                     // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
+                      // trying to show the values for STL containers and smartpointer instances.
+                      // Instead, it shows an error message saying "Cannot instantiate printer for default visualizer"
+//                    std::cout << exception.what() << "\n";
+
                     packageWithInferredNameExact->getNextInferredPackageNameCandidate();
                     continue;
                 }
-
-                // if the key WAS found,
-                //  - infer the package version from the compound package name and version,
-                //  - create a package file with filename, absolute path and package version
-                //     and add it to the matching locally installed package
-                //  - break out of the loop
-
-                // For debugging purposes
-//                assert(iteratorPointingToMatchingLocallyInstalledPackage->get()->getName().string() == packageWithInferredName->getName().getAbsolutePath());
-
-                auto inferredPackageVersion = packageWithInferredNameExact->extractPackageVersion();
-
-                auto packageRelatedFile = std::make_unique<ExtendedInstallationPackageFile>(
-                        std::move(packageAbsolutePath),
-                        std::move(packageFilename),
-                        iteratorPointingToMatchingLocallyInstalledPackage->get()->getName(),
-                        std::move(inferredPackageVersion));
-
-                auto locallyInstalledPackageExact = dynamic_cast<LocallyInstalledPackage*>(iteratorPointingToMatchingLocallyInstalledPackage->get());
-
-                // For debugging purposes
-//                assert(locallyInstalledPackageExact != nullptr);
-
-                bool wasInstallationPackageFileAdded = locallyInstalledPackageExact->addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
-
-                // if the package file was added to the deletion candidates for the particular package,
-                //  save the reference to the package file for generating only
-                //  and faster deleting of the package files by iterating only packages that have at least one package file for deletion
-                if (wasInstallationPackageFileAdded) {
-
-                    packagesWithInstallationPackageFilesForDifferentVersions.emplace(
-                            *locallyInstalledPackageExact
-                    );
-                }
-
-                break;
             }
 
             bool hasInstallationPackageFileMissingReferenceToLocallyInstalledPackage = packageWithInferredNameExact->isPackageNameEmpty();
@@ -195,15 +139,7 @@ int main() {
         }
     }
 
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "LIST OF ALL INSTALLED PACKAGES WITH RELATED PACKAGE FILES FOR DIFFERENT VERSIONS (IF ANY)\n\n";
-
-    std::cout << "Found " << locallyInstalledPackages.size() << " installed packages\n\n";
-
-    for (const auto& package : locallyInstalledPackages) {
-        std::cout << *package << "\n";
-    }
+    std::cout << locallyInstalledPackages->generateReport();
 
     std::cout << "\n";
     std::cout << "===============================================\n\n";

@@ -51,19 +51,19 @@ void IgnoredPackageNames::emplace_back(std::unique_ptr<IgnoredPackageName> ignor
 }
 
 std::string IgnoredPackageNames::generateReport() const {
-    std::stringstream stringstream{};
+    std::stringstream report{};
     
-    stringstream << "\n";
-    stringstream << "===============================================\n\n";
-    stringstream << "LIST OF IGNORED PACKAGES\n\n";
+    report << "\n";
+    report << "===============================================\n\n";
+    report << "LIST OF IGNORED PACKAGES\n\n";
 
-    stringstream << "Found " << this->ignoredPackageNames.size() << " ignored packages\n\n";
+    report << "Found " << this->ignoredPackageNames.size() << " ignored packages\n\n";
 
     for (const auto& ignoredPackageName : this->ignoredPackageNames) {
-        stringstream << *ignoredPackageName  << "\n";
+        report << *ignoredPackageName << "\n";
     }
 
-    return stringstream.str();
+    return report.str();
 }
 
 bool IgnoredPackageNames::isPackageWithGivenNameIgnored(std::unique_ptr<IgnoredPackageName>& ignoredPackageNameCandidate) const {
