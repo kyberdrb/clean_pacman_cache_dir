@@ -20,6 +20,8 @@ public:
 
     void movePackageFilesForDifferentPackageVersionsToSeparateDir() const;
 
+    void addReferenceToPackageRelatedToInstallationPackageFileForDifferentVersion(const LocallyInstalledPackage& localyInstalledPackageExactModifiable);
+
 private:
     const IgnoredPackageNames& ignoredPackageNames;
 
@@ -35,6 +37,12 @@ private:
     //   - not a 'map' [the values are related and contained in the key itself] and
     //   - not a 'multimap' [the key - package name - is unique - a filesystem feature: each file in a directory has a unique name]
     std::set<std::unique_ptr<Package>> locallyInstalledPackages;
+
+    std::set<std::reference_wrapper<const LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
+
+    // TODO replace multiple definitions across multiple classes
+    //  with one definition and multiple references from 'main' to the constructors of classes that use this member variable
+    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 
     void fillLocallyInstalledPackages();
     void addLocallyInstalledPackage(std::unique_ptr<LocallyInstalledPackage> locallyInstalledPackage);

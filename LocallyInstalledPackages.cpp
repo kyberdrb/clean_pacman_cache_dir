@@ -11,6 +11,8 @@
 #include "alpm.h"
 #include "alpm_list.h"
 
+#include <filesystem>
+
 #include <cassert>
 
 LocallyInstalledPackages::LocallyInstalledPackages(const IgnoredPackageNames& ignoredPackageNames) :
@@ -103,9 +105,44 @@ std::string LocallyInstalledPackages::generateReport() const {
         report << *package << "\n";
     }
 
+    report << "\n";
+    report << "===============================================\n\n";
+    report << "LIST OF INSTALLED PACKAGES THAT HAVE AT LEAST ONE RELATED INSTALLATION PACKAGE FILE FOR DIFFERENT VERSION THAN THE LOCALLY INSTALLED ONE\n\n";
+
+    report << "Found " << packagesWithInstallationPackageFilesForDifferentVersions.size()
+           << " installed packages with installation package files for other than locally installed version\n\n";
+
+    uint_fast16_t numberOfInstallationPackageFilesForOtherVersions = 0;
+
+    for (const auto package : packagesWithInstallationPackageFilesForDifferentVersions) {
+        report << package << "\n";
+
+        uint_fast16_t numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage =
+                package.get().getNumberOfInstallationPackageFilesForDifferentVersions();
+
+        numberOfInstallationPackageFilesForOtherVersions += numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage;
+    }
+
+    report << "\n";
+    report << "Found " << numberOfInstallationPackageFilesForOtherVersions
+           << " installation package files for different version than the locally installed\n";
+
     return report.str();
 }
 
 void LocallyInstalledPackages::movePackageFilesForDifferentPackageVersionsToSeparateDir() const {
+    std::string pathToDuplicateFilesDirectoryAsText =
+            this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
 
+    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
+
+    auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
+
+    for (const auto& installedPackage : packagesWithInstallationPackageFilesForDifferentVersions) {
+        installedPackage.get().movePackageFilesForDifferentVersionsToSeparateDir( *(directoryForInstallationPackageFilesForDeletion) );
+    }
+}
+
+void LocallyInstalledPackages::addReferenceToPackageRelatedToInstallationPackageFileForDifferentVersion(const LocallyInstalledPackage& localyInstalledPackageExactModifiable) {
+    this->packagesWithInstallationPackageFilesForDifferentVersions.emplace(localyInstalledPackageExactModifiable);
 }

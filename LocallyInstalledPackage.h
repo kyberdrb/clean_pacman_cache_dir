@@ -31,6 +31,13 @@ public:
     void movePackageFilesForDifferentVersionsToSeparateDir(
             const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles) const;
 
+    friend bool operator<(
+            const std::reference_wrapper<const LocallyInstalledPackage>& locallyInstalledPackage,
+            const std::reference_wrapper<const LocallyInstalledPackage>& anotherLocallyInstalledPackage)
+    {
+        return locallyInstalledPackage.get().getName() < anotherLocallyInstalledPackage.get().getName();
+    }
+
 protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
@@ -52,10 +59,6 @@ protected:
 
     bool lessThanOperator(const std::unique_ptr<Package>& anotherPackage) const override {
         return Package::getName() < anotherPackage->getName();
-    }
-
-    bool lessThanOperator(const std::reference_wrapper<Package>& anotherPackage) override {
-        return Package::getName() < anotherPackage.get().getName();
     }
 
 private:

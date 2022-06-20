@@ -1,4 +1,4 @@
-#include "MoverOfInstallationPackageFile.h"
+#include "MoverOfInstallationPackageFiles.h"
 
 #include <iostream>
 
@@ -24,12 +24,12 @@ int main() {
     std::cout << matchFinderWithPackageFilesRelatedToPackages->generateReport();
 
     // MOVE PACKAGE FILES TO SEPARATE DIRECTORY
-    auto installationPackageFileMover = std::make_unique<MoverOfInstallationPackageFile>(
+    auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(
             *matchFinderWithPackageFilesRelatedToPackages,
             *locallyInstalledPackages);
-    //auto installationPackageFileMover = std::make_unique<MoverOfInstallationPackageFile>(*locallyInstalledPackages, *matchFinderWithPackageFilesRelatedToPackages, directoryForMovedInstallationPackageFiles);
+    //auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(*locallyInstalledPackages, *matchFinderWithPackageFilesRelatedToPackages, directoryForMovedInstallationPackageFiles);
 
-    installationPackageFileMover->moveChosenInstallationPackageFilesToSeparateDir();
+    installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir();
 
     return 0;
 }

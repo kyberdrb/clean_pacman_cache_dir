@@ -9,22 +9,19 @@
 
 class MatchFinderForPackageFilesToLocallyInstalledPackages {
 public:
-    explicit MatchFinderForPackageFilesToLocallyInstalledPackages(const LocallyInstalledPackages& locallyInstalledPackages);
+    explicit MatchFinderForPackageFilesToLocallyInstalledPackages(LocallyInstalledPackages& locallyInstalledPackages);
 
     std::string generateReport() const;
 
     // TODO move function to separate class 'InstallationPackageFileMover' and use it in the client instead of here
-    void moveInstallationPackageFilesForPackagesWithDifferenVersions() const;
+    void moveChosenInstallationPackageFiles() const;
 
 private:
-    const LocallyInstalledPackages& locallyInstalledPackages;
+    LocallyInstalledPackages& locallyInstalledPackages;
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
-
-    // TODO maybe move this member variable to class 'LocallyInstalledPackages'?
-    std::set<std::reference_wrapper<LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     void relatePackageFilesToLocallyInstalledPackages();
 };

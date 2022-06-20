@@ -12,7 +12,7 @@
 #include <set>
 
 MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFilesToLocallyInstalledPackages(
-        const LocallyInstalledPackages& locallyInstalledPackages)
+        LocallyInstalledPackages& locallyInstalledPackages)
 :
         locallyInstalledPackages(locallyInstalledPackages)
 {
@@ -21,7 +21,7 @@ MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFiles
 }
 
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackages() {
-    std::filesystem::path pacmanCacheDirPath {pacmanCacheDir};
+    std::filesystem::path pacmanCacheDirPath {this->pacmanCacheDir};
 
     for (const auto& packageFile : std::filesystem::directory_iterator(pacmanCacheDirPath)) {
         const auto& packageFileExtension = packageFile.path().extension().string();
@@ -38,7 +38,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     std::move(packageFilename),
                     SimpleInstallationPackageFileType::PARTIALLY_DOWNLOADED);
 
-            partiallyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
+            this->partiallyDownloadedPackageFiles.emplace(std::move(partlyDownloadedPackageFile));
             continue;
         }
 
@@ -61,7 +61,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
             while ( packageWithInferredNameExact->hasStillSomethingInPackageName() ) {
                 try {
                     // search for the matching package element in the 'locallyInstalledPackages' by 'packageWithInferredName'
-                    const Package& matchingLocallyInstalledPackage = locallyInstalledPackages.find(packageWithInferredName);
+                    const Package& matchingLocallyInstalledPackage = this->locallyInstalledPackages.find(packageWithInferredName);
 
                     // if the key WAS found,
                     //  - infer the package version from the compound package name and version,
@@ -95,7 +95,8 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     //  save the reference to the package file for generating only
                     //  and faster deleting of the package files by iterating only packages that have at least one package file for deletion
                     if (wasInstallationPackageFileAdded) {
-                        packagesWithInstallationPackageFilesForDifferentVersions.emplace(localyInstalledPackageExactModifiable);
+                        this->locallyInstalledPackages.addReferenceToPackageRelatedToInstallationPackageFileForDifferentVersion(
+                                localyInstalledPackageExactModifiable);
                     }
 
                     break;
@@ -121,7 +122,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                         std::move(packageFilename),
                         SimpleInstallationPackageFileType::MISSING_LOCALLY_INSTALLED_PACKAGE);
 
-                packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
+                this->packageFilesRelatedToMissingPackages.emplace(std::move(packageFileForMissingPackage));
             }
         }
     }
@@ -129,36 +130,14 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
 
 std::string MatchFinderForPackageFilesToLocallyInstalledPackages::generateReport() const {
     std::stringstream report;
-    
-    report << "\n";
-    report << "===============================================\n\n";
-    report << "LIST OF INSTALLED PACKAGES THAT HAVE AT LEAST ONE RELATED INSTALLATION PACKAGE FILE FOR DIFFERENT VERSION THAN THE LOCALLY INSTALLED ONE\n\n";
-
-    report << "Found " << packagesWithInstallationPackageFilesForDifferentVersions.size()
-              << " installed packages with installation package files for other than locally installed version\n\n";
-
-    uint_fast16_t numberOfInstallationPackageFilesForOtherVersions = 0;
-
-    for (const auto package : packagesWithInstallationPackageFilesForDifferentVersions) {
-        report << package << "\n";
-
-        uint_fast16_t numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage =
-                package.get().getNumberOfInstallationPackageFilesForDifferentVersions();
-
-        numberOfInstallationPackageFilesForOtherVersions += numberOfInstallationPackageFilesForDifferentVersionsForCurrentPackage;
-    }
-
-    report << "\n";
-    report << "Found " << numberOfInstallationPackageFilesForOtherVersions
-              << " installation package files for different version than the locally installed\n";
 
     report << "\n";
     report << "===============================================\n\n";
     report << "LIST OF PARTIALLY DOWNLOADED INSTALLATION PACKAGE FILES\n\n";
 
-    report << "Found " << partiallyDownloadedPackageFiles.size() << " partly downloaded package files\n\n";
+    report << "Found " << this->partiallyDownloadedPackageFiles.size() << " partly downloaded package files\n\n";
 
-    for (const auto& partlyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
+    for (const auto& partlyDownloadedPackageFile : this->partiallyDownloadedPackageFiles) {
         report << *partlyDownloadedPackageFile << "\n";
     }
 
@@ -166,36 +145,28 @@ std::string MatchFinderForPackageFilesToLocallyInstalledPackages::generateReport
     report << "===============================================\n\n";
     report << "LIST OF INSTALLATION PACKAGE FILES RELATED TO MISSING PACKAGES\n\n";
 
-    report << "Found " << packageFilesRelatedToMissingPackages.size() << " package files related to missing packages\n\n";
+    report << "Found " << this->packageFilesRelatedToMissingPackages.size() << " package files related to missing packages\n\n";
 
-    for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
+    for (const auto& packageFilesRelatedToMissingPackage : this->packageFilesRelatedToMissingPackages) {
         report << *packageFilesRelatedToMissingPackage << "\n";
     }
     
     return report.str();
 }
 
-void MatchFinderForPackageFilesToLocallyInstalledPackages::moveInstallationPackageFilesForPackagesWithDifferenVersions() const {
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "MOVING PACKAGES\n\n";
-
+void MatchFinderForPackageFilesToLocallyInstalledPackages::moveChosenInstallationPackageFiles() const {
     std::string pathToDuplicateFilesDirectoryAsText =
-            pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
+            this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
 
     std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
     auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
 
-    for (const auto& installedPackage : packagesWithInstallationPackageFilesForDifferentVersions) {
-        installedPackage.get().movePackageFilesForDifferentVersionsToSeparateDir( *(directoryForInstallationPackageFilesForDeletion) );
-    }
-
-    for (const auto& partiallyDownloadedPackageFile : partiallyDownloadedPackageFiles) {
+    for (const auto& partiallyDownloadedPackageFile : this->partiallyDownloadedPackageFiles) {
         partiallyDownloadedPackageFile->moveToSeparateDirectoryForDeletion(*(directoryForInstallationPackageFilesForDeletion));
     }
 
-    for (const auto& packageFilesRelatedToMissingPackage : packageFilesRelatedToMissingPackages) {
+    for (const auto& packageFilesRelatedToMissingPackage : this->packageFilesRelatedToMissingPackages) {
         packageFilesRelatedToMissingPackage->moveToSeparateDirectoryForDeletion(*(directoryForInstallationPackageFilesForDeletion));
     }
 

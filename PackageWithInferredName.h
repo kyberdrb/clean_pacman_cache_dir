@@ -35,9 +35,9 @@ protected:
         return Package::getName() < anotherPackage->getName();
     }
 
-    bool lessThanOperator(const std::reference_wrapper<Package>& anotherPackage) override {
-        return Package::getName() < anotherPackage.get().getName();
-    }
+//    bool lessThanOperator(const std::reference_wrapper<Package>& anotherPackage) override {
+//        return Package::getName() < anotherPackage.get().getName();
+//    }
 
 private:
     std::unique_ptr<PackageNameAndVersion> nameAndVersion;

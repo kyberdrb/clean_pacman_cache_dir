@@ -6,9 +6,9 @@
 
 #include "MatchFinderForPackageFilesToLocallyInstalledPackages.h"
 
-class MoverOfInstallationPackageFile {
+class MoverOfInstallationPackageFiles {
 public:
-    explicit MoverOfInstallationPackageFile(
+    explicit MoverOfInstallationPackageFiles(
             const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages,
             const LocallyInstalledPackages& locallyInstalledPackages);
 
@@ -17,4 +17,6 @@ public:
 private:
     const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages;
     const LocallyInstalledPackages& locallyInstalledPackages;
+
+    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 };
