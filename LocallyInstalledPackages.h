@@ -18,9 +18,11 @@ public:
 
     std::string generateReport() const;
 
-    void movePackageFilesForDifferentPackageVersionsToSeparateDir() const;
+    void movePackageFilesForDifferentPackageVersionsToSeparateDir(
+            const AbsolutePath& directoryForInstallationPackageFilesForDeletion) const;
 
-    void addReferenceToPackageRelatedToInstallationPackageFileForDifferentVersion(const LocallyInstalledPackage& localyInstalledPackageExactModifiable);
+    void addReferenceToPackageRelatedToInstallationPackageFileForDifferentVersion(
+            const LocallyInstalledPackage& localyInstalledPackageExactModifiable);
 
 private:
     const IgnoredPackageNames& ignoredPackageNames;
@@ -40,8 +42,6 @@ private:
 
     std::set<std::reference_wrapper<const LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
-    // TODO replace multiple definitions across multiple classes
-    //  with one definition and multiple references from 'main' to the constructors of classes that use this member variable
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 
     void fillLocallyInstalledPackages();

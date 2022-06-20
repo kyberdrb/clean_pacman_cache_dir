@@ -13,8 +13,6 @@ class IgnoredPackageNames {
 public:
     IgnoredPackageNames();
 
-    void emplace_back(std::unique_ptr<IgnoredPackageName> ignoredPackageName);
-
     bool isPackageWithGivenNameIgnored(std::unique_ptr<IgnoredPackageName>& ignoredPackageNameCandidate) const;
 
     std::string generateReport() const;

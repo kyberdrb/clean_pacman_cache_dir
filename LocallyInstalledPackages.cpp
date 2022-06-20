@@ -130,16 +130,11 @@ std::string LocallyInstalledPackages::generateReport() const {
     return report.str();
 }
 
-void LocallyInstalledPackages::movePackageFilesForDifferentPackageVersionsToSeparateDir() const {
-    std::string pathToDuplicateFilesDirectoryAsText =
-            this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
-
-    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
-
-    auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
-
+void LocallyInstalledPackages::movePackageFilesForDifferentPackageVersionsToSeparateDir(
+        const AbsolutePath& directoryForInstallationPackageFilesForDeletion) const
+{
     for (const auto& installedPackage : packagesWithInstallationPackageFilesForDifferentVersions) {
-        installedPackage.get().movePackageFilesForDifferentVersionsToSeparateDir( *(directoryForInstallationPackageFilesForDeletion) );
+        installedPackage.get().movePackageFilesForDifferentVersionsToSeparateDir(directoryForInstallationPackageFilesForDeletion);
     }
 }
 

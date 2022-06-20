@@ -27,7 +27,10 @@ int main() {
     auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(
             *matchFinderWithPackageFilesRelatedToPackages,
             *locallyInstalledPackages);
-    //auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(*locallyInstalledPackages, *matchFinderWithPackageFilesRelatedToPackages, directoryForMovedInstallationPackageFiles);
+//    auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(
+//            *locallyInstalledPackages,
+//            *matchFinderWithPackageFilesRelatedToPackages,
+//            directoryForMovedInstallationPackageFiles);
 
     installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir();
 

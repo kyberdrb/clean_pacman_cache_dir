@@ -24,11 +24,8 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
 
     std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
 
-    auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
+    const auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
 
-    locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir();
-//    locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
-
-    packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles();
-//    packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);
+    locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
+    packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);
 }

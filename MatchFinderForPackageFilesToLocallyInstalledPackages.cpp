@@ -154,20 +154,15 @@ std::string MatchFinderForPackageFilesToLocallyInstalledPackages::generateReport
     return report.str();
 }
 
-void MatchFinderForPackageFilesToLocallyInstalledPackages::moveChosenInstallationPackageFiles() const {
-    std::string pathToDuplicateFilesDirectoryAsText =
-            this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
-
-    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
-
-    auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
-
+void MatchFinderForPackageFilesToLocallyInstalledPackages::moveChosenInstallationPackageFiles(
+        const AbsolutePath& directoryForInstallationPackageFilesForDeletion) const
+{
     for (const auto& partiallyDownloadedPackageFile : this->partiallyDownloadedPackageFiles) {
-        partiallyDownloadedPackageFile->moveToSeparateDirectoryForDeletion(*(directoryForInstallationPackageFilesForDeletion));
+        partiallyDownloadedPackageFile->moveToSeparateDirectoryForDeletion(directoryForInstallationPackageFilesForDeletion);
     }
 
     for (const auto& packageFilesRelatedToMissingPackage : this->packageFilesRelatedToMissingPackages) {
-        packageFilesRelatedToMissingPackage->moveToSeparateDirectoryForDeletion(*(directoryForInstallationPackageFilesForDeletion));
+        packageFilesRelatedToMissingPackage->moveToSeparateDirectoryForDeletion(directoryForInstallationPackageFilesForDeletion);
     }
 
     // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges

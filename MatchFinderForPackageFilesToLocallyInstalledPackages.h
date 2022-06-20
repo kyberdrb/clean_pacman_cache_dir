@@ -13,8 +13,7 @@ public:
 
     std::string generateReport() const;
 
-    // TODO move function to separate class 'InstallationPackageFileMover' and use it in the client instead of here
-    void moveChosenInstallationPackageFiles() const;
+    void moveChosenInstallationPackageFiles(const AbsolutePath& directoryForInstallationPackageFilesForDeletion) const;
 
 private:
     LocallyInstalledPackages& locallyInstalledPackages;

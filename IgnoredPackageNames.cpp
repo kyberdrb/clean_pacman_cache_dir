@@ -46,10 +46,6 @@ IgnoredPackageNames::IgnoredPackageNames() {
     }
 }
 
-void IgnoredPackageNames::emplace_back(std::unique_ptr<IgnoredPackageName> ignoredPackageName) {
-    this->ignoredPackageNames.emplace_back(std::move(ignoredPackageName));
-}
-
 std::string IgnoredPackageNames::generateReport() const {
     std::stringstream report{};
     
