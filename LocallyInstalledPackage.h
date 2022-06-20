@@ -29,7 +29,7 @@ public:
     bool addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
 
     void movePackageFilesForDifferentVersionsToSeparateDir(
-            const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles);
+            const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles) const;
 
 protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {

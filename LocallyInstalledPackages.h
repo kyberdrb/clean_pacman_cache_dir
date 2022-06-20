@@ -18,6 +18,8 @@ public:
 
     std::string generateReport() const;
 
+    void movePackageFilesForDifferentPackageVersionsToSeparateDir() const;
+
 private:
     const IgnoredPackageNames& ignoredPackageNames;
 

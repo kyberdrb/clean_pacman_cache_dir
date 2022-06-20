@@ -105,3 +105,7 @@ std::string LocallyInstalledPackages::generateReport() const {
 
     return report.str();
 }
+
+void LocallyInstalledPackages::movePackageFilesForDifferentPackageVersionsToSeparateDir() const {
+
+}

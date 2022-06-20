@@ -50,7 +50,7 @@ bool LocallyInstalledPackage::addPackageFileToDeletionCandidates(
 }
 
 void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
-        const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles)
+        const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles) const
 {
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
         const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();

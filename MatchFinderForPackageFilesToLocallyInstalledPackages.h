@@ -14,7 +14,7 @@ public:
     std::string generateReport() const;
 
     // TODO move function to separate class 'InstallationPackageFileMover' and use it in the client instead of here
-    void movePackageFilesForPackagesWithDifferenVersions();
+    void moveInstallationPackageFilesForPackagesWithDifferenVersions() const;
 
 private:
     const LocallyInstalledPackages& locallyInstalledPackages;

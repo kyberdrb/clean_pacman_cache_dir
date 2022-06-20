@@ -175,7 +175,7 @@ std::string MatchFinderForPackageFilesToLocallyInstalledPackages::generateReport
     return report.str();
 }
 
-void MatchFinderForPackageFilesToLocallyInstalledPackages::movePackageFilesForPackagesWithDifferenVersions() {
+void MatchFinderForPackageFilesToLocallyInstalledPackages::moveInstallationPackageFilesForPackagesWithDifferenVersions() const {
     std::cout << "\n";
     std::cout << "===============================================\n\n";
     std::cout << "MOVING PACKAGES\n\n";
