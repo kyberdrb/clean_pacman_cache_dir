@@ -66,7 +66,10 @@ private:
     std::string architecture;
     bool isIgnored;
 
-    // TODO make this a 'std::set' to prevent duplicates,
-    //  otherwise an exception might occure when deleting an already deleted installation package file, i. e. a duplicate one
+    // I was considering to change the type of this container from 'std::vector' to 'std::set'
+    //  to prevent adding duplicate package file entry,
+    //  and to prevent an exception which might occure at deleting an already deleted installation package file, i. e. the duplicate one
+    //  but I decided to keep this as 'vector' because that way I can spot where in my code I generate duplicate entries for package files.
+    //  But maybe I will eventually change the type of this member variable to 'std::set' when I'll be doing a release
     std::vector<std::unique_ptr<ExtendedInstallationPackageFile>> installationPackageFilesForDifferentPackageVersions;
 };

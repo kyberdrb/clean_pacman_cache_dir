@@ -3070,6 +3070,13 @@ struct PackageComparatorPredicate {
                 - `std::any_of`
                 - `std::binary_search`
     - https://en.cppreference.com/w/cpp/algorithm/find
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/commit/e872520bef41d017ac70cc56e14ae76726efb7aa
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/tree/e872520bef41d017ac70cc56e14ae76726efb7aa
+        - Simplifying lookup for ignored package with `std::any_of` and a *Predicate*
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/e872520bef41d017ac70cc56e14ae76726efb7aa/PackageComparatorPredicate.h
+        - Simplifying lookup for ignored package with `std::any_of` and a *Predicate*
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/e872520bef41d017ac70cc56e14ae76726efb7aa/main.cpp
+        - Simplifying lookup for ignored package with `std::any_of` and a *Predicate*
 - `regex`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
