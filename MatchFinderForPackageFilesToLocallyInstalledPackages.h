@@ -19,8 +19,8 @@ private:
     LocallyInstalledPackages& locallyInstalledPackages;
     const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 
-    std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
+    std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
 
     void relatePackageFilesToLocallyInstalledPackages();
 };

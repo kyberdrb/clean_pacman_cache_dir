@@ -87,9 +87,9 @@ const Package& LocallyInstalledPackages::find(std::unique_ptr<Package>& packageW
         throw PackageNameMissing(*packageWithInferredName);
     }
 
-    const std::unique_ptr<Package>& uniquePtrBehindIteratorForMatchingLocallyInstalledPackage = *(iteratorPointingToMatchingLocallyInstalledPackage);
-    const Package& instanceBehindUniquePtrForMatchingLocallyInstalledPackage = *(uniquePtrBehindIteratorForMatchingLocallyInstalledPackage);
-    return instanceBehindUniquePtrForMatchingLocallyInstalledPackage;
+    const std::unique_ptr<Package>& matchingLocallyInstalledPackageWithinIterator = *(iteratorPointingToMatchingLocallyInstalledPackage);
+    const Package& dereferencedMatchingLocallyInstalledPackage = *(matchingLocallyInstalledPackageWithinIterator);
+    return dereferencedMatchingLocallyInstalledPackage;
 }
 
 std::string LocallyInstalledPackages::generateReport() const {
