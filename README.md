@@ -3069,6 +3069,14 @@ struct PackageComparatorPredicate {
                 - `std::contains` (C++20>)
                 - `std::any_of`
                 - `std::binary_search`
+    - https://en.cppreference.com/w/cpp/algorithm/find
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/commit/e872520bef41d017ac70cc56e14ae76726efb7aa
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/tree/e872520bef41d017ac70cc56e14ae76726efb7aa
+        - Simplifying lookup for ignored package with `std::any_of` and a *Predicate*
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/e872520bef41d017ac70cc56e14ae76726efb7aa/PackageComparatorPredicate.h
+        - Simplifying lookup for ignored package with `std::any_of` and a *Predicate*
+    - https://github.com/kyberdrb/clean_pacman_cache_dir/blob/e872520bef41d017ac70cc56e14ae76726efb7aa/main.cpp
+        - Simplifying lookup for ignored package with `std::any_of` and a *Predicate*
 - `regex`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+replace+regex+patern&ia=web
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+sed+regex+replace+equivalent&ia=web
@@ -3321,7 +3329,10 @@ struct PackageComparatorPredicate {
     - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference/2522311#2522311
         - The standard practice for exceptions in C++ is ...
 
-            > Throw by value, catch by reference
+            > Throw by value, catch by reference  
+            [ideally by `const` reference:  
+            `const` for assurance for immutability   
+            and `reference` for resolving derived exceptions from `std::exception` inheritance]
 
             in order to accurately catch the derived exceptions, not only their base classes
     - https://stackoverflow.com/questions/2522299/c-catch-blocks-catch-exception-by-value-or-reference/2522311#comment2519675_2522311
@@ -3334,7 +3345,10 @@ struct PackageComparatorPredicate {
             Remove the const declaration on run() - voilá.
 
             [I was modifying a member variable in a `const` member function. Removing the `const` ness of the function allowed the compiler to modify member variables, i. e. calling the `swap` function]
-
+    - https://duckduckgo.com/?q=c%2B%2B+custom+own+exceptions&t=ffab&ia=web&iax=qa
+    - http://peterforgacs.github.io/2017/06/25/Custom-C-Exceptions-For-Beginners/
+    - https://dotnettutorials.net/lesson/exception-handling-in-cpp/
+    - https://cplusplus.com/doc/tutorial/exceptions/
 - Polymorhism, Inheritance and STL (mainly `std::set`)
     - https://duckduckgo.com/?q=c%2B%2B+find+derived+vector&t=ffab&ia=web
     - https://stackoverflow.com/questions/11889178/c-can-vectorbase-contain-objects-of-type-derived#11889242
@@ -3377,7 +3391,6 @@ struct PackageComparatorPredicate {
     - https://dotnettutorials.net/lesson/access-specifiers-in-cpp/
     - http://cplusplus.bordoon.com/inheriting_constructors.html
     - https://stackoverflow.com/questions/20029883/do-we-inherit-constructors-in-c-whats-is-exact-definition-of-inheriting
-    -
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling

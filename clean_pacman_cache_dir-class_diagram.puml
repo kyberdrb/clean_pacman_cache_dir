@@ -4,14 +4,154 @@ skinparam ranksep 100
 
 class main
 
+main .d.> IgnoredPackageNames : "<- creates an instance of ""IgnoredPackageNames""\nto be moved from place of creation\nto place of composition"
+main *-d-> "ignoredPackageNames ->\n1" IgnoredPackageNames
+
+main ..d> LocallyInstalledPackages : "<- creates an instance of ""LocallyInstalledPackages""\nto be moved from place of creation\nto place of composition"
+main *-d-> "locallyInstalledPackages\n1" LocallyInstalledPackages
+
+main .d.> MatchFinderForPackageFilesToLocallyInstalledPackages : "<- creates an instance of ""MatchFinderForPackageFilesToLocallyInstalledPackages""\nto be moved from place of creation\nto place of composition"
+main *-d-> "matchFinderWithPackageFilesRelatedToPackages ->\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
+
+main .d.> MoverOfInstallationPackageFiles : "<- creates an instance of ""MoverOfInstallationPackageFiles""\nto be moved from place of creation\nto place of composition"
+main *-d-> "installationPackageFilesMover ->\n1" MoverOfInstallationPackageFiles
+
+class MoverOfInstallationPackageFiles {
+    + MoverOfInstallationPackageFiles(\
+        \n    packageFilesRelatedToLocallyInstalledPackages\
+        \n        : MatchFinderForPackageFilesToLocallyInstalledPackages,\
+        \n    locallyInstalledPackages : LocallyInstalledPackages)
+    + moveChosenInstallationPackageFilesToSeparateDir() : void
+
+    - packageFilesRelatedToLocallyInstalledPackages\
+        \n    : MatchFinderForPackageFilesToLocallyInstalledPackages
+    - locallyInstalledPackages : LocallyInstalledPackages
+    - pacmanCacheDir : string
+}
+
+note left of MoverOfInstallationPackageFiles::pacmanCacheDir
+    "/var/cache/pacman/pkg"
+end note
+
+MoverOfInstallationPackageFiles -d-> "packageFilesRelatedToLocallyInstalledPackages\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
+MoverOfInstallationPackageFiles -d-> "locallyInstalledPackages\n1" LocallyInstalledPackages
+
+class IgnoredPackageNames {
+    + IgnoredPackageNames()
+    + isPackageWithGivenNameIgnored(\
+        \n    ignoredPackageNameCandidate : IgnoredPackageName) : bool
+    + generateReport() : string
+
+    - ignoredPackageNames : vector<IgnoredPackageName>
+}
+
+IgnoredPackageNames .> IgnoredPackageNameComparatorPredicate
+
+class IgnoredPackageNameComparatorPredicate {
+    + IgnoredPackageNameComparatorPredicate(\
+        \n    ignoredPackageNameCandidate : IgnoredPackageName)
+    + bool operator()(otherPackage : IgnoredPackageName)
+
+    - ignoredPackageNameCandidate : IgnoredPackageName
+}
+
+IgnoredPackageNameComparatorPredicate .> IgnoredPackageName : "compares for equality two instances of type >"
+
 class IgnoredPackageName {
     + IgnoredPackageName(\
         \n    ignoredPackageName : string)
+
     - name : string
 }
 
-main .u.> IgnoredPackageName : "<- creates an instance of ""IgnoredPackageName""\nto be moved from place of creation\nto place of composition"
-main *-u-> "ignoredPackageNames ->\n0..*" IgnoredPackageName
+IgnoredPackageNames .d.> IgnoredPackageName : "<- creates an instance of ""IgnoredPackageName""\nto be moved from place of creation\nto place of composition"
+IgnoredPackageNames *-d-> "ignoredPackageNames ->\n0..*" IgnoredPackageName
+
+class LocallyInstalledPackages {
+    + LocallyInstalledPackages(\
+        \n    ignoredPackageNames : IgnoredPackageNames)
+    + find(packageWithInferredName : Package) : Package
+    + generateReport() : string
+    + movePackageFilesForDifferentPackageVersionsToSeparateDir(\
+        \n    directoryForInstallationPackageFilesForDeletion : AbsolutePath)\
+      \n: void
+    + addReferenceToPackageRelatedToInstallationPackageFileForDifferentVersion(\
+        \n    localyInstalledPackageExactModifiable : LocallyInstalledPackage)\
+      \n: void
+
+    - ignoredPackageNames : IgnoredPackageNames
+    - locallyInstalledPackages : set<Package>
+    - packagesWithInstallationPackageFilesForDifferentVersions\
+        \n    : set<LocallyInstalledPackage>
+    - pacmanCacheDir : string
+
+    - fillLocallyInstalledPackages() : void
+    - addLocallyInstalledPackage(\
+        \n    locallyInstalledPackage : LocallyInstalledPackage) : void
+}
+
+note left of LocallyInstalledPackages::pacmanCacheDir
+    "/var/cache/pacman/pkg"
+end note
+
+LocallyInstalledPackages -d-> IgnoredPackageNames
+LocallyInstalledPackages *-d-> "locallyInstalledPackages\n0..*" Package
+LocallyInstalledPackages -d-> "packagesWithInstallationPackageFilesForDifferentVersions\n0..*" LocallyInstalledPackage
+LocallyInstalledPackages .d.> "1" PackageVersion : "<- creates an instance of ""PackageVersion""\nto be moved from place of creation\nto place of composition\nfor an instance of type ""LocallyInstalledPackage"""
+LocallyInstalledPackages .d.> "1" PackageName : "<- creates an instance of ""PackageVersion""\nto be moved from place of creation\nto place of composition\nfor an instance of type ""LocallyInstalledPackage"""
+LocallyInstalledPackages *-> alpm
+LocallyInstalledPackages *-> alpm_list
+LocallyInstalledPackages -d-> PackageNameMissing : "throws an exception >"
+LocallyInstalledPackages .d.> "1" AbsolutePath
+LocallyInstalledPackages .d.> "1" LocallyInstalledPackage
+
+class PackageNameMissing {
+    + PackageNameMissing(packageWithInferredName : Package)
+    + what() : string
+
+    - inferredPackageName : PackageName
+    - exceptionMessageAsCharSequence : string
+}
+
+PackageNameMissing -|> exception
+PackageNameMissing .> Package
+PackageNameMissing -> "inferredPackageName\n1" PackageName
+
+class MatchFinderForPackageFilesToLocallyInstalledPackages {
+    + MatchFinderForPackageFilesToLocallyInstalledPackages(\
+        \n    locallyInstalledPackages : LocallyInstalledPackages)
+    + generateReport() : string
+    + moveChosenInstallationPackageFiles(\
+        \n    directoryForInstallationPackageFilesForDeletion : AbsolutePath)\
+      \n: void
+
+    - locallyInstalledPackages : LocallyInstalledPackages
+    - pacmanCacheDir : string
+    - partiallyDownloadedPackageFiles : set<SimpleInstallationPackageFile>
+    - packageFilesRelatedToMissingPackages : set<SimpleInstallationPackageFile>
+
+    - relatePackageFilesToLocallyInstalledPackages() : void
+}
+
+note left of MatchFinderForPackageFilesToLocallyInstalledPackages::pacmanCacheDir
+    "/var/cache/pacman/pkg"
+end note
+
+MatchFinderForPackageFilesToLocallyInstalledPackages -> LocallyInstalledPackages
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..1" SimpleInstallationPackageFile : "<- creates an instance of ""SimpleInstallationPackageFile""\nto be moved from place of creation\nto place of composition\ninto ""partiallyDownloadedPackageFiles"""
+MatchFinderForPackageFilesToLocallyInstalledPackages *-d-> "partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..1" SimpleInstallationPackageFile : "<- creates an instance of ""SimpleInstallationPackageFile""\nto be moved from place of creation\nto place of composition\ninto ""packageFilesRelatedToMissingPackages"""
+MatchFinderForPackageFilesToLocallyInstalledPackages *-d-> "packageFilesRelatedToMissingPackages\n0..*" SimpleInstallationPackageFile
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> SimpleInstallationPackageFileType
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..1" ExtendedInstallationPackageFile : "<- creates an instance of ""ExtendedInstallationPackageFile""\nto be moved from place of creation\nto place of composition\ninto ""packageFilesRelatedToMissingPackages"""
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..*" PackageNameAndVersion : "<- creates an instance of ""PackageNameAndVersion""\nto be moved from place of creation\nto place of composition"
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..*" AbsolutePath : "<- creates an instance of ""AbsolutePath""\nto be moved from place of creation\nto place of composition"
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..*" Filename : "<- creates an instance of ""Filename""\nto be moved from place of creation\nto place of composition"
 
 abstract class Package {
     + Package(packageName : PackageName)
@@ -30,9 +170,7 @@ abstract class Package {
 
 note left of Package: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package"" class
 
-Package *-l-> "name\n1" PackageName
-
-main *-> "installedPackages\n1..*" Package : "<- creates an instance of derived classes\nfrom ""Package"" base class\nto be moved from place of creation\nto place of composition"
+Package *-> "name\n1" PackageName
 
 class PackageWithInferredName {
     + PackageWithInferredName(extractedPackageNameAndVersionAsText : string)
@@ -47,12 +185,17 @@ class PackageWithInferredName {
     - getStartingPositionForPackageVersion() : uint_fast8_t
 }
 
-Package <|-u- PackageWithInferredName
+PackageWithInferredName -u-|> Package
 PackageWithInferredName .u.> "1" Package
 PackageWithInferredName .d.> "1" PackageVersion
 PackageWithInferredName *-d-> "nameAndVersion\n1" PackageNameAndVersion
 
-note bottom of PackageWithInferredName: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+note left of PackageWithInferredName::lessThanOperator
+    virtual function ""lessThanOperator""
+    is overloaded for
+    ""reference_wrapper"" and ""unique_ptr""
+    to common abstract/virtual ""Package"" base class
+end note
 
 class LocallyInstalledPackage {
     + LocallyInstalledPackage(\
@@ -80,17 +223,18 @@ class LocallyInstalledPackage {
       \n    : vector<ExtendedInstallationPackageFile>
 }
 
-note bottom of LocallyInstalledPackage: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+'note bottom of LocallyInstalledPackage: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+note left of LocallyInstalledPackage::lessThanOperator
+    virtual function ""lessThanOperator"" is overloaded for
+    ""reference_wrapper"" and ""unique_ptr""
+    to common abstract/virtual ""Package"" base class
+end note
 
-Package <|-u- LocallyInstalledPackage
-
-main -> "packagesWithInstallationPackageFilesForDifferentVersions\n1..*" LocallyInstalledPackage
-LocallyInstalledPackage *--> "installationPackageFilesForDifferentPackageVersions ↴\n0..*" ExtendedInstallationPackageFile
-
+LocallyInstalledPackage -u-|> Package
 LocallyInstalledPackage .u.> "1" Package
-LocallyInstalledPackage *-d-> "locallyInstalledVersion\n1" PackageVersion
-LocallyInstalledPackage *---> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
-LocallyInstalledPackage ...> "1" AbsolutePath
+LocallyInstalledPackage *--> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
+LocallyInstalledPackage *-> "locallyInstalledVersion\n1" PackageVersion
+LocallyInstalledPackage .d.> "1" AbsolutePath
 
 class FileMover {
     + {static} move(\
@@ -99,8 +243,7 @@ class FileMover {
     \n: void
 }
 
-LocallyInstalledPackage ..> FileMover
-main ..> "1" FileMover : "move installation package files from\n""<- packagesWithInstallationPackageFilesForDifferentVersions"",\n""partiallyDownloadedPackageFiles""\nand ""packageFilesRelatedToMissingPackages"""
+LocallyInstalledPackage .d.> FileMover
 
 class SimpleInstallationPackageFile {
     + SimpleInstallationPackageFile(\
@@ -115,13 +258,10 @@ class SimpleInstallationPackageFile {
     - reasonForDeletion : SimpleInstallationPackageFileType
 }
 
-main ...> "0..*" SimpleInstallationPackageFile : "<- creates an instance of ""SimpleInstallationPackageFile""\nto be moved from place of creation\nto place of composition"
-main *--> "partiallyDownloadedPackageFiles\n0..*" SimpleInstallationPackageFile
-main *--> "packageFilesRelatedToMissingPackages\n0..*" SimpleInstallationPackageFile
-
-SimpleInstallationPackageFile *--> "1" AbsolutePath
-SimpleInstallationPackageFile *--> "filename\n1" Filename
-SimpleInstallationPackageFile --> SimpleInstallationPackageFileType
+SimpleInstallationPackageFile *-> "1" AbsolutePath
+SimpleInstallationPackageFile *-> "filename\n1" Filename
+SimpleInstallationPackageFile -> SimpleInstallationPackageFileType
+SimpleInstallationPackageFile .d.> FileMover
 
 class ExtendedInstallationPackageFile {
     + ExtendedInstallationPackageFile(\
@@ -139,12 +279,12 @@ class ExtendedInstallationPackageFile {
     - relatedPackageVersion : PackageVersion
 }
 
-main ..> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ""ExtendedInstallationPackageFile""\nto be moved from place of creation\nto place of composition"
+MatchFinderForPackageFilesToLocallyInstalledPackages .> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ""ExtendedInstallationPackageFile""\nto be moved from place of creation\nto place of composition"
 
-ExtendedInstallationPackageFile *--> "absolutePath\n1" AbsolutePath
-ExtendedInstallationPackageFile *--> "filename\n1" Filename
+ExtendedInstallationPackageFile *-> "absolutePath\n1" AbsolutePath
+ExtendedInstallationPackageFile *-> "filename\n1" Filename
 
-ExtendedInstallationPackageFile -l-> "relatedPackageName ->\n1" PackageName : "<- references ""PackageName"" from ""Package"""
+ExtendedInstallationPackageFile --> "relatedPackageName\n1" PackageName : "references ""PackageName"" from ""Package"" >"
 /'
 The relationship between 'PackageFile' and 'PackageName'
  can also be modelled with 'shared_ptr' packageName member
@@ -155,7 +295,7 @@ The relationship between 'PackageFile' and 'PackageName'
  because of the reference counting feature of 'shared_ptr'
 '/
 
-ExtendedInstallationPackageFile *-u-> "relatedPackageVersion 1 ->" PackageVersion
+ExtendedInstallationPackageFile *-> "relatedPackageVersion 1 ->" PackageVersion
 
 class PackageName {
     + PackageName(name : string)
@@ -168,7 +308,7 @@ class PackageName {
     - name : string
 }
 
-main ..> "0..*" PackageName : "<- creates an instance of ""PackageName""\nto be moved from place of creation\nto place of composition"
+LocallyInstalledPackages .> "0..*" PackageName : "<- creates an instance of ""PackageName""\nto be moved from place of creation\nto place of composition"
 
 class PackageVersion {
     + PackageVersion(\
@@ -178,8 +318,6 @@ class PackageVersion {
 
     - version : string
 }
-
-main ..> "0..*" PackageVersion : "<- creates an instance of ""PackageVersion""\nto be moved from place of creation\nto place of composition"
 
 class PackageNameAndVersion {
     + PackageNameAndVersion(\
@@ -195,8 +333,6 @@ class PackageNameAndVersion {
     - nameAndVersion : string
 }
 
-main .> "0..*" PackageNameAndVersion : "<- creates an instance of ""PackageNameAndVersion""\nto be moved from place of creation\nto place of composition"
-
 class AbsolutePath {
     + AbsolutePath(absolutePath : string)
     + getAbsolutePath() : string
@@ -204,7 +340,6 @@ class AbsolutePath {
     - absolutePath : string
 }
 
-main ..> "0..*" AbsolutePath : "<- creates an instance of ""AbsolutePath""\nto be moved from place of creation\nto place of composition"
 AbsolutePath ..> "1" Filename
 
 class Filename {
@@ -213,12 +348,8 @@ class Filename {
     - nameOfFile : string
 }
 
-main ..> "0..*" Filename : "<- creates an instance of ""Filename""\nto be moved from place of creation\nto place of composition"
-
 enum SimpleInstallationPackageFileType {
     PARTIALLY_DOWNLOADED
     MISSING_LOCALLY_INSTALLED_PACKAGE
 }
-
-main ..> SimpleInstallationPackageFileType
 @enduml

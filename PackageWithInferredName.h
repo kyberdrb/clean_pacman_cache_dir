@@ -26,17 +26,13 @@ protected:
     std::ostream& streamOutputOperator(std::ostream& out) const override {
         out
                 << *(this->nameAndVersion) << "\t"
-                << Package::getName();
+                << *(Package::name);
 
         return out;
     }
 
     bool lessThanOperator(const std::unique_ptr<Package>& anotherPackage) const override {
-        return Package::getName() < anotherPackage->getName();
-    }
-
-    bool lessThanOperator(const std::reference_wrapper<Package>& anotherPackage) override {
-        return Package::getName() < anotherPackage.get().getName();
+        return *(Package::name) < anotherPackage->getName();
     }
 
 private:

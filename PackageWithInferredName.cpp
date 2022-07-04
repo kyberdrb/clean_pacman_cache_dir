@@ -14,7 +14,7 @@
 
 PackageWithInferredName::PackageWithInferredName(std::string extractedPackageNameAndVersionAsText) :
         Package(std::make_unique<PackageName>(std::move(extractedPackageNameAndVersionAsText) ) ),
-        nameAndVersion(std::make_unique<PackageNameAndVersion>(Package::getName().string() ) )
+        nameAndVersion(std::make_unique<PackageNameAndVersion>(Package::name->string() ) )
 {}
 
 bool PackageWithInferredName::isPackageNameEmpty() const {
