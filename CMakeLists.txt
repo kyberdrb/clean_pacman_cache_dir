@@ -15,8 +15,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message("using Visual Studio C++ compiler")
 endif()
 
-# For lambda predicate
-add_executable(clean_pacman_cache_dir main.cpp ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h SimpleInstallationPackageFile.cpp SimpleInstallationPackageFile.h AbsolutePath.cpp AbsolutePath.h FileMover.cpp FileMover.h Filename.cpp Filename.h SimpleInstallationPackageFileType.h Package.h LocallyInstalledPackage.h PackageWithInferredName.h PackageWithInferredName.cpp LocallyInstalledPackage.cpp PackageNameAndVersion.cpp PackageNameAndVersion.h Package.cpp IgnoredPackageNames.cpp IgnoredPackageNames.h IgnoredPackageNameComparatorPredicate.h LocallyInstalledPackages.cpp LocallyInstalledPackages.h PackageNameMissing.h PackageNameMissing.cpp MatchFinderForPackageFilesToLocallyInstalledPackages.cpp MatchFinderForPackageFilesToLocallyInstalledPackages.h MoverOfInstallationPackageFiles.cpp MoverOfInstallationPackageFiles.h)
+# to enable code coverage
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -g")
+message("All used compiler flags: ${CMAKE_CXX_FLAGS}")
 
-# For comparator functor predicate
-#add_executable(clean_pacman_cache_dir main.cpp Package.cpp Package.h ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h IgnoredPackageNamesEqualityComparator.h)
+add_executable(clean_pacman_cache_dir main.cpp ExtendedInstallationPackageFile.cpp ExtendedInstallationPackageFile.h IgnoredPackageName.cpp IgnoredPackageName.h PackageName.cpp PackageName.h PackageVersion.cpp PackageVersion.h SimpleInstallationPackageFile.cpp SimpleInstallationPackageFile.h AbsolutePath.cpp AbsolutePath.h FileMover.cpp FileMover.h Filename.cpp Filename.h SimpleInstallationPackageFileType.h Package.h LocallyInstalledPackage.h PackageWithInferredName.h PackageWithInferredName.cpp LocallyInstalledPackage.cpp PackageNameAndVersion.cpp PackageNameAndVersion.h Package.cpp IgnoredPackageNames.cpp IgnoredPackageNames.h IgnoredPackageNameComparatorPredicate.h LocallyInstalledPackages.cpp LocallyInstalledPackages.h PackageNameMissing.h PackageNameMissing.cpp MatchFinderForPackageFilesToLocallyInstalledPackages.cpp MatchFinderForPackageFilesToLocallyInstalledPackages.h MoverOfInstallationPackageFiles.cpp MoverOfInstallationPackageFiles.h)

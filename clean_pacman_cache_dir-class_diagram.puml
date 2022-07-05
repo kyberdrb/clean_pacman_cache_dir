@@ -1,4 +1,4 @@
-@startuml
+@startuml clean_pacman_cache_dir
 skinparam nodesep 80
 skinparam ranksep 100
 

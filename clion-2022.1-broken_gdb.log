@@ -1,0 +1,1161 @@
+GNU gdb (GDB) 11.2
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-pc-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word".
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+
+Breakpoint 5, Packages::cleanCachedFilesOfPackageManagers (this=0x5555555caee0) at /home/laptop/git/kyberdrb/clean_pacman_cache_dir/Packages.cpp:34
+34	    auto finderOfInstallationPackageFilesForPackages = std::make_unique<FinderOfInstallationPackageFilesForPackages>(locallyInstalledPackages);
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> >'. Candidates are:
+  'std::default_delete<IgnoredPackageNames> std::_Head_base<1, std::default_delete<IgnoredPackageNames>, true>::_M_head_impl' (std::tuple<IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Tuple_impl<0, IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Tuple_impl<1, std::default_delete<IgnoredPackageNames> > -> std::_Head_base<1, std::default_delete<IgnoredPackageNames>, true>)
+  '<unnamed type> std::_Head_base<0, IgnoredPackageNames*, false>::_M_head_impl' (std::tuple<IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Tuple_impl<0, IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Head_base<0, IgnoredPackageNames*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+
+Breakpoint 4, FinderOfInstallationPackageFilesForPackages::relateInstallationPackageFilesToLocallyInstalledPackages (this=0x5555555ce480) at /home/laptop/git/kyberdrb/clean_pacman_cache_dir/FinderOfInstallationPackageFilesForPackages.cpp:18
+18	    std::filesystem::path pacmanCacheDir {FinderOfInstallationPackageFilesForPackages::PACMAN_CACHE_DIR_PATH};
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> >'. Candidates are:
+  'std::default_delete<LocallyInstalledPackages> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<1, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<1, std::default_delete<LocallyInstalledPackages>, true>)
+  '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Breakpoint 9, LocallyInstalledPackages::find (this=0x5555555cd510, packageWithInferredName=...) at /home/laptop/git/kyberdrb/clean_pacman_cache_dir/LocallyInstalledPackages.cpp:64
+64	    return this->locallyInstalledPackages.find(packageWithInferredName);
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> >'. Candidates are:
+  'std::default_delete<IgnoredPackageNames> std::_Head_base<1, std::default_delete<IgnoredPackageNames>, true>::_M_head_impl' (std::tuple<IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Tuple_impl<0, IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Tuple_impl<1, std::default_delete<IgnoredPackageNames> > -> std::_Head_base<1, std::default_delete<IgnoredPackageNames>, true>)
+  '<unnamed type> std::_Head_base<0, IgnoredPackageNames*, false>::_M_head_impl' (std::tuple<IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Tuple_impl<0, IgnoredPackageNames*, std::default_delete<IgnoredPackageNames> > -> std::_Head_base<0, IgnoredPackageNames*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Breakpoint 9, LocallyInstalledPackages::find (this=0x5555555cd510, packageWithInferredName=...) at /home/laptop/git/kyberdrb/clean_pacman_cache_dir/LocallyInstalledPackages.cpp:64
+64	    return this->locallyInstalledPackages.find(packageWithInferredName);
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+(gdb) print packageWithInferredName
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+$1 = Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+(std::unique_ptr<Package, std::default_delete<Package> > &) Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+@0x7fffffffdc18: {_M_t = {<std::__uniq_ptr_impl<Package, std::default_delete<Package> >> = {_M_t = std::tuple containing = {[1] = 0x555555705c00, [2] = {<No data fields>}}}, <No data fields>}}
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) print packageWithInferredName
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+$2 = Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+(std::unique_ptr<Package, std::default_delete<Package> > &) Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+@0x7fffffffdc18: {_M_t = {<std::__uniq_ptr_impl<Package, std::default_delete<Package> >> = {_M_t = std::tuple containing = {[1] = 0x555555705c00, [2] = {<No data fields>}}}, <No data fields>}}
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Breakpoint 9, LocallyInstalledPackages::find (this=0x5555555cd510, packageWithInferredName=...) at /home/laptop/git/kyberdrb/clean_pacman_cache_dir/LocallyInstalledPackages.cpp:64
+64	    return this->locallyInstalledPackages.find(packageWithInferredName);
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+Traceback (most recent call last):
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
+    return self.lookup[basename].invoke(val)
+  File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1460, in invoke
+    return self.function(self.name, value)
+  File "/opt/clion/bin/gdb/renderers/default/libstdcxx_printers.py", line 81, in __init__
+    self.pointer = tuple_member['_M_head_impl']
+gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Package*, std::default_delete<Package> >'. Candidates are:
+  'std::default_delete<Package> std::_Head_base<1, std::default_delete<Package>, true>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Tuple_impl<1, std::default_delete<Package> > -> std::_Head_base<1, std::default_delete<Package>, true>)
+  '<unnamed type> std::_Head_base<0, Package*, false>::_M_head_impl' (std::tuple<Package*, std::default_delete<Package> > -> std::_Tuple_impl<0, Package*, std::default_delete<Package> > -> std::_Head_base<0, Package*, false>)
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 
+(gdb) 

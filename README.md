@@ -2846,6 +2846,584 @@ struct PackageComparatorPredicate {
 //};
 ```
 
+## Ressurection merge log
+
+<pre>[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+Changes not staged for commit:
+  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
+  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)
+	<font color="#AA0000">modified:   clean_pacman_cache_dir-class_diagram.puml</font>
+
+no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
+[laptop@laptop clean_pacman_cache_dir]$ git branch
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+* <font color="#00AA00">encapsulate_container_variables_to_separate_classes</font>
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+  main
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+Changes not staged for commit:
+  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
+  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)
+	<font color="#AA0000">modified:   clean_pacman_cache_dir-class_diagram.puml</font>
+
+no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+Changes not staged for commit:
+  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)
+  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)
+	<font color="#AA0000">modified:   clean_pacman_cache_dir-class_diagram.puml</font>
+
+no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
+[laptop@laptop clean_pacman_cache_dir]$ git add -A
+[laptop@laptop clean_pacman_cache_dir]$ git commit -m &quot;Update relationships in UML class diagram&quot;
+[encapsulate_container_variables_to_separate_classes 92bd00e] Update relationships in UML class diagram
+ 1 file changed, 62 insertions(+), 60 deletions(-)
+[laptop@laptop clean_pacman_cache_dir]$ git push
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 784 bytes | 784.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:kyberdrb/clean_pacman_cache_dir.git
+   2905f8b..92bd00e  encapsulate_container_variables_to_separate_classes -&gt; encapsulate_container_variables_to_separate_classes
+[laptop@laptop clean_pacman_cache_dir]$ cm
+cmake       cmake-gui   cmp         cmsutil     cmuwmtopbm  cmx2raw     cmx2text    cmx2xhtml   
+[laptop@laptop clean_pacman_cache_dir]$ ls
+<font color="#FFFF55"><b>cmake-build-debug</b></font>
+<font color="#FFFF55"><b>cmake-build-release</b></font>
+AbsolutePath.cpp
+AbsolutePath.h
+clean_pacman_cache_dir-class_diagram.puml
+clean_pacman_cache_dir.drawio
+<font color="#FF55FF"><b>clean_pacman_cache_dir.drawio.png</b></font>
+CMakeLists.txt
+ExtendedInstallationPackageFile.cpp
+ExtendedInstallationPackageFile.h
+FileMover.cpp
+FileMover.h
+Filename.cpp
+Filename.h
+IgnoredPackageNameComparatorPredicate.h
+IgnoredPackageName.cpp
+IgnoredPackageName.h
+IgnoredPackageNames.cpp
+IgnoredPackageNames.h
+LICENSE
+LocallyInstalledPackage.cpp
+LocallyInstalledPackage.h
+LocallyInstalledPackages.cpp
+LocallyInstalledPackages.h
+main.cpp
+MatchFinderForPackageFilesToLocallyInstalledPackages.cpp
+MatchFinderForPackageFilesToLocallyInstalledPackages.h
+MoverOfInstallationPackageFiles.cpp
+MoverOfInstallationPackageFiles.h
+Package.cpp
+Package.h
+PackageNameAndVersion.cpp
+PackageNameAndVersion.h
+PackageName.cpp
+PackageName.h
+PackageNameMissing.cpp
+PackageNameMissing.h
+PackageVersion.cpp
+PackageVersion.h
+PackageWithInferredName.cpp
+PackageWithInferredName.h
+README.md
+Refactoring_Package_due_to_using_a_subset_of_features_for_packageWithInferredName_of_original_Package_type_and_initializing_the_rest_to_undefined_values-Class_diagram.puml
+Refactoring_PackageFile_due_to_referencing_of_member_variable_to_temporary_value-Class_diagram.puml
+SimpleInstallationPackageFile.cpp
+SimpleInstallationPackageFile.h
+SimpleInstallationPackageFileType.h
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git branch
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+* <font color="#00AA00">encapsulate_container_variables_to_separate_classes</font>
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+  main
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ man cmake
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git branch
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+* <font color="#00AA00">encapsulate_container_variables_to_separate_classes</font>
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+  main
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch encapsulate_container_variables_to_separate_classes
+Your branch is up to date with &apos;origin/encapsulate_container_variables_to_separate_classes&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git branc
+git: &apos;branc&apos; is not a git command. See &apos;git --help&apos;.
+[laptop@laptop clean_pacman_cache_dir]$ git branch
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+* <font color="#00AA00">encapsulate_container_variables_to_separate_classes</font>
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+  main
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ git checkout backports 
+Switched to branch &apos;backports&apos;
+Your branch is up to date with &apos;origin/backports&apos;.
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch backports
+Your branch is up to date with &apos;origin/backports&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git pull
+Already up to date.
+[laptop@laptop clean_pacman_cache_dir]$ git merge --no-ff encapsulate_container_variables_to_separate_classes --message=&quot;Encapsulate container variables to separate classes&quot;
+Merge made by the &apos;ort&apos; strategy.
+ CMakeLists.txt                                           |   2 <font color="#00AA00">+</font><font color="#AA0000">-</font>
+ FileMover.cpp                                            |   6 <font color="#00AA00">+</font><font color="#AA0000">-</font>
+ IgnoredPackageNameComparatorPredicate.h                  |  22 <font color="#00AA00">+++++++</font>
+ IgnoredPackageNames.cpp                                  |  70 <font color="#00AA00">++++++++++++++++++++++</font>
+ IgnoredPackageNames.h                                    |  22 <font color="#00AA00">+++++++</font>
+ LocallyInstalledPackage.cpp                              |   4 <font color="#00AA00">+</font><font color="#AA0000">-</font>
+ LocallyInstalledPackage.h                                |  23 <font color="#00AA00">++++++</font><font color="#AA0000">--</font>
+ LocallyInstalledPackages.cpp                             | 143 <font color="#00AA00">+++++++++++++++++++++++++++++++++++++++++++++</font>
+ LocallyInstalledPackages.h                               |  49 <font color="#00AA00">++++++++++++++++</font>
+ MatchFinderForPackageFilesToLocallyInstalledPackages.cpp | 176 <font color="#00AA00">+++++++++++++++++++++++++++++++++++++++++++++++++++++++</font>
+ MatchFinderForPackageFilesToLocallyInstalledPackages.h   |  26 <font color="#00AA00">+++++++++</font>
+ MoverOfInstallationPackageFiles.cpp                      |  31 <font color="#00AA00">++++++++++</font>
+ MoverOfInstallationPackageFiles.h                        |  22 <font color="#00AA00">+++++++</font>
+ Package.h                                                |   8 <font color="#AA0000">---</font>
+ PackageNameMissing.cpp                                   |  13 <font color="#00AA00">+++++</font>
+ PackageNameMissing.h                                     |  23 <font color="#00AA00">++++++++</font>
+ PackageWithInferredName.cpp                              |   2 <font color="#00AA00">+</font><font color="#AA0000">-</font>
+ PackageWithInferredName.h                                |   8 <font color="#00AA00">+</font><font color="#AA0000">--</font>
+ README.md                                                |  19 <font color="#00AA00">+++++</font><font color="#AA0000">-</font>
+ clean_pacman_cache_dir-class_diagram.puml                | 211 <font color="#00AA00">+++++++++++++++++++++++++++++++++++++++++++++++++++++</font><font color="#AA0000">-------------</font>
+ main.cpp                                                 | 343 <font color="#00AA00">+++++++++</font><font color="#AA0000">--------------------------------------------------------------------------------------------------</font>
+ 21 files changed, 838 insertions(+), 385 deletions(-)
+ create mode 100644 IgnoredPackageNameComparatorPredicate.h
+ create mode 100644 IgnoredPackageNames.cpp
+ create mode 100644 IgnoredPackageNames.h
+ create mode 100644 LocallyInstalledPackages.cpp
+ create mode 100644 LocallyInstalledPackages.h
+ create mode 100644 MatchFinderForPackageFilesToLocallyInstalledPackages.cpp
+ create mode 100644 MatchFinderForPackageFilesToLocallyInstalledPackages.h
+ create mode 100644 MoverOfInstallationPackageFiles.cpp
+ create mode 100644 MoverOfInstallationPackageFiles.h
+ create mode 100644 PackageNameMissing.cpp
+ create mode 100644 PackageNameMissing.h
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch backports
+Your branch is ahead of &apos;origin/backports&apos; by 10 commits.
+  (use &quot;git push&quot; to publish your local commits)
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git push
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 234 bytes | 234.00 KiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0), pack-reused 0
+To github.com:kyberdrb/clean_pacman_cache_dir.git
+   ca15638..9ad61b8  backports -&gt; backports
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch backports
+Your branch is up to date with &apos;origin/backports&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git pull
+Already up to date.
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch backports
+Your branch is up to date with &apos;origin/backports&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git branch 
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+* <font color="#00AA00">backports</font>
+  encapsulate_container_variables_to_separate_classes
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+  main
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ git checkout main 
+Switched to branch &apos;main&apos;
+Your branch is up to date with &apos;origin/main&apos;.
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch main
+Your branch is up to date with &apos;origin/main&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git pull
+Already up to date.
+[laptop@laptop clean_pacman_cache_dir]$ git tag
+1.0.0
+1.0.1
+2.0.0
+2.0.1
+2.1.0
+2.2.0
+2.3.1
+2.3.2
+2.3.3
+2.3.4
+2.3.5
+2.3.6
+[laptop@laptop clean_pacman_cache_dir]$ git branch 
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+  encapsulate_container_variables_to_separate_classes
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+* <font color="#00AA00">main</font>
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ git pull
+Already up to date.
+[laptop@laptop clean_pacman_cache_dir]$ git merge --no-ff backports --message=&quot;Encapsulate container variables to separate classes&quot;
+Auto-merging CMakeLists.txt
+CONFLICT (content): Merge conflict in CMakeLists.txt
+Auto-merging IgnoredPackageNames.cpp
+CONFLICT (add/add): Merge conflict in IgnoredPackageNames.cpp
+Auto-merging IgnoredPackageNames.h
+CONFLICT (add/add): Merge conflict in IgnoredPackageNames.h
+Auto-merging LocallyInstalledPackages.cpp
+CONFLICT (add/add): Merge conflict in LocallyInstalledPackages.cpp
+Auto-merging LocallyInstalledPackages.h
+CONFLICT (add/add): Merge conflict in LocallyInstalledPackages.h
+Auto-merging Package.cpp
+CONFLICT (content): Merge conflict in Package.cpp
+Auto-merging Package.h
+CONFLICT (content): Merge conflict in Package.h
+CONFLICT (modify/delete): PackageFile.cpp deleted in backports and modified in HEAD.  Version HEAD of PackageFile.cpp left in tree.
+CONFLICT (modify/delete): PackageFile.h deleted in backports and modified in HEAD.  Version HEAD of PackageFile.h left in tree.
+Auto-merging PackageName.cpp
+CONFLICT (add/add): Merge conflict in PackageName.cpp
+Auto-merging PackageName.h
+CONFLICT (add/add): Merge conflict in PackageName.h
+Auto-merging PackageVersion.cpp
+CONFLICT (add/add): Merge conflict in PackageVersion.cpp
+Auto-merging PackageVersion.h
+CONFLICT (add/add): Merge conflict in PackageVersion.h
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Auto-merging main.cpp
+CONFLICT (content): Merge conflict in main.cpp
+Automatic merge failed; fix conflicts and then commit the result.
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch main
+Your branch is up to date with &apos;origin/main&apos;.
+
+You have unmerged paths.
+  (fix conflicts and run &quot;git commit&quot;)
+  (use &quot;git merge --abort&quot; to abort the merge)
+
+Changes to be committed:
+	<font color="#00AA00">new file:   AbsolutePath.cpp</font>
+	<font color="#00AA00">new file:   AbsolutePath.h</font>
+	<font color="#00AA00">new file:   ExtendedInstallationPackageFile.cpp</font>
+	<font color="#00AA00">new file:   ExtendedInstallationPackageFile.h</font>
+	<font color="#00AA00">new file:   FileMover.cpp</font>
+	<font color="#00AA00">new file:   FileMover.h</font>
+	<font color="#00AA00">new file:   Filename.cpp</font>
+	<font color="#00AA00">new file:   Filename.h</font>
+	<font color="#00AA00">new file:   IgnoredPackageName.cpp</font>
+	<font color="#00AA00">new file:   IgnoredPackageName.h</font>
+	<font color="#00AA00">new file:   IgnoredPackageNameComparatorPredicate.h</font>
+	<font color="#00AA00">new file:   LICENSE</font>
+	<font color="#00AA00">new file:   LocallyInstalledPackage.cpp</font>
+	<font color="#00AA00">new file:   LocallyInstalledPackage.h</font>
+	<font color="#00AA00">new file:   MatchFinderForPackageFilesToLocallyInstalledPackages.cpp</font>
+	<font color="#00AA00">new file:   MatchFinderForPackageFilesToLocallyInstalledPackages.h</font>
+	<font color="#00AA00">new file:   MoverOfInstallationPackageFiles.cpp</font>
+	<font color="#00AA00">new file:   MoverOfInstallationPackageFiles.h</font>
+	<font color="#00AA00">new file:   PackageNameAndVersion.cpp</font>
+	<font color="#00AA00">new file:   PackageNameAndVersion.h</font>
+	<font color="#00AA00">new file:   PackageNameMissing.cpp</font>
+	<font color="#00AA00">new file:   PackageNameMissing.h</font>
+	<font color="#00AA00">new file:   PackageWithInferredName.cpp</font>
+	<font color="#00AA00">new file:   PackageWithInferredName.h</font>
+	<font color="#00AA00">new file:   Refactoring_PackageFile_due_to_referencing_of_member_variable_to_temporary_value-Class_diagram.puml</font>
+	<font color="#00AA00">new file:   Refactoring_Package_due_to_using_a_subset_of_features_for_packageWithInferredName_of_original_Package_type_and_initializing_the_rest_to_undefined_values-Class_diagram.puml</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFile.cpp</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFile.h</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFileType.h</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir-class_diagram.puml</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir.drawio</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir.drawio.png</font>
+
+Unmerged paths:
+  (use &quot;git add/rm &lt;file&gt;...&quot; as appropriate to mark resolution)
+	<font color="#AA0000">both modified:   CMakeLists.txt</font>
+	<font color="#AA0000">both added:      IgnoredPackageNames.cpp</font>
+	<font color="#AA0000">both added:      IgnoredPackageNames.h</font>
+	<font color="#AA0000">both added:      LocallyInstalledPackages.cpp</font>
+	<font color="#AA0000">both added:      LocallyInstalledPackages.h</font>
+	<font color="#AA0000">both modified:   Package.cpp</font>
+	<font color="#AA0000">both modified:   Package.h</font>
+	<font color="#AA0000">deleted by them: PackageFile.cpp</font>
+	<font color="#AA0000">deleted by them: PackageFile.h</font>
+	<font color="#AA0000">both added:      PackageName.cpp</font>
+	<font color="#AA0000">both added:      PackageName.h</font>
+	<font color="#AA0000">both added:      PackageVersion.cpp</font>
+	<font color="#AA0000">both added:      PackageVersion.h</font>
+	<font color="#AA0000">both modified:   README.md</font>
+	<font color="#AA0000">both modified:   main.cpp</font>
+
+[laptop@laptop clean_pacman_cache_dir]$ pwd
+/home/laptop/git/kyberdrb/clean_pacman_cache_dir
+[laptop@laptop clean_pacman_cache_dir]$ ls -l PackageFile.cpp
+-rw-r--r-- 1 laptop users 870 Jul  5 00:31 PackageFile.cpp
+[laptop@laptop clean_pacman_cache_dir]$ gio trash PackageFile.cpp PackageFile.h 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch main
+Your branch is up to date with &apos;origin/main&apos;.
+
+You have unmerged paths.
+  (fix conflicts and run &quot;git commit&quot;)
+  (use &quot;git merge --abort&quot; to abort the merge)
+
+Changes to be committed:
+	<font color="#00AA00">new file:   AbsolutePath.cpp</font>
+	<font color="#00AA00">new file:   AbsolutePath.h</font>
+	<font color="#00AA00">new file:   ExtendedInstallationPackageFile.cpp</font>
+	<font color="#00AA00">new file:   ExtendedInstallationPackageFile.h</font>
+	<font color="#00AA00">new file:   FileMover.cpp</font>
+	<font color="#00AA00">new file:   FileMover.h</font>
+	<font color="#00AA00">new file:   Filename.cpp</font>
+	<font color="#00AA00">new file:   Filename.h</font>
+	<font color="#00AA00">new file:   IgnoredPackageName.cpp</font>
+	<font color="#00AA00">new file:   IgnoredPackageName.h</font>
+	<font color="#00AA00">new file:   IgnoredPackageNameComparatorPredicate.h</font>
+	<font color="#00AA00">new file:   LICENSE</font>
+	<font color="#00AA00">new file:   LocallyInstalledPackage.cpp</font>
+	<font color="#00AA00">new file:   LocallyInstalledPackage.h</font>
+	<font color="#00AA00">new file:   MatchFinderForPackageFilesToLocallyInstalledPackages.cpp</font>
+	<font color="#00AA00">new file:   MatchFinderForPackageFilesToLocallyInstalledPackages.h</font>
+	<font color="#00AA00">new file:   MoverOfInstallationPackageFiles.cpp</font>
+	<font color="#00AA00">new file:   MoverOfInstallationPackageFiles.h</font>
+	<font color="#00AA00">new file:   PackageNameAndVersion.cpp</font>
+	<font color="#00AA00">new file:   PackageNameAndVersion.h</font>
+	<font color="#00AA00">new file:   PackageNameMissing.cpp</font>
+	<font color="#00AA00">new file:   PackageNameMissing.h</font>
+	<font color="#00AA00">new file:   PackageWithInferredName.cpp</font>
+	<font color="#00AA00">new file:   PackageWithInferredName.h</font>
+	<font color="#00AA00">new file:   Refactoring_PackageFile_due_to_referencing_of_member_variable_to_temporary_value-Class_diagram.puml</font>
+	<font color="#00AA00">new file:   Refactoring_Package_due_to_using_a_subset_of_features_for_packageWithInferredName_of_original_Package_type_and_initializing_the_rest_to_undefined_values-Class_diagram.puml</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFile.cpp</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFile.h</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFileType.h</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir-class_diagram.puml</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir.drawio</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir.drawio.png</font>
+
+Unmerged paths:
+  (use &quot;git add/rm &lt;file&gt;...&quot; as appropriate to mark resolution)
+	<font color="#AA0000">both modified:   CMakeLists.txt</font>
+	<font color="#AA0000">both added:      IgnoredPackageNames.cpp</font>
+	<font color="#AA0000">both added:      IgnoredPackageNames.h</font>
+	<font color="#AA0000">both added:      LocallyInstalledPackages.cpp</font>
+	<font color="#AA0000">both added:      LocallyInstalledPackages.h</font>
+	<font color="#AA0000">both modified:   Package.cpp</font>
+	<font color="#AA0000">both modified:   Package.h</font>
+	<font color="#AA0000">deleted by them: PackageFile.cpp</font>
+	<font color="#AA0000">deleted by them: PackageFile.h</font>
+	<font color="#AA0000">both added:      PackageName.cpp</font>
+	<font color="#AA0000">both added:      PackageName.h</font>
+	<font color="#AA0000">both added:      PackageVersion.cpp</font>
+	<font color="#AA0000">both added:      PackageVersion.h</font>
+	<font color="#AA0000">both modified:   README.md</font>
+	<font color="#AA0000">both modified:   main.cpp</font>
+
+[laptop@laptop clean_pacman_cache_dir]$ git add --all 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch main
+Your branch is up to date with &apos;origin/main&apos;.
+
+All conflicts fixed but you are still merging.
+  (use &quot;git commit&quot; to conclude merge)
+
+Changes to be committed:
+	<font color="#00AA00">new file:   AbsolutePath.cpp</font>
+	<font color="#00AA00">new file:   AbsolutePath.h</font>
+	<font color="#00AA00">modified:   CMakeLists.txt</font>
+	<font color="#00AA00">new file:   ExtendedInstallationPackageFile.cpp</font>
+	<font color="#00AA00">new file:   ExtendedInstallationPackageFile.h</font>
+	<font color="#00AA00">new file:   FileMover.cpp</font>
+	<font color="#00AA00">new file:   FileMover.h</font>
+	<font color="#00AA00">new file:   Filename.cpp</font>
+	<font color="#00AA00">new file:   Filename.h</font>
+	<font color="#00AA00">new file:   IgnoredPackageName.cpp</font>
+	<font color="#00AA00">new file:   IgnoredPackageName.h</font>
+	<font color="#00AA00">new file:   IgnoredPackageNameComparatorPredicate.h</font>
+	<font color="#00AA00">modified:   IgnoredPackageNames.cpp</font>
+	<font color="#00AA00">modified:   IgnoredPackageNames.h</font>
+	<font color="#00AA00">new file:   LICENSE</font>
+	<font color="#00AA00">new file:   LocallyInstalledPackage.cpp</font>
+	<font color="#00AA00">new file:   LocallyInstalledPackage.h</font>
+	<font color="#00AA00">modified:   LocallyInstalledPackages.cpp</font>
+	<font color="#00AA00">modified:   LocallyInstalledPackages.h</font>
+	<font color="#00AA00">new file:   MatchFinderForPackageFilesToLocallyInstalledPackages.cpp</font>
+	<font color="#00AA00">new file:   MatchFinderForPackageFilesToLocallyInstalledPackages.h</font>
+	<font color="#00AA00">new file:   MoverOfInstallationPackageFiles.cpp</font>
+	<font color="#00AA00">new file:   MoverOfInstallationPackageFiles.h</font>
+	<font color="#00AA00">modified:   Package.cpp</font>
+	<font color="#00AA00">modified:   Package.h</font>
+	<font color="#00AA00">deleted:    PackageFile.cpp</font>
+	<font color="#00AA00">deleted:    PackageFile.h</font>
+	<font color="#00AA00">modified:   PackageName.cpp</font>
+	<font color="#00AA00">modified:   PackageName.h</font>
+	<font color="#00AA00">new file:   PackageNameAndVersion.cpp</font>
+	<font color="#00AA00">new file:   PackageNameAndVersion.h</font>
+	<font color="#00AA00">new file:   PackageNameMissing.cpp</font>
+	<font color="#00AA00">new file:   PackageNameMissing.h</font>
+	<font color="#00AA00">modified:   PackageVersion.cpp</font>
+	<font color="#00AA00">modified:   PackageVersion.h</font>
+	<font color="#00AA00">new file:   PackageWithInferredName.cpp</font>
+	<font color="#00AA00">new file:   PackageWithInferredName.h</font>
+	<font color="#00AA00">modified:   README.md</font>
+	<font color="#00AA00">new file:   Refactoring_PackageFile_due_to_referencing_of_member_variable_to_temporary_value-Class_diagram.puml</font>
+	<font color="#00AA00">new file:   Refactoring_Package_due_to_using_a_subset_of_features_for_packageWithInferredName_of_original_Package_type_and_initializing_the_rest_to_undefined_values-Class_diagram.puml</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFile.cpp</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFile.h</font>
+	<font color="#00AA00">new file:   SimpleInstallationPackageFileType.h</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir-class_diagram.puml</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir.drawio</font>
+	<font color="#00AA00">new file:   clean_pacman_cache_dir.drawio.png</font>
+	<font color="#00AA00">modified:   main.cpp</font>
+
+[laptop@laptop clean_pacman_cache_dir]$ git commit --message=&quot;Bring project back to life...&quot; --message=&quot;...Conform to SOLID principles, delegate functionalities to separate classes according to SRP/encapsulation/autonomy for more cohesion, less coupling, making the intentions and meaning of the classes and operations clearer; refactoring to making further planned changes easier to implement with less mental effort&quot;
+[main 7006f1b] Bring project back to life...
+[laptop@laptop clean_pacman_cache_dir]$ git push
+Enumerating objects: 34, done.
+Counting objects: 100% (34/34), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (12/12), done.
+Writing objects: 100% (12/12), 1.94 KiB | 1.94 MiB/s, done.
+Total 12 (delta 11), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (11/11), completed with 11 local objects.
+To github.com:kyberdrb/clean_pacman_cache_dir.git
+   6bb11e5..7006f1b  main -&gt; main
+[laptop@laptop clean_pacman_cache_dir]$ git status
+On branch main
+Your branch is up to date with &apos;origin/main&apos;.
+
+nothing to commit, working tree clean
+[laptop@laptop clean_pacman_cache_dir]$ git branch
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+  encapsulate_container_variables_to_separate_classes
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+* <font color="#00AA00">main</font>
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ git tag --message=&quot;Ressurection&quot; --annotate &quot;3.0.0&quot;
+[laptop@laptop clean_pacman_cache_dir]$ git tag
+1.0.0
+1.0.1
+2.0.0
+2.0.1
+2.1.0
+2.2.0
+2.3.1
+2.3.2
+2.3.3
+2.3.4
+2.3.5
+2.3.6
+3.0.0
+[laptop@laptop clean_pacman_cache_dir]$ git push --tags 
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 160 bytes | 160.00 KiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0), pack-reused 0
+To github.com:kyberdrb/clean_pacman_cache_dir.git
+ * [new tag]         3.0.0 -&gt; 3.0.0
+[laptop@laptop clean_pacman_cache_dir]$ git branch
+  backport-encapsulate_ignored_package_name_to_class
+  backport-fix_for_package_from_inferred_name
+  backport-fix_for_partially_downloaded_package_file
+  backports
+  encapsulate_container_variables_to_separate_classes
+  encapsulate_relating_package_files_to_packages
+  find_element_of_custom_type_in_set
+* <font color="#00AA00">main</font>
+  packageVersion_from_string_to_PackageVersion
+  refactoring_Package_class
+[laptop@laptop clean_pacman_cache_dir]$ 
+[laptop@laptop clean_pacman_cache_dir]$ date
+Tue Jul  5 03:06:57 PM CEST 2022</pre>
+
+## Possible experiments
+
+- `std::set` with custom comparator given as a second template parameter at initialization
+- `std::find_if`/`std::any_of`
+    - passing unique pointer to `std::any_of` directly
+        - lambda
+            - public friend function - all params const (the only one that works) - 'std::set' encapsulated in class
+        - comparator predicate
+            - direct comparison in comparator
+                - public friend function - all params const - 'std::set' encapsulated in class
+
 ## Sources
 
 - `libalpm` - library of the Arch Linux Package Manager - the `pacman`
@@ -3444,5 +4022,16 @@ struct PackageComparatorPredicate {
     - https://blog.jetbrains.com/clion/2019/10/clion-2019-3-eap-ninja-cmake-generators/
     - https://duckduckgo.com/?t=ffab&q=clion+lldb+error%3A+unknown+option%3A+--interpreter%3Dmi2&ia=web
   - https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000394670-How-can-I-configure-LLVM-Clang-6-0-with-CLION-2018-1
+- terminal
+    - https://duckduckgo.com/?t=ffab&q=copy+bash+output+with+color+formatting&ia=web
+    - https://askubuntu.com/questions/394228/bash-colored-copy-paste
+    - https://duckduckgo.com/?t=ffab&q=embed+html+to+markdown&ia=web&iax=qa
+    - **finally I solved it by marking the text in the `xfce4-terminal`, right clicked on it and from the context menu I selected `Copy as HTML`. That copied the output as HTML formatted text with Markdown interpretted as code block with colors**
+    - https://duckduckgo.com/?t=ffab&q=clion+%2Fetc%2Fsysctl.d%2F99-perf.conf&ia=web
+    - https://www.jetbrains.com/help/clion/cpu-profiler.html#Prerequisites
+    - https://duckduckgo.com/?t=ffab&q=read+perf+profiling+file+log&ia=web
+    - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/recording-and-analyzing-performance-profiles-with-perf_monitoring-and-managing-system-status-and-performance
+    - https://duckduckgo.com/?t=ffab&q=gcov+testing+interpretation&ia=web
+    - https://www.linuxtoday.com/blog/analyzing-code-coverage-with-gcov/
 - `libarchive`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
