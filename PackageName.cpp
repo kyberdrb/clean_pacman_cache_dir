@@ -2,10 +2,14 @@
 // Created by laptop on 4/28/22.
 //
 
+//
+// Created by laptop on 5/23/22.
+//
+
 #include "PackageName.h"
 
 PackageName::PackageName(std::string packageName) :
-    name(std::move(packageName))
+        name(std::move(packageName))
 {}
 
 bool PackageName::empty() const {

@@ -2,6 +2,10 @@
 // Created by laptop on 4/28/22.
 //
 
+//
+// Created by laptop on 5/23/22.
+//
+
 #pragma once
 
 #include <memory>
@@ -22,24 +26,22 @@ public:
         return out;
     }
 
-    bool operator==(const PackageName& otherPackageName) const {
-        return PackageName::name == otherPackageName.name;
+    friend bool operator<(
+            const std::unique_ptr<PackageName>& packageName,
+            const std::unique_ptr<PackageName>& otherPackageName)
+    {
+        return packageName->name < otherPackageName->name;
     }
 
-    bool operator<(const PackageName& otherPakcageName) const {
-        return PackageName::name < otherPakcageName.name;
+    bool operator<(const PackageName& anotherPackage) const {
+        return PackageName::name < anotherPackage.name;
+//        return this->name < anotherPackage.name;
+    }
+
+    bool operator==(const PackageName& anotherPackageName) const {
+        return PackageName::name == anotherPackageName.name;
     }
 
 private:
     std::string name;
 };
-
-// overload the 'less' functor in order to enable lookup ('find') in a 'set' or a 'map' with instances of this class as a key, or with any custom object-type key
-namespace std {
-    template<>
-    struct less<unique_ptr<PackageName>> {
-    bool operator() (const unique_ptr<PackageName>& onePackageName, const unique_ptr<PackageName>& otherPackageName) const {
-        return *onePackageName < *otherPackageName;
-    }
-};
-}

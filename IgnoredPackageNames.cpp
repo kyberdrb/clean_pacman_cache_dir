@@ -2,39 +2,28 @@
 // Created by laptop on 5/1/22.
 //
 
-#include "IgnoredPackageNames.h"
+//
+// Created by laptop on 6/17/22.
+//
 
+#include "IgnoredPackageNames.h"
+#include "IgnoredPackageNameComparatorPredicate.h"
+
+#include <algorithm>
 #include <fstream>
 #include <regex>
+#include <sstream>
 
-// TODO How can I use only one constructor and only initializer list to make the string parameter optional
-//  and to initialize the field with a default parameter when the argument is empty string? Maybe with 'std::optional'?
-//  encapsulated in a separate instance that will hold user inputted options'?
-//  - https://www.cppstories.com/2018/05/using-optional/#examples-of-stdoptional
-//  - http://coliru.stacked-crooked.com/a/f02d37fc4319bcd8
-// Populate ignoredPackageNames collection immediately in constructor - constructor parameter for PacmanConfigurationFilePath will be optional; when ommitted, the default path will be "/etc/pacman.conf"
-IgnoredPackageNames::IgnoredPackageNames(std::string pacmanConfigurationFilePath) :
-        pacmanConfigurationFilePath(std::move(pacmanConfigurationFilePath))
-{
-    this->setDefaultPacmanConfigPathIfEmpty();
-    this->findIgnoredPackageNames();
-}
+IgnoredPackageNames::IgnoredPackageNames() {
+    // TODO encapsulate pacman's config file parsing to a separate class e.g. 'PacmanConfigParser' to function e.g. 'getIgnoredPackageNames'
 
-IgnoredPackageNames::IgnoredPackageNames() :
-        IgnoredPackageNames(std::string{})
-{}
+    // 'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
+    //alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
 
-void IgnoredPackageNames::findIgnoredPackageNames() {
     std::ifstream pacmanConfigFile;
 
-    //  'alpm_option_get_ignorepkgs' to retrieve the list of ignored packages from pacman's config doesn't work. Parsing '/etc/pacman.conf' manually
-    //    alpm_list_t* listOfIgnoredPackages = alpm_option_get_ignorepkgs(handle);
-
-    // TODO parametrize with argument (maybe use getopt?)
-    //  - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists;
-    //    otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages
-    //    in order to exclude them from deletion
-    pacmanConfigFile.open(this->pacmanConfigurationFilePath);
+    // TODO parametrize with argument (maybe use getopt?) - if parameter empty, then use default one + check whether the pacman configuration file in the default path actually exists; otherwise exit?/ask user whether to terminate or continue, because the configuration file is used to determine ignored packages in order to exclude them from deletion
+    pacmanConfigFile.open("/etc/pacman.conf");
 
     std::string lineWithIgnoredPackages;
     std::smatch match;
@@ -49,39 +38,37 @@ void IgnoredPackageNames::findIgnoredPackageNames() {
 
     // TODO OPTIONAL (assuming no leading spaces/tabs) remove leading and ending blank characters
     // TODO OPTIONAL (assuming no ending spaces/tabs; only one space delimiting [separating] each package filename) replace multiple spaces or tabs with one space
-    // build a list of ignored packages
 
     auto lineWithIgnoredPackagesWithoutOptionPrefix = regex_replace(lineWithIgnoredPackages, regexForIgnoredPackagesInPacmanConfigFile, "");
     std::stringstream ignoredPackagesAsStream{lineWithIgnoredPackagesWithoutOptionPrefix};
     std::string ignoredPackageNameAsText{};
-    char delimiterForIgnoredPakcages = ' ';
+    char delimiterForIgnoredPackages = ' ';
 
-    while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPakcages)) {
-        this->ignoredPackageNames.push_back(std::make_unique<PackageName>(ignoredPackageNameAsText) );
+    while(getline(ignoredPackagesAsStream, ignoredPackageNameAsText, delimiterForIgnoredPackages)) {
+        auto ignoredPackageName = std::make_unique<IgnoredPackageName>(std::move(ignoredPackageNameAsText));
+        this->ignoredPackageNames.emplace_back(std::move(ignoredPackageName));
     }
-}
-
-bool IgnoredPackageNames::contains(const PackageName& packageName) const {
-    bool containsElement =
-            std::find_if(
-                    this->ignoredPackageNames.begin(),
-                    this->ignoredPackageNames.end(),
-                    [&packageName](const std::unique_ptr<PackageName>& packageNameCandidate) {
-                        return packageName == *packageNameCandidate;
-                    }
-            ) != this->ignoredPackageNames.end();
-    return containsElement;
 }
 
 std::string IgnoredPackageNames::generateReport() const {
-    std::stringstream reportStream{};
-    reportStream << *this;
-    return reportStream.str();
+    std::stringstream report{};
+
+    report << "\n";
+    report << "===============================================\n\n";
+    report << "LIST OF IGNORED PACKAGES\n\n";
+
+    report << "Found " << this->ignoredPackageNames.size() << " ignored packages\n\n";
+
+    for (const auto& ignoredPackageName : this->ignoredPackageNames) {
+        report << *ignoredPackageName << "\n";
+    }
+
+    return report.str();
 }
 
-void IgnoredPackageNames::setDefaultPacmanConfigPathIfEmpty() {
-    if (this->pacmanConfigurationFilePath.empty()) {
-        const std::string DEFAULT_PACMAN_CONFIGURATION_FILE_PATH = "/etc/pacman.conf";
-        this->pacmanConfigurationFilePath = DEFAULT_PACMAN_CONFIGURATION_FILE_PATH;
-    }
+bool IgnoredPackageNames::isPackageWithGivenNameIgnored(std::unique_ptr<IgnoredPackageName>& ignoredPackageNameCandidate) const {
+    return std::any_of(
+            this->ignoredPackageNames.begin(),
+            this->ignoredPackageNames.end(),
+            IgnoredPackageNameComparatorPredicate(ignoredPackageNameCandidate));
 }

@@ -1,0 +1,115 @@
+@startuml
+
+'Proposed solutions to avoid assigning reference member attributes to temporary values in single-argument constructor:
+' - Inheritance/Implementation of interface - a class with only pure virtual functions with commonfunctions
+'   - overkill/not necessary - I don't use them in one container, neither I want to complicate my code with abstractions for simplicity and understandability
+' - Splitting one 'PackageFile'
+'   - to two classes
+'   - then encapsulate the 'string' type 'filname' and 'absolutePath' member variables to custom defined classes 'Filename' and 'AbsolutePath' for expressivenes
+'   - Accepted solution
+
+class Package__the_original_one_before_refactoring {
+    + Package(\
+      \n    packageName : PackageName,\
+      \n    locallyInstalledVersion : PackageVersion\
+      \n    architecture : string\
+      \n    isIgnored : bool)
+    + Package(inferredPackageName : PackageName)
+    + getName() : PackageName
+    + getLocallyInstalledVersion() : PackageVersion
+    + isPackageNameEmpty() : bool
+    + hasStillSomethingInPackageName() : bool
+    + getNextInferredPackageNameCandidate() : void
+    + getStartingPositionForPackageVersion() : uint_fast8_t
+    + getNumberOfInstallationPackageFilesForDifferentVersions()\
+      \n    : uint_fast16_t
+    + addPackageFileToDeletionCandidates(\
+      \n    packageRelatedPackageFile : PackageFile) : void
+    + movePackageFilesForDifferentVersionsToSeparateDir(\
+      \n        pathToDirectoryForOtherVersionsOfPackageFiles : AbsolutePath)\
+      \n    : void
+
+    - PackageName name
+    - PackageVersion locallyInstalledVersion
+    - string architecture
+    - bool isIgnored
+
+    - installationPackageFilesForDifferentPackageVersions :\
+      \n    vector<ExtendedInstallationPackageFile>>
+}
+
+'Analysis
+
+abstract class Package {
+    + Package(packageName : PackageName)
+    + {abstract} ~Package()
+
+    + getName() : PackageName
+
+    + operator<<(out : ostream, package : Package) : ostream
+    # {abstract} streamOutputOperator(out : ostream) : ostream
+
+    + operator<(package : Package, anotherPackage : Package) : bool
+    # {abstract} lessThanOperator(Package anotherPackage) : bool
+
+    # name : PackageName
+}
+
+note left of Package: function ""operator<""\nand virtual function ""lessThanOperator""\nare overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto ""Package"" class
+
+Package *-l-> "name\n1" PackageName
+
+class PackageWithInferredName {
+    + PackageWithInferredName(extractedPackageNameAndVersionAsText : string)
+    + isPackageNameEmpty() : bool
+    + hasStillSomethingInPackageName() : bool
+    + getNextInferredPackageNameCandidate() : void
+    + extractPackageVersion() : PackageVersion
+    # ostream streamOutputOperator(out : ostream)
+    # lessThanOperator(anotherPackage : Package) : bool
+
+    - nameAndVersion : PackageNameAndVersion
+    - getStartingPositionForPackageVersion() : uint_fast8_t
+}
+
+Package <|-u- PackageWithInferredName
+PackageWithInferredName .u.> "1" Package
+PackageWithInferredName .d.> "1" PackageVersion
+PackageWithInferredName *-d-> "nameAndVersion\n1" PackageNameAndVersion
+
+note bottom of PackageWithInferredName: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+
+class LocallyInstalledPackage {
+    + LocallyInstalledPackage(\
+      \n    PackageName packageName,\
+      \n    PackageVersion locallyInstalledVersion,\
+      \n    string architecture,\
+      \n    bool isIgnored)
+    + getNumberOfInstallationPackageFilesForDifferentVersions()\
+      \n: uint_fast16_t
+    + addPackageFileToDeletionCandidates(\
+      \n    ExtendedInstallationPackageFile packageRelatedPackageFile)\
+      \n: bool
+    + movePackageFilesForDifferentVersionsToSeparateDir(\
+      \n    absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles\
+      \n        AbsolutePath)\
+      \n: void
+
+    # streamOutputOperator(ostream out) : ostream
+    # lessThanOperator(anotherPackage : Package) : bool
+
+    - locallyInstalledVersion : PackageVersion
+    - architecture : string
+    - isIgnored : bool
+    - installationPackageFilesForDifferentPackageVersions\
+      \n    : vector<ExtendedInstallationPackageFile>
+}
+
+note bottom of LocallyInstalledPackage: virtual function ""lessThanOperator""\nis overloaded for\n""reference_wrapper"" and\n""unique_ptr""\nto common abstract/virtual ""Package"" base class
+
+Package <|-u- LocallyInstalledPackage
+LocallyInstalledPackage .u.> "1" Package
+LocallyInstalledPackage *-d-> "locallyInstalledVersion\n1" PackageVersion
+LocallyInstalledPackage *---> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
+LocallyInstalledPackage ...> "1" AbsolutePath
+@enduml
