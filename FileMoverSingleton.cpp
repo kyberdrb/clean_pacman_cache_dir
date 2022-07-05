@@ -2,12 +2,12 @@
 // Created by laptop on 5/29/22.
 //
 
-#include "FileMover.h"
+#include "FileMoverSingleton.h"
 
 #include <filesystem>
 #include <iostream>
 
-void FileMover::move(const AbsolutePath& from, const AbsolutePath& to) {
+void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) {
     // catch 'std::filesystem' exception to prevent memory leaks when 'rename' fails
     try {
         std::filesystem::rename(from.getAbsolutePath(), to.getAbsolutePath());

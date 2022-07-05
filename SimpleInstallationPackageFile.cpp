@@ -4,8 +4,13 @@
 
 #include "SimpleInstallationPackageFile.h"
 
-#include "FileMover.h"
+#include "FileMoverSingleton.h"
 
+// TODO centralize terminal output, i.e.
+//  replace all occurences of
+//     #include <iostream>
+//  in related files in the entire project with
+//     #include "TerminalSingleton.h"
 #include <iostream>
 
 SimpleInstallationPackageFile::SimpleInstallationPackageFile(
@@ -44,5 +49,5 @@ void SimpleInstallationPackageFile::moveToSeparateDirectoryForDeletion(const Abs
             << "\t" << *(to) << "\n\n";
     }
 
-    FileMover::move(from, *(to));
+    FileMoverSingleton::move(from, *(to));
 }

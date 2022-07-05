@@ -8,7 +8,7 @@
 
 #include "PackageWithInferredName.h"
 
-#include "FileMover.h"
+#include "FileMoverSingleton.h"
 
 #include <iostream>
 

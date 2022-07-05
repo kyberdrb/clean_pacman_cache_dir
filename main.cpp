@@ -1,8 +1,5 @@
 #include "MoverOfInstallationPackageFiles.h"
-
-#include <iostream>
-
-//#include <cassert>
+#include "TerminalSingleton.h"
 
 int main() {
     // FIND IGNORED PACKAGES - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
@@ -17,11 +14,11 @@ int main() {
 //    auto matchFinderWithPackageFilesRelatedToPackages = std::make_unique<MatchFinderForPackageFilesToLocallyInstalledPackages>(*locallyInstalledPackages, installationPackageFilesCacheDirs);
 
     // SHOW REPORT
-    // TODO replace with:
-    //     TerminalPrinter::print(ignoredPackageNames->generateReport());
-    std::cout << ignoredPackageNames->generateReport();
-    std::cout << locallyInstalledPackages->generateReport();
-    std::cout << matchFinderWithPackageFilesRelatedToPackages->generateReport();
+    // Rely on the implicit move semantics - don't move the function's return value explicitly to allow compiler to do Move Elision
+    TerminalSingleton::get()
+            .printText(ignoredPackageNames->generateReport())
+            .printText(locallyInstalledPackages->generateReport())
+            .printText(matchFinderWithPackageFilesRelatedToPackages->generateReport());
 
     // MOVE PACKAGE FILES TO SEPARATE DIRECTORY
     auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(

@@ -8,7 +8,7 @@
 
 #include "LocallyInstalledPackage.h"
 
-#include "FileMover.h"
+#include "FileMoverSingleton.h"
 
 #include <iostream>
 
@@ -75,6 +75,6 @@ void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
             << "to separate directory:\n"
             << "\t" << *(to) << "\n\n";
 
-        FileMover::move(from, *(to));
+        FileMoverSingleton::move(from, *(to));
     }
 }
