@@ -10,7 +10,9 @@
 
 #include "FileMoverSingleton.h"
 
-#include <iostream>
+#include <sstream>
+//#include <iostream>
+#include "TerminalSingleton.h"
 
 LocallyInstalledPackage::LocallyInstalledPackage(
     std::unique_ptr<PackageName> packageName,
@@ -53,28 +55,30 @@ void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
         const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles) const
 {
     for (const auto& packageFileForDeletion : this->installationPackageFilesForDifferentPackageVersions) {
+        std::stringstream message;
         const AbsolutePath& from = packageFileForDeletion->getAbsolutePath();
         const auto to = absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles + packageFileForDeletion->getFilename();
 
-        std::cout
+        message
                 << "Info about the locally installed package:\n"
                 << "\t" << Package::getName() << "-" << *(this->locallyInstalledVersion) << "\n";
 
-        std::cout
+        message
             << "Info about the installation package file for deletion:\n"
             << "\t" << packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n";
 
-        std::cout << "\n";
+        message << "\n";
 
         // TODO maybe abstract duplicate code from here and from 'moveToSeparateDirectoryForDeletion' in 'SimpleInstallationPackageFile.cpp'
         //  to a separate class 'TerminalPrinter'? for example? And delegate all 'std::cout' calls to the 'TerminalPrinter' instance?
         //TerminalPrinter::printInstallationPackageFileInfoBeforeDeletion(from, *(to));
-        std::cout
+        message
             << "Moving package file:\n"
             << "\t" << from << "\n"
             << "to separate directory:\n"
             << "\t" << *(to) << "\n\n";
 
+        TerminalSingleton::get().printText(message.str());
         FileMoverSingleton::move(from, *(to));
     }
 }

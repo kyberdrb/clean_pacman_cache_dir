@@ -8,7 +8,7 @@
 #include "PackageVersion.h"
 #include "PackageNameAndVersion.h"
 
-#include <iostream>
+//#include <iostream>
 
 class PackageWithInferredName : public Package {
 public:

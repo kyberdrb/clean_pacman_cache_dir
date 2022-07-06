@@ -11,7 +11,9 @@
 //     #include <iostream>
 //  in related files in the entire project with
 //     #include "TerminalSingleton.h"
-#include <iostream>
+#include <sstream>
+//#include <iostream>
+#include "TerminalSingleton.h"
 
 SimpleInstallationPackageFile::SimpleInstallationPackageFile(
         std::unique_ptr<AbsolutePath> absolutePath,
@@ -32,22 +34,24 @@ const Filename& SimpleInstallationPackageFile::getFilename() const {
 }
 
 void SimpleInstallationPackageFile::moveToSeparateDirectoryForDeletion(const AbsolutePath& directoryForInstallationPackageFilesForDeletion) {
+    std::stringstream message;
     const AbsolutePath& from = this->getAbsolutePath();
     const auto to = directoryForInstallationPackageFilesForDeletion + this->getFilename();
 
     if (this->reasonForDeletion == SimpleInstallationPackageFileType::PARTIALLY_DOWNLOADED) {
-        std::cout
+        message
             << "Moving partially downloaded installation package file:\n"
             << "\t" << from << "\n"
             << "to separate directory\n"
             << "\t" << *(to) << "\n\n";
     } else if (this->reasonForDeletion == SimpleInstallationPackageFileType::MISSING_LOCALLY_INSTALLED_PACKAGE) {
-        std::cout
+        message
             << "Moving installation package file related to missing package:\n"
             << "\t" << from << "\n"
             << "to separate directory\n"
             << "\t" << *(to) << "\n\n";
     }
 
+    TerminalSingleton::get().printText(message.str());
     FileMoverSingleton::move(from, *(to));
 }

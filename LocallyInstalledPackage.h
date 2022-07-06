@@ -8,7 +8,7 @@
 
 #include "ExtendedInstallationPackageFile.h"
 
-#include <iostream>
+//#include <iostream>
 #include <vector>
 
 class LocallyInstalledPackage : public Package {
