@@ -6,7 +6,7 @@
 
 #include "AbsolutePath.h"
 
-class FileMover {
+class FileMoverSingleton {
 public:
     static void move(const AbsolutePath& from, const AbsolutePath& to);
 };

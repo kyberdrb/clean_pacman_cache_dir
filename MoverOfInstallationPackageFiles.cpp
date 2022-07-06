@@ -3,6 +3,7 @@
 //
 
 #include "MoverOfInstallationPackageFiles.h"
+#include "TerminalSingleton.h"
 
 #include <filesystem>
 
@@ -15,9 +16,14 @@ MoverOfInstallationPackageFiles::MoverOfInstallationPackageFiles(
 {}
 
 void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir() const {
-    std::cout << "\n";
-    std::cout << "===============================================\n\n";
-    std::cout << "MOVING PACKAGES\n\n";
+    std::stringstream message;
+
+    message
+        << "\n"
+        << "===============================================\n\n"
+        << "MOVING PACKAGES\n\n";
+
+    TerminalSingleton::get().printText(message.str());
 
     std::string pathToDuplicateFilesDirectoryAsText =
             this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";

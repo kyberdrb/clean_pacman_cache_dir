@@ -8,8 +8,6 @@
 #include "PackageVersion.h"
 #include "PackageNameAndVersion.h"
 
-#include <iostream>
-
 class PackageWithInferredName : public Package {
 public:
     explicit PackageWithInferredName(std::string extractedPackageNameAndVersionAsText);

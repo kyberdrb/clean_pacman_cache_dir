@@ -8,9 +8,7 @@
 
 #include "PackageWithInferredName.h"
 
-#include "FileMover.h"
-
-#include <iostream>
+#include "FileMoverSingleton.h"
 
 PackageWithInferredName::PackageWithInferredName(std::string extractedPackageNameAndVersionAsText) :
         Package(std::make_unique<PackageName>(std::move(extractedPackageNameAndVersionAsText) ) ),
