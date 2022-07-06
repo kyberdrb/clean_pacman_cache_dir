@@ -9,10 +9,12 @@
 #include "LocallyInstalledPackage.h"
 
 #include "FileMoverSingleton.h"
+#include "TerminalSingleton.h"
 
 #include <sstream>
-//#include <iostream>
-#include "TerminalSingleton.h"
+
+// For debugging purposes
+//#include "TerminalSingleton.h"
 
 LocallyInstalledPackage::LocallyInstalledPackage(
     std::unique_ptr<PackageName> packageName,
@@ -38,7 +40,7 @@ bool LocallyInstalledPackage::addPackageFileToDeletionCandidates(
 
     // For debugging purposes
 //    if (isPackageVersionDifferent) {
-//        std::cerr << "this is what I was waiting for..." << "\n";
+//        TerminalSingleton::get().printText("this is what I was waiting for...\n");
 //    }
 
     bool isPackageNonignored = !this->isIgnored;
@@ -61,22 +63,14 @@ void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
 
         message
                 << "Info about the locally installed package:\n"
-                << "\t" << Package::getName() << "-" << *(this->locallyInstalledVersion) << "\n";
-
-        message
-            << "Info about the installation package file for deletion:\n"
-            << "\t" << packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n";
-
-        message << "\n";
-
-        // TODO maybe abstract duplicate code from here and from 'moveToSeparateDirectoryForDeletion' in 'SimpleInstallationPackageFile.cpp'
-        //  to a separate class 'TerminalPrinter'? for example? And delegate all 'std::cout' calls to the 'TerminalPrinter' instance?
-        //TerminalPrinter::printInstallationPackageFileInfoBeforeDeletion(from, *(to));
-        message
-            << "Moving package file:\n"
-            << "\t" << from << "\n"
-            << "to separate directory:\n"
-            << "\t" << *(to) << "\n\n";
+                << "\t" << Package::getName() << "-" << *(this->locallyInstalledVersion) << "\n"
+                << "Info about the installation package file for deletion:\n"
+                << "\t" << packageFileForDeletion->getRelatedPackageName() << "-" << packageFileForDeletion->getRelatedPackageVersion() << "\n"
+                << "\n"
+                << "Moving package file:\n"
+                << "\t" << from << "\n"
+                << "to separate directory:\n"
+                << "\t" << *(to) << "\n\n";
 
         TerminalSingleton::get().printText(message.str());
         FileMoverSingleton::move(from, *(to));

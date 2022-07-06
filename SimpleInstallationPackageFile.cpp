@@ -5,15 +5,9 @@
 #include "SimpleInstallationPackageFile.h"
 
 #include "FileMoverSingleton.h"
-
-// TODO centralize terminal output, i.e.
-//  replace all occurences of
-//     #include <iostream>
-//  in related files in the entire project with
-//     #include "TerminalSingleton.h"
-#include <sstream>
-//#include <iostream>
 #include "TerminalSingleton.h"
+
+#include <sstream>
 
 SimpleInstallationPackageFile::SimpleInstallationPackageFile(
         std::unique_ptr<AbsolutePath> absolutePath,

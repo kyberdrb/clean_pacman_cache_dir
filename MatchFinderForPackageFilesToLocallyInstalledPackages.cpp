@@ -11,6 +11,9 @@
 #include <memory>
 #include <set>
 
+// For debugging purposes
+//#include "TerminalSingleton.h"
+
 MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFilesToLocallyInstalledPackages(
         LocallyInstalledPackages& locallyInstalledPackages)
 :
@@ -44,7 +47,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
 
         // For debugging purposes
 //        if (packageFilenameAsText == "libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst") {
-//            std::cout << "Here we go..." << "\n";
+//            TerminalSingleton::get().printText("Here we go...\n");
 //        }
 
         if (packageFile.is_regular_file()) {
@@ -107,7 +110,9 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     // For debugging purposes - because the gdb debugger in CLion 2022.1 produces an error when
                     // trying to show the values for STL containers and smartpointer instances.
                     // Instead, it shows an error message saying "Cannot instantiate printer for default visualizer"
-//                    std::cout << exception.what() << "\n";
+//                    std::stringstream message;
+//                    message << exception.what() << "\n";
+//                    TerminalSingleton::get().printText(message.str());
 
                     packageWithInferredNameExact->getNextInferredPackageNameCandidate();
                     continue;

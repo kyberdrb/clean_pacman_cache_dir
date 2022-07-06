@@ -4,10 +4,10 @@
 
 #include "FileMoverSingleton.h"
 
+#include "TerminalSingleton.h"
+
 #include <filesystem>
 #include <sstream>
-//#include <iostream>
-#include "TerminalSingleton.h"
 
 void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) {
     // catch 'std::filesystem' exception to prevent memory leaks when 'rename' fails
