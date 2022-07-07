@@ -3720,8 +3720,10 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
     - Possible memory leak in filesystem::copy() #66  - https://github.com/boostorg/filesystem/issues/66
     - https://stackoverflow.com/questions/36019855/memory-leak-in-directory-iterator-of-boost-filesystem
 - own projects
-    - duplicate_finder - TODO add Github link
-    - EmployeeManagementSystem - TODO add Github link
+    - duplicate_finder - https://github.com/kyberdrb/duplicate_finder
+        - iterating through files
+    - EmployeeManagementSystem - https://github.com/kyberdrb/EmployeeManagementSystem
+        - _Singleton_ design pattern implementation from `ID_Pool` class implementation
 - UML / PlantUML
     - https://duckduckgo.com/?t=ffab&q=uml+abstract+class&ia=web
     - https://www.guru99.com/uml-class-diagram.html
@@ -3969,6 +3971,17 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
     - https://dotnettutorials.net/lesson/access-specifiers-in-cpp/
     - http://cplusplus.bordoon.com/inheriting_constructors.html
     - https://stackoverflow.com/questions/20029883/do-we-inherit-constructors-in-c-whats-is-exact-definition-of-inheriting
+- `Singleton` design pattern in C++
+    - EmployeeManagementSystem - https://github.com/kyberdrb/EmployeeManagementSystem
+        - First _Singleton_ design pattern implementation from `ID_Pool` class implementation `ID_Pool.h` and `ID_Pool.cpp` files
+    - https://duckduckgo.com/?q=make_unique+singleton&t=ffab&ia=web
+    - https://stackoverflow.com/questions/50995599/make-unique-doesnt-compile-for-creating-a-singleton-instance
+    - https://stackoverflow.com/questions/50995599/make-unique-doesnt-compile-for-creating-a-singleton-instance/50996628#50996628
+    - https://stackoverflow.com/questions/33905030/how-to-make-stdmake-unique-a-friend-of-my-class
+    - https://stackoverflow.com/questions/33905030/how-to-make-stdmake-unique-a-friend-of-my-class/33905304#33905304
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+ld+undefined+reference+to
+    - https://stackoverflow.com/questions/14557657/linker-error-c-undefined-reference
+    - https://www.geeksforgeeks.org/static-data-members-c/
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
