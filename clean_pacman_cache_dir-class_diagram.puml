@@ -16,6 +16,8 @@ main *-d-> "matchFinderWithPackageFilesRelatedToPackages ->\n1" MatchFinderForPa
 main .d.> MoverOfInstallationPackageFiles : "<- creates an instance of ""MoverOfInstallationPackageFiles""\nto be moved from place of creation\nto place of composition"
 main *-d-> "installationPackageFilesMover ->\n1" MoverOfInstallationPackageFiles
 
+main .> TerminalSingleton
+
 class MoverOfInstallationPackageFiles {
     + MoverOfInstallationPackageFiles(\
         \n    packageFilesRelatedToLocallyInstalledPackages\
@@ -35,6 +37,7 @@ end note
 
 MoverOfInstallationPackageFiles -d-> "packageFilesRelatedToLocallyInstalledPackages\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
 MoverOfInstallationPackageFiles -d-> "locallyInstalledPackages\n1" LocallyInstalledPackages
+MoverOfInstallationPackageFiles .> TerminalSingleton
 
 class IgnoredPackageNames {
     + IgnoredPackageNames()
@@ -235,15 +238,17 @@ LocallyInstalledPackage .u.> "1" Package
 LocallyInstalledPackage *--> "installationPackageFilesForDifferentPackageVersions\n0..*" ExtendedInstallationPackageFile
 LocallyInstalledPackage *-> "locallyInstalledVersion\n1" PackageVersion
 LocallyInstalledPackage .d.> "1" AbsolutePath
+LocallyInstalledPackage .d.> FileMoverSingleton
+LocallyInstalledPackage .> TerminalSingleton
 
-class FileMover {
+class FileMoverSingleton {
     + {static} move(\
     \n    from : AbsolutePath\
     \n    to : AbsolutePath) \
     \n: void
 }
 
-LocallyInstalledPackage .d.> FileMover
+FileMoverSingleton .> TerminalSingleton
 
 class SimpleInstallationPackageFile {
     + SimpleInstallationPackageFile(\
@@ -261,7 +266,8 @@ class SimpleInstallationPackageFile {
 SimpleInstallationPackageFile *-> "1" AbsolutePath
 SimpleInstallationPackageFile *-> "filename\n1" Filename
 SimpleInstallationPackageFile -> SimpleInstallationPackageFileType
-SimpleInstallationPackageFile .d.> FileMover
+SimpleInstallationPackageFile .d.> FileMoverSingleton
+SimpleInstallationPackageFile .> TerminalSingleton
 
 class ExtendedInstallationPackageFile {
     + ExtendedInstallationPackageFile(\
@@ -278,8 +284,6 @@ class ExtendedInstallationPackageFile {
     - relatedPackageName : PackageName
     - relatedPackageVersion : PackageVersion
 }
-
-MatchFinderForPackageFilesToLocallyInstalledPackages .> "0..*" ExtendedInstallationPackageFile : "<- creates an instance of ""ExtendedInstallationPackageFile""\nto be moved from place of creation\nto place of composition"
 
 ExtendedInstallationPackageFile *-> "absolutePath\n1" AbsolutePath
 ExtendedInstallationPackageFile *-> "filename\n1" Filename
@@ -351,5 +355,11 @@ class Filename {
 enum SimpleInstallationPackageFileType {
     PARTIALLY_DOWNLOADED
     MISSING_LOCALLY_INSTALLED_PACKAGE
+}
+
+class TerminalSingleton {
+    + static TerminalSingleton get()
+    + TerminalSingleton printText(string text)
+    - TerminalSingleton()
 }
 @enduml
