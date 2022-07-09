@@ -19,7 +19,7 @@ int main() {
     message << ignoredPackageNames->generateReport()
             << locallyInstalledPackages->generateReport()
             << matchFinderWithPackageFilesRelatedToPackages->generateReport();
-    TerminalSingleton::printText(message);
+    TerminalSingleton::get().printText(message);
 
     // MOVE PACKAGE FILES TO SEPARATE DIRECTORY
     auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(

@@ -6,10 +6,19 @@
 
 #include <iostream>
 
-void TerminalSingleton::printText(const std::string& text) {
-    std::cout << text;
+const TerminalSingleton& TerminalSingleton::get() {
+    // Source: https://stackoverflow.com/questions/50995599/make-unique-doesnt-compile-for-creating-a-singleton-instance/50995962#50995962
+    // Create the instance either with or without parentheses;
+    //  I prefer to write the parentheses to clearly show the constructor invokation
+    static TerminalSingleton theOneAndOnlyTerminalSingletonInstance = TerminalSingleton();
+    return theOneAndOnlyTerminalSingletonInstance;
 }
 
-void TerminalSingleton::printText(const std::stringstream& textstream) {
+const TerminalSingleton& TerminalSingleton::printText(const std::string& text) const {
+    std::cout << text;
+    return *this;
+}
+
+void TerminalSingleton::printText(const std::stringstream& textstream) const {
     std::cout << textstream.str();
 }

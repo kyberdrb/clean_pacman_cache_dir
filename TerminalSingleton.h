@@ -1,5 +1,5 @@
 //
-// Created by laptop on 9/5/22.
+// Created by laptop on 7/9/22.
 //
 
 #pragma once
@@ -9,8 +9,12 @@
 
 class TerminalSingleton {
 public:
-    static void printText(const std::string& text);
-    static void printText(const std::stringstream& textstream);
+    static const TerminalSingleton& get();
+
+    // Return reference to the instance to enable Fluent Interface, i.e. function chaining,
+    //  to print text continuously
+    const TerminalSingleton& printText(const std::string& text) const;
+    void printText(const std::stringstream& textstream) const;
 
     // Disable copy semantics:
     //   - disable copy constructor
@@ -27,5 +31,7 @@ public:
     TerminalSingleton& operator=(TerminalSingleton&& otherTerminalSingleton) = delete;
 
 private:
+    // Define only the default constructor and make it private
+    //  so that only the Singleton class controls the creation and access to the single instance
     TerminalSingleton() = default;
 };

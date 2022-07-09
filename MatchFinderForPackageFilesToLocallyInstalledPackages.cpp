@@ -47,7 +47,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
 
         // For debugging purposes
 //        if (packageFilenameAsText == "libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst") {
-//            TerminalSingleton::printText("Here we go...\n");
+//            TerminalSingleton::get().printText("Here we go...\n");
 //        }
 
         if (packageFile.is_regular_file()) {
@@ -112,7 +112,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     // Instead, it shows an error message saying "Cannot instantiate printer for default visualizer"
 //                    std::stringstream message;
 //                    message << exception.what() << "\n";
-//                    TerminalSingleton::printText(message);
+//                    TerminalSingleton::get().printText(message);
 
                     packageWithInferredNameExact->getNextInferredPackageNameCandidate();
                     continue;

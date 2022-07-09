@@ -23,7 +23,7 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
         << "===============================================\n\n"
         << "MOVING PACKAGES\n\n";
 
-    TerminalSingleton::printText(message);
+    TerminalSingleton::get().printText(message);
 
     std::string pathToDuplicateFilesDirectoryAsText =
             this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";

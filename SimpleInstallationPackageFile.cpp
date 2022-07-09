@@ -46,6 +46,6 @@ void SimpleInstallationPackageFile::moveToSeparateDirectoryForDeletion(const Abs
             << "\t" << *(to) << "\n\n";
     }
 
-    TerminalSingleton::printText(message);
+    TerminalSingleton::get().printText(message);
     FileMoverSingleton::move(from, *(to));
 }
