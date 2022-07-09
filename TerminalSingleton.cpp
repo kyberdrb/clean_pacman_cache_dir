@@ -8,7 +8,7 @@
 
 // Create the instance either with or without parentheses;
 //  I prefer to write the constructor invokation explicitly to clearly show the instance creation
-TerminalSingleton TerminalSingleton::theOneAndOnlyTerminalSingletonInstance;
+TerminalSingleton TerminalSingleton::theOneAndOnlyTerminalSingletonInstance = TerminalSingleton();
 
 const TerminalSingleton& TerminalSingleton::get() {
     return TerminalSingleton::theOneAndOnlyTerminalSingletonInstance;
