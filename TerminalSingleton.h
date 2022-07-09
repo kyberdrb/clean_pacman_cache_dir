@@ -31,6 +31,8 @@ public:
     TerminalSingleton& operator=(TerminalSingleton&& otherTerminalSingleton) = delete;
 
 private:
+    static TerminalSingleton theOneAndOnlyTerminalSingletonInstance;
+
     // Define only the default constructor and make it private
     //  so that only the Singleton class controls the creation and access to the single instance
     TerminalSingleton() = default;
