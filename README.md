@@ -3982,6 +3982,9 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+ld+undefined+reference+to
     - https://stackoverflow.com/questions/14557657/linker-error-c-undefined-reference
     - https://www.geeksforgeeks.org/static-data-members-c/
+    - https://duckduckgo.com/?q=static+class+design+pattern&t=ffab&ia=web
+    - https://stackoverflow.com/questions/15178769/singleton-design-pattern-vs-static-class
+    - https://stackoverflow.com/questions/15178769/singleton-design-pattern-vs-static-class/47002325#47002325
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
