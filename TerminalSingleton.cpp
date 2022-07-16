@@ -6,13 +6,7 @@
 
 #include <iostream>
 
-// Derived class 'TerminalSingletonDerived' can be instantiated and destroyed entirely,
-//  even though it's in an inheritance relationship with 'TerminalSingleton'
-//  because the body of the derived class is emtpy,
-//  i.e. the class has no member functions or variables, which means that no object-slicing
-//  or partial destruction occurs; nice, safe and convenient trick/solution
-class TerminalSingletonDerived : public TerminalSingleton {};
-std::unique_ptr<TerminalSingleton> TerminalSingleton::theOneAndOnlyTerminalSingletonInstance = std::make_unique<TerminalSingletonDerived>();
+std::unique_ptr<TerminalSingleton> TerminalSingleton::theOneAndOnlyTerminalSingletonInstance;
 
 const TerminalSingleton& TerminalSingleton::get() {
     return *(TerminalSingleton::theOneAndOnlyTerminalSingletonInstance);

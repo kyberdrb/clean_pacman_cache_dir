@@ -33,14 +33,5 @@ public:
 private:
     static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance;
 
-protected:
-    // Define only the default constructor and make it hidden from public interface,
-    //  so that only the Singleton class controls the creation and access to the single instance,
-    //  but it's still visible for 'std::make_unique' and derived classes (for 'TerminalSingletonDerived'
-    //  and or for possible testing/mocking purposes)
-    // The constructor defined as 'protected' instead of 'private' to prevent errors:
-    //   - g++: "‘TerminalSingletonDerived::TerminalSingletonDerived()’ is implicitly deleted because the default definition would be ill-formed:"
-    //   - clang-tidy: "In template: call to implicitly-deleted default constructor of 'TerminalSingletonDerived'"
-    //      - even after making the default constructor 'public' in 'TerminalSingletonDerived' the error still persists
     TerminalSingleton() = default;
 };
