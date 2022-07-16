@@ -1,5 +1,5 @@
 //
-// Created by laptop on 7/9/22.
+// Created by laptop on 7/16/22.
 //
 
 #pragma once
@@ -31,9 +31,16 @@ public:
     TerminalSingleton& operator=(TerminalSingleton&& otherTerminalSingleton) = delete;
 
 private:
-    static TerminalSingleton theOneAndOnlyTerminalSingletonInstance;
+    static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance;
 
-    // Define only the default constructor and make it private
-    //  so that only the Singleton class controls the creation and access to the single instance
+protected:
+    // Define only the default constructor and make it hidden from public interface,
+    //  so that only the Singleton class controls the creation and access to the single instance,
+    //  but it's still visible for 'std::make_unique' and derived classes (for 'TerminalSingletonDerived'
+    //  and or for possible testing/mocking purposes)
+    // The constructor defined as 'protected' instead of 'private' to prevent errors:
+    //   - g++: "‘TerminalSingletonDerived::TerminalSingletonDerived()’ is implicitly deleted because the default definition would be ill-formed:"
+    //   - clang-tidy: "In template: call to implicitly-deleted default constructor of 'TerminalSingletonDerived'"
+    //      - even after making the default constructor 'public' in 'TerminalSingletonDerived' the error still persists
     TerminalSingleton() = default;
 };

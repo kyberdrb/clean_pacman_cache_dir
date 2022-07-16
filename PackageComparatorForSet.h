@@ -1,3 +1,5 @@
+// TODO delete this class - no longer used in the project
+
 //
 // Created by laptop on 5/7/22.
 //
