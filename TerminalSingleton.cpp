@@ -1,14 +1,19 @@
 //
-// Created by laptop on 7/19/22.
+// Created by laptop on 7/20/22.
 //
 
 #include "TerminalSingleton.h"
 
 #include <iostream>
 
+// Making the 'std::make_unique' a friend of this class fixes the error message in clang-tidy:
+//     "calling a private constructor of class 'TerminalSingleton'"
+//  and its related error message from the compiler
+//     "error: ‘constexpr TerminalSingleton::TerminalSingleton()’ is private within this context"
+std::unique_ptr<TerminalSingleton> TerminalSingleton::theOneAndOnlyTerminalSingletonInstance = std::make_unique<TerminalSingleton>();
+
 const TerminalSingleton& TerminalSingleton::get() {
-    static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance;
-    return *theOneAndOnlyTerminalSingletonInstance;
+    return *(TerminalSingleton::theOneAndOnlyTerminalSingletonInstance);
 }
 
 const TerminalSingleton& TerminalSingleton::printText(const std::string& text) const {
