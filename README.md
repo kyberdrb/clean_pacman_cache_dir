@@ -3724,6 +3724,9 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
         - iterating through files
     - EmployeeManagementSystem - https://github.com/kyberdrb/EmployeeManagementSystem
         - _Singleton_ design pattern implementation from `ID_Pool` class implementation
+- git
+    - https://duckduckgo.com/?t=ffab&q=git+merge+two+local+commits&ia=web&iax=qa
+    - https://stackoverflow.com/questions/12522565/how-can-i-combine-two-commits-into-one-commit#12523432
 - UML / PlantUML
     - https://duckduckgo.com/?t=ffab&q=uml+abstract+class&ia=web
     - https://www.guru99.com/uml-class-diagram.html
