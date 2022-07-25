@@ -1,15 +1,19 @@
 //
-// Created by laptop on 7/20/22.
+// Created by laptop on 7/25/22.
 //
 
 #include "TerminalSingleton.h"
 
 #include <iostream>
 
-std::unique_ptr<TerminalSingleton> TerminalSingleton::theOneAndOnlyTerminalSingletonInstance;
+// Formal/minimal constructor implementation
+TerminalSingleton::TerminalSingleton(const PrivateAuthorizationToken& privateAuthorizationToken) {}
 
 const TerminalSingleton& TerminalSingleton::get() {
-    return *(TerminalSingleton::theOneAndOnlyTerminalSingletonInstance);
+    static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance =
+            std::make_unique<TerminalSingleton>(PrivateAuthorizationToken());
+
+    return *theOneAndOnlyTerminalSingletonInstance;
 }
 
 const TerminalSingleton& TerminalSingleton::printText(const std::string& text) const {
