@@ -6,13 +6,8 @@
 
 #include <iostream>
 
-// Formal/minimal constructor implementation
-TerminalSingleton::TerminalSingleton(const PrivateAuthorizationToken& privateAuthorizationToken) {}
-
 const TerminalSingleton& TerminalSingleton::get() {
-    static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance =
-            std::make_unique<TerminalSingleton>(PrivateAuthorizationToken());
-
+    static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance;
     return *theOneAndOnlyTerminalSingletonInstance;
 }
 
