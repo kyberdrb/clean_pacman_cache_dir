@@ -3848,6 +3848,10 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
     - https://duckduckgo.com/?t=ffab&q=plantuml+invisible+class&ia=web
     - https://stackoverflow.com/questions/56447433/plantuml-how-to-control-the-alignment-of-classes-of-the-same-rank
     - https://www.w3schools.com/charsets/ref_utf_arrows.asp
+    - https://duckduckgo.com/?q=plantuml+inner+class&t=ffab&iar=images&iax=images&ia=images&iai=http%3A%2F%2Fwww.plantuml.com%2Fplantuml%2Fpng%2FIyv9B2vMIClFD-HAXZ6Dk41y1MrTNJ0F0000
+    - https://forum.plantuml.net/3655/representing-inner-class-or-containement-in-class-diagram
+        - Representing inner class / nested class in PlantUML
+    - https://forum.plantuml.net/3655/representing-inner-class-or-containement-in-class-diagram?show=3656#a3656
 - C++ specific
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+member+vairable+member+function+with+the+same+name&ia=web&iax=qa
     - https://duckduckgo.com/?q=c%2B%2B+find+longest+prefix+match+string&t=ffab&ia=web
@@ -3976,12 +3980,16 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
         - First _Singleton_ design pattern implementation from `ID_Pool` class implementation `ID_Pool.h` and `ID_Pool.cpp` files
     - https://duckduckgo.com/?q=make_unique+singleton&t=ffab&ia=web
     - https://stackoverflow.com/questions/50995599/make-unique-doesnt-compile-for-creating-a-singleton-instance
+    - https://stackoverflow.com/questions/50995599/make-unique-doesnt-compile-for-creating-a-singleton-instance/50995962#50995962
     - https://stackoverflow.com/questions/50995599/make-unique-doesnt-compile-for-creating-a-singleton-instance/50996628#50996628
     - https://stackoverflow.com/questions/33905030/how-to-make-stdmake-unique-a-friend-of-my-class
     - https://stackoverflow.com/questions/33905030/how-to-make-stdmake-unique-a-friend-of-my-class/33905304#33905304
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+ld+undefined+reference+to
     - https://stackoverflow.com/questions/14557657/linker-error-c-undefined-reference
     - https://www.geeksforgeeks.org/static-data-members-c/
+    - https://duckduckgo.com/?q=static+class+design+pattern&t=ffab&ia=web
+    - https://stackoverflow.com/questions/15178769/singleton-design-pattern-vs-static-class
+    - https://stackoverflow.com/questions/15178769/singleton-design-pattern-vs-static-class/47002325#47002325
 - General programming
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+parameter+argument&ia=web
 - CMake, LLVM toolchain, `clang`, cross-compiling
