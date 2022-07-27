@@ -20,11 +20,23 @@ MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFiles
         locallyInstalledPackages(locallyInstalledPackages)
 {
     relatePackageFilesToLocallyInstalledPackages();
-
 }
 
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackages() {
-    std::filesystem::path pacmanCacheDirPath {this->pacmanCacheDir};
+    auto pacmanCacheDir = std::make_unique<AbsolutePath>(this->pacmanCacheDir);
+    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
+
+//    auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
+//    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
+
+//    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>("/home/laptop/.cache/pikaur/pkg/");
+//    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirUser);
+}
+
+void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackagesForDirectory(
+        const AbsolutePath& directoryWithInstallationPackageFiles)
+{
+    std::filesystem::path pacmanCacheDirPath {directoryWithInstallationPackageFiles.getAbsolutePath()};
 
     for (const auto& packageFile : std::filesystem::directory_iterator(pacmanCacheDirPath)) {
         const auto& packageFileExtension = packageFile.path().extension().string();

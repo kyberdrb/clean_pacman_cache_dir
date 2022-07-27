@@ -30,4 +30,5 @@ private:
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
 
     void relatePackageFilesToLocallyInstalledPackages();
+    void relatePackageFilesToLocallyInstalledPackagesForDirectory(const AbsolutePath& directoryWithInstallationPackageFiles);
 };
