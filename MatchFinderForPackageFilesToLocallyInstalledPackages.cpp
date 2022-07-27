@@ -23,7 +23,11 @@ MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFiles
 }
 
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackages() {
-    auto pacmanCacheDir = std::make_unique<AbsolutePath>(this->pacmanCacheDir);
+    // TODO iterate through multiple directories with installation package files, not only within the default pacman's cache dir "/var/cache/pacman/pkg"
+    //  but also in pikaur cache directories:
+
+    // TODO share one copy of 'pacmanCacheDir' across all instances that uses it
+    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
 
 //    auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
