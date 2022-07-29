@@ -15,7 +15,7 @@ MoverOfInstallationPackageFiles::MoverOfInstallationPackageFiles(
     locallyInstalledPackages(locallyInstalledPackages)
 {}
 
-void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir() const {
+void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir(bool dryRun) const {
     std::stringstream message;
 
     message
@@ -25,12 +25,17 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
 
     TerminalSingleton::get().printText(message.str());
 
-    std::string pathToDuplicateFilesDirectoryAsText =
+    std::string pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText =
             this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
 
-    std::filesystem::create_directories(pathToDuplicateFilesDirectoryAsText);
+    std::filesystem::create_directories(pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText);
 
-    const auto directoryForInstallationPackageFilesForDeletion = std::make_unique<AbsolutePath>(pathToDuplicateFilesDirectoryAsText);
+    const auto directoryForInstallationPackageFilesForDeletion =
+            std::make_unique<AbsolutePath>(pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText);
+
+    if (dryRun) {
+        return;
+    }
 
     locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
     packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);

@@ -6,10 +6,17 @@
 
 #include "PackageNameMissing.h"
 #include "PackageWithInferredName.h"
+#include "TerminalSingleton.h"
 
 #include <filesystem>
 #include <memory>
 #include <set>
+
+// libs to detect the home directory path of the current user, even behind 'sudo'
+//#include <csignal> // for 'getuid()' to get the user ID (UID) for 'getpwuid()' - offered as auto-include by CLion - preffered, because it produces smaller debug binary by 224 B
+#include <unistd.h> // for 'getuid()' to get the user ID (UID) for 'getpwuid()' - included in examples from people on the internet
+#include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
+#include <libaudit.h> // for 'audit_getloginuid()' to detect the UID of the user who invoked 'sudo', instead of the 'root' user
 
 // For debugging purposes
 //#include "TerminalSingleton.h"
@@ -27,20 +34,77 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
     //  but also in pikaur cache directories:
 
     // TODO share one copy of 'pacmanCacheDir' across all instances that uses it
-    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
-    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
+//    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
+//    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
 
-//    auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
-//    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
+    auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
+    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
 
+    // TODO find out the home directory of current user programmatically; something like
+    //     "${HOME}/.cache/pikaur/pkg/"
+    //  in shell
 //    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>("/home/laptop/.cache/pikaur/pkg/");
-//    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirUser);
+
+    std::stringstream pikaurCacheDirUserAsStream;
+
+    const char* currentUserHomeDirCheck = NULL;
+    currentUserHomeDirCheck = std::getenv("HOME");
+    currentUserHomeDirCheck = std::getenv("HOMEE");
+    currentUserHomeDirCheck = std::getenv("HOME");
+
+    std::string currentUserHomeDir{};
+    if (currentUserHomeDirCheck != NULL) {
+        currentUserHomeDir = std::getenv("HOME");
+        TerminalSingleton::get().printText(currentUserHomeDir);
+        TerminalSingleton::get().printText("\n");
+    }
+
+    //if (currentUserHomeDirCheck == NULL) {
+        // the '$HOME' variable is not defined in the system - using fallback
+        currentUserHomeDir = getpwuid(getuid())->pw_dir;
+        TerminalSingleton::get().printText(currentUserHomeDir);
+        TerminalSingleton::get().printText("\n");
+
+        currentUserHomeDir = getpwuid(geteuid())->pw_dir;
+        TerminalSingleton::get().printText(currentUserHomeDir);
+        TerminalSingleton::get().printText("\n");
+
+        currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
+        TerminalSingleton::get().printText(currentUserHomeDir);
+        TerminalSingleton::get().printText("\n");
+
+        std::exit(1);
+    //}
+
+    pikaurCacheDirUserAsStream << currentUserHomeDir;
+    pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";
+
+    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>(pikaurCacheDirUserAsStream.str());
+    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirUser);
 }
 
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackagesForDirectory(
         const AbsolutePath& directoryWithInstallationPackageFiles)
 {
     std::filesystem::path pacmanCacheDirPath {directoryWithInstallationPackageFiles.getAbsolutePath()};
+
+    try {
+        std::filesystem::exists(pacmanCacheDirPath);
+    } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
+        std::stringstream message;
+
+        message
+                << exception.what() << "\n"
+                << "Skipping scanning of directory: " << pacmanCacheDirPath << "\n"
+                << "Error: Insufficient permissions to access the files in the directory or file path doesn't exist." << "\n"
+                << "Please, run this program with elevated priviledges as 'sudo' or 'root' user"
+                   " and make sure the source file is present on the filesystem."
+                << "\n---\n";
+
+        TerminalSingleton::get().printText(message.str());
+
+        return;
+    }
 
     for (const auto& packageFile : std::filesystem::directory_iterator(pacmanCacheDirPath)) {
         const auto& packageFileExtension = packageFile.path().extension().string();
@@ -89,7 +153,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     //  - break out of the loop
 
                     // For debugging purposes
-//                    assert(iteratorPointingToMatchingLocallyInstalledPackage.getName().string() == packageWithInferredName->getName().string());
+//                    assert(matchingLocallyInstalledPackage.getName().string() == packageWithInferredName->getName().string());
 
                     auto inferredPackageVersion = packageWithInferredNameExact->extractPackageVersion();
 
@@ -103,12 +167,24 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                             *( dynamic_cast<const LocallyInstalledPackage*>(&matchingLocallyInstalledPackage) );
 
                     // For debugging purposes
-                    //                assert(locallyInstalledPackageExact != nullptr);
+                    // assert(locallyInstalledPackageExact != nullptr);
 
                     LocallyInstalledPackage& localyInstalledPackageExactModifiable =
                             *( const_cast<LocallyInstalledPackage*>(&locallyInstalledPackageExact) );
 
-                    bool wasInstallationPackageFileAdded = localyInstalledPackageExactModifiable.addPackageFileToDeletionCandidates(std::move(packageRelatedFile));
+                    // For debugging purposes
+                    //  KNOWN BUG: algorithm matches installation package file 'gdb-frontend-gui' to package 'gdb'
+                    //   instead of adding it to the collection of missing packages when no 'gdb-frontend-gui' is present in the system
+                    //   but the behavior of deleting the package file, because its version ["frontend-bin-0.11.2.beta-1"]
+                    //   was lower than the one of 'gdb' ["12.1-1"]
+                    //   but other cases I didn't test, and I don't know what will happen, when the version will have different composition
+//                    if (matchingLocallyInstalledPackage.getName().string() == "gdb") {
+//                        TerminalSingleton::get().printText("Found suspicious package");
+//                    }
+
+                    bool wasInstallationPackageFileAdded =
+                            localyInstalledPackageExactModifiable.addPackageFileToDeletionCandidatesOnlyWhenMatchingCriteria(
+                                    std::move(packageRelatedFile));
 
                     // if the package file was added to the deletion candidates for the particular package,
                     //  save the reference to the package file for generating only

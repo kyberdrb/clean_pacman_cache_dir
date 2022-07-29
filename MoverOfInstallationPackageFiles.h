@@ -12,7 +12,7 @@ public:
             const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages,
             const LocallyInstalledPackages& locallyInstalledPackages);
 
-    void moveChosenInstallationPackageFilesToSeparateDir() const;
+    void moveChosenInstallationPackageFilesToSeparateDir(bool dryRun) const;
 
 private:
     const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages;

@@ -29,7 +29,16 @@ int main() {
 //            *matchFinderWithPackageFilesRelatedToPackages,
 //            directoryForMovedInstallationPackageFiles);
 
-    installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir();
+    // TODO delete variable 'skipActualFileDeletion' with parameter for related function for release version:
+    //  needed to test the access to the system cache directory
+    //    "/var/cache/pikaur/pkg/"
+    //  or
+    //    "/var/cache/private/pikaur/pkg/"
+    //  for 'pikaur'
+
+    // Variable to run this utility with superuser/root permissions, to access the system cache dir for pikaur but to skip the deletion
+    bool skipActualFileDeletion = true;
+    installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir(skipActualFileDeletion);
 
     return 0;
 }

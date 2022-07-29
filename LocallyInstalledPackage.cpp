@@ -32,7 +32,7 @@ uint_fast16_t LocallyInstalledPackage::getNumberOfInstallationPackageFilesForDif
     return this->installationPackageFilesForDifferentPackageVersions.size();
 }
 
-bool LocallyInstalledPackage::addPackageFileToDeletionCandidates(
+bool LocallyInstalledPackage::addPackageFileToDeletionCandidatesOnlyWhenMatchingCriteria(
         std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile)
 {
     bool isPackageNamesMatching = Package::getName() == packageRelatedPackageFile->getRelatedPackageName();

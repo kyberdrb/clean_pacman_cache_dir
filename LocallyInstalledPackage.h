@@ -25,7 +25,7 @@ public:
      * @return TRUE if the package file was added to the container of package files for deletion
      * or false when package names are different, package version is matching or package is ignored
      */
-    bool addPackageFileToDeletionCandidates(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
+    bool addPackageFileToDeletionCandidatesOnlyWhenMatchingCriteria(std::unique_ptr<ExtendedInstallationPackageFile> packageRelatedPackageFile);
 
     void movePackageFilesForDifferentVersionsToSeparateDir(
             const AbsolutePath& absolutePathToDirectoryForOtherVersionsOfInstallationPackageFiles) const;
