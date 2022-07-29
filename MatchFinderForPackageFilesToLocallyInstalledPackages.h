@@ -21,6 +21,6 @@ private:
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
 
-    void relatePackageFilesToLocallyInstalledPackages();
+    void relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
     void relatePackageFilesToLocallyInstalledPackagesForDirectory(const AbsolutePath& directoryWithInstallationPackageFiles);
 };

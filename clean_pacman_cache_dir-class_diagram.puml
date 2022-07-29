@@ -32,7 +32,7 @@ class MoverOfInstallationPackageFiles {
 }
 
 note left of MoverOfInstallationPackageFiles::pacmanCacheDir
-    "/var/cache/pacman/pkg"
+    "/var/cache/pacman/pkg/"
 end note
 
 MoverOfInstallationPackageFiles -d-> "packageFilesRelatedToLocallyInstalledPackages\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
@@ -94,7 +94,7 @@ class LocallyInstalledPackages {
 }
 
 note left of LocallyInstalledPackages::pacmanCacheDir
-    "/var/cache/pacman/pkg"
+    "/var/cache/pacman/pkg/"
 end note
 
 LocallyInstalledPackages -d-> IgnoredPackageNames
@@ -137,7 +137,7 @@ class MatchFinderForPackageFilesToLocallyInstalledPackages {
 }
 
 note left of MatchFinderForPackageFilesToLocallyInstalledPackages::pacmanCacheDir
-    "/var/cache/pacman/pkg"
+    "/var/cache/pacman/pkg/"
 end note
 
 MatchFinderForPackageFilesToLocallyInstalledPackages -> LocallyInstalledPackages

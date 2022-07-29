@@ -19,6 +19,6 @@ private:
     const LocallyInstalledPackages& locallyInstalledPackages;
 
     // TODO share one copy of 'pacmanCacheDir'
-    // TODO rename member var 'pacmanCacheDir' to 'dirForInstalltionPackageFilesForDeletion'
-    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
+    // TODO rename member var 'pacmanCacheDir' to 'dirForInstalltionPackageFilesForDeletion'/'installationPackageFilesDeletionCandidatesDirectory'
+    const std::string pacmanCacheDir = "/var/cache/pacman/pkg/";
 };

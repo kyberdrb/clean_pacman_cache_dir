@@ -47,7 +47,7 @@ private:
     std::set<std::reference_wrapper<const LocallyInstalledPackage>> packagesWithInstallationPackageFilesForDifferentVersions;
 
     // TODO share one copy of 'pacmanCacheDir'
-    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
+    const std::string pacmanCacheDir = "/var/cache/pacman/pkg/";
 
     void fillLocallyInstalledPackages();
     void addLocallyInstalledPackage(std::unique_ptr<LocallyInstalledPackage> locallyInstalledPackage);

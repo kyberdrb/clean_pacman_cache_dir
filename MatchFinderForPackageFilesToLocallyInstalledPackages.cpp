@@ -12,9 +12,7 @@
 #include <memory>
 #include <set>
 
-// libs to detect the home directory path of the current user, even behind 'sudo'
-//#include <csignal> // for 'getuid()' to get the user ID (UID) for 'getpwuid()' - offered as auto-include by CLion - preffered, because it produces smaller debug binary by 224 B
-#include <unistd.h> // for 'getuid()' to get the user ID (UID) for 'getpwuid()' - included in examples from people on the internet
+// helpers to detect the home directory path of the current user, even behind 'sudo'
 #include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
 #include <libaudit.h> // for 'audit_getloginuid()' to detect the UID of the user who invoked 'sudo', instead of the 'root' user
 
@@ -26,26 +24,26 @@ MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFiles
 :
         locallyInstalledPackages(locallyInstalledPackages)
 {
-    relatePackageFilesToLocallyInstalledPackages();
+    relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
 }
 
-void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackages() {
-    // TODO iterate through multiple directories with installation package files, not only within the default pacman's cache dir "/var/cache/pacman/pkg"
-    //  but also in pikaur cache directories:
+void MatchFinderForPackageFilesToLocallyInstalledPackages::relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs() {
+    // TODO add paths into a 'std::vector' (e.g. by calling a function designated for this purpose in the constructor)
+    //  and recompute the installation package files to locally installed packages relationships in one for-each loop (e.g. in )
 
-    // iterate cache directory for pacman
+    // Iterate cache directory for pacman
     // TODO share one copy of 'pacmanCacheDir' across all instances that uses it, and reference it with other more accurate variable names
     //  when used for different reasons
-//    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
-//    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
+    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
+    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
 
-    // iterate system cache directory for pikaur
+    // Iterate system cache directory for pikaur
     auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
 
-    // iterate user cache directory for pikaur
+    // Iterate user cache directory for pikaur
     std::stringstream pikaurCacheDirUserAsStream;
-    // The home directory detection can still fail when the user had been created without home directory
+    // the home directory detection can still fail when the user had been created without home directory
     std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
     pikaurCacheDirUserAsStream << currentUserHomeDir;
     pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";

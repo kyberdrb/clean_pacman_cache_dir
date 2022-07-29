@@ -28,7 +28,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. Check the contents of the pacman's cache directory
 
-        ls -1 /var/cache/pacman/pkg | less
+        ls -1 /var/cache/pacman/pkg/| less
 
 2. Move package file in versions for other than the locally installed package version into a separate directory by executing
 
@@ -37,7 +37,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 3. Verify contents of directories
 
-        ls -1 /var/cache/pacman/pkg | less
+        ls -1 /var/cache/pacman/pkg/| less
         du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
         ls -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
 
@@ -55,7 +55,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 5. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
 
-        ls -1 /var/cache/pacman/pkg | less
+        ls -1 /var/cache/pacman/pkg/| less
 
 ## Result
 
