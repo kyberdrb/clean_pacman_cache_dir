@@ -1,5 +1,5 @@
 #include "MoverOfInstallationPackageFiles.h"
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 int main() {
     // FIND IGNORED PACKAGES - OMMIT/EXCLUDE ALL PACKAGE FILES FROM DELETION THAT MATCH ANY OF THE IGNORED PACKAGE NAMES
@@ -15,7 +15,7 @@ int main() {
 
     // SHOW REPORT
     // Rely on the implicit move semantics - don't move the function's return value explicitly to allow compiler to do Move Elision
-    TerminalSingleton::get()
+    TerminalAndLoggerSingleton::get()
             .printAndLog(ignoredPackageNames->generateReport())
             .printAndLog(locallyInstalledPackages->generateReport())
             .printAndLog(matchFinderWithPackageFilesRelatedToPackages->generateReport());

@@ -2,7 +2,7 @@
 // Created by laptop on 7/25/22.
 //
 
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <ctime>
 #include <filesystem>
@@ -17,12 +17,13 @@
 #include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
 
 // Making the 'std::make_unique' a friend of this class fixes the error message in clang-tidy:
-//     "calling a private constructor of class 'TerminalSingleton'"
+//     "calling a private constructor of class 'TerminalAndLoggerSingleton'"
 //  and its related error message from the compiler
-//     "error: ‘constexpr TerminalSingleton::TerminalSingleton()’ is private within this context"
-std::unique_ptr<TerminalSingleton> TerminalSingleton::theOneAndOnlyTerminalSingletonInstance = std::make_unique<TerminalSingleton>();
+//     "error: ‘constexpr TerminalAndLoggerSingleton::TerminalAndLoggerSingleton()’ is private within this context"
+std::unique_ptr<TerminalAndLoggerSingleton> TerminalAndLoggerSingleton::theOneAndOnlyTerminalAndLoggerSingletonInstance =
+        std::make_unique<TerminalAndLoggerSingleton>();
 
-TerminalSingleton::TerminalSingleton() :
+TerminalAndLoggerSingleton::TerminalAndLoggerSingleton() :
         logFilePath()
 {
     std::stringstream logFileDirPathAsStream{};
@@ -42,11 +43,11 @@ TerminalSingleton::TerminalSingleton() :
     this->logFilePath = logFilePathAsStream.str();
 }
 
-const TerminalSingleton& TerminalSingleton::get() {
-    return *(TerminalSingleton::theOneAndOnlyTerminalSingletonInstance);
+const TerminalAndLoggerSingleton& TerminalAndLoggerSingleton::get() {
+    return *(TerminalAndLoggerSingleton::theOneAndOnlyTerminalAndLoggerSingletonInstance);
 }
 
-const TerminalSingleton& TerminalSingleton::printAndLog(const std::string& text) const {
+const TerminalAndLoggerSingleton& TerminalAndLoggerSingleton::printAndLog(const std::string& text) const {
     std::cout << text;
 
     std::ofstream logFile{logFilePath, std::ios::app};
@@ -55,6 +56,6 @@ const TerminalSingleton& TerminalSingleton::printAndLog(const std::string& text)
     return *this;
 }
 
-void TerminalSingleton::printText(const std::stringstream& textstream) const {
+void TerminalAndLoggerSingleton::printText(const std::stringstream& textstream) const {
     std::cout << textstream.str();
 }

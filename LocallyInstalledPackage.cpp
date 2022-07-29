@@ -9,12 +9,12 @@
 #include "LocallyInstalledPackage.h"
 
 #include "FileMoverSingleton.h"
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <sstream>
 
 // For debugging purposes
-//#include "TerminalSingleton.h"
+//#include "TerminalAndLoggerSingleton.h"
 
 LocallyInstalledPackage::LocallyInstalledPackage(
     std::unique_ptr<PackageName> packageName,
@@ -40,7 +40,7 @@ bool LocallyInstalledPackage::addPackageFileToDeletionCandidatesOnlyWhenMatching
 
     // For debugging purposes
 //    if (isPackageVersionDifferent) {
-//        TerminalSingleton::get().printAndLog("this is what I was waiting for...\n");
+//        TerminalAndLoggerSingleton::get().printAndLog("this is what I was waiting for...\n");
 //    }
 
     bool isPackageNonignored = !this->isIgnored;
@@ -72,7 +72,7 @@ void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
                 << "to separate directory:\n"
                 << "\t" << *(to) << "\n\n";
 
-        TerminalSingleton::get().printAndLog(message.str());
+        TerminalAndLoggerSingleton::get().printAndLog(message.str());
         FileMoverSingleton::move(from, *(to));
     }
 }

@@ -3,7 +3,7 @@
 //
 
 #include "MoverOfInstallationPackageFiles.h"
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <filesystem>
 
@@ -23,7 +23,7 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
         << "===============================================\n\n"
         << "MOVING PACKAGES\n\n";
 
-    TerminalSingleton::get().printAndLog(message.str());
+    TerminalAndLoggerSingleton::get().printAndLog(message.str());
 
     std::string pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText =
             this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";

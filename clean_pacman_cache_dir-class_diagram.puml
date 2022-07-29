@@ -16,7 +16,7 @@ main *-d-> "matchFinderWithPackageFilesRelatedToPackages ->\n1" MatchFinderForPa
 main .d.> MoverOfInstallationPackageFiles : "<- creates an instance of ""MoverOfInstallationPackageFiles""\nto be moved from place of creation\nto place of composition"
 main *-d-> "installationPackageFilesMover ->\n1" MoverOfInstallationPackageFiles
 
-main .> TerminalSingleton
+main .> TerminalAndLoggerSingleton
 
 class MoverOfInstallationPackageFiles {
     + MoverOfInstallationPackageFiles(\
@@ -37,7 +37,7 @@ end note
 
 MoverOfInstallationPackageFiles -d-> "packageFilesRelatedToLocallyInstalledPackages\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
 MoverOfInstallationPackageFiles -d-> "locallyInstalledPackages\n1" LocallyInstalledPackages
-MoverOfInstallationPackageFiles .> TerminalSingleton
+MoverOfInstallationPackageFiles .> TerminalAndLoggerSingleton
 
 class IgnoredPackageNames {
     + IgnoredPackageNames()
@@ -239,7 +239,7 @@ LocallyInstalledPackage *--> "installationPackageFilesForDifferentPackageVersion
 LocallyInstalledPackage *-> "locallyInstalledVersion\n1" PackageVersion
 LocallyInstalledPackage .d.> "1" AbsolutePath
 LocallyInstalledPackage .d.> FileMoverSingleton
-LocallyInstalledPackage .> TerminalSingleton
+LocallyInstalledPackage .> TerminalAndLoggerSingleton
 
 class FileMoverSingleton {
     + {static} move(\
@@ -248,7 +248,7 @@ class FileMoverSingleton {
     \n: void
 }
 
-FileMoverSingleton .> TerminalSingleton
+FileMoverSingleton .> TerminalAndLoggerSingleton
 
 class SimpleInstallationPackageFile {
     + SimpleInstallationPackageFile(\
@@ -267,7 +267,7 @@ SimpleInstallationPackageFile *-> "1" AbsolutePath
 SimpleInstallationPackageFile *-> "filename\n1" Filename
 SimpleInstallationPackageFile -> SimpleInstallationPackageFileType
 SimpleInstallationPackageFile .d.> FileMoverSingleton
-SimpleInstallationPackageFile .> TerminalSingleton
+SimpleInstallationPackageFile .> TerminalAndLoggerSingleton
 
 class ExtendedInstallationPackageFile {
     + ExtendedInstallationPackageFile(\
@@ -357,9 +357,9 @@ enum SimpleInstallationPackageFileType {
     MISSING_LOCALLY_INSTALLED_PACKAGE
 }
 
-class TerminalSingleton {
-    + [static] get() : TerminalSingleton
-    + printAndLog(text : string) : TerminalSingleton
-    - TerminalSingleton()
+class TerminalAndLoggerSingleton {
+    + {static} get() : TerminalAndLoggerSingleton
+    + printAndLog(text : string) : TerminalAndLoggerSingleton
+    - TerminalAndLoggerSingleton()
 }
 @enduml

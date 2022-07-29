@@ -6,7 +6,7 @@
 
 #include "PackageNameMissing.h"
 #include "PackageWithInferredName.h"
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <filesystem>
 #include <memory>
@@ -17,7 +17,7 @@
 #include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
 
 // For debugging purposes
-//#include "TerminalSingleton.h"
+//#include "TerminalAndLoggerSingleton.h"
 
 MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFilesToLocallyInstalledPackages(
         LocallyInstalledPackages& locallyInstalledPackages)
@@ -70,7 +70,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                    " and make sure the source file is present on the filesystem."
                 << "\n---\n";
 
-        TerminalSingleton::get().printAndLog(message.str());
+        TerminalAndLoggerSingleton::get().printAndLog(message.str());
 
         return;
     }
@@ -96,7 +96,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
 
         // For debugging purposes
 //        if (packageFilenameAsText == "libyuv-r2266+eb6e7bb6-1-x86_64.pkg.tar.zst") {
-//            TerminalSingleton::get().printAndLog("Here we go...\n");
+//            TerminalAndLoggerSingleton::get().printAndLog("Here we go...\n");
 //        }
 
         if (packageFile.is_regular_file()) {
@@ -161,7 +161,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     //   to check the criteria used when adding a package file to the deletion candidates in
                     //   'installationPackageFilesForDifferentPackageVersions'
 //                    if (matchingLocallyInstalledPackage.getName().string() == "gdb") {
-//                        TerminalSingleton::get().printAndLog("Found suspicious package");
+//                        TerminalAndLoggerSingleton::get().printAndLog("Found suspicious package");
 //                    }
 
                     bool wasInstallationPackageFileAdded =
@@ -186,7 +186,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                     // Instead, it shows an error message saying "Cannot instantiate printer for default visualizer"
 //                    std::stringstream message;
 //                    message << exception.what() << "\n";
-//                    TerminalSingleton::get().printAndLog(message.str());
+//                    TerminalAndLoggerSingleton::get().printAndLog(message.str());
 
                     packageWithInferredNameExact->getNextInferredPackageNameCandidate();
                     continue;

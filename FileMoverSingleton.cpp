@@ -4,7 +4,7 @@
 
 #include "FileMoverSingleton.h"
 
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <filesystem>
 #include <sstream>
@@ -23,6 +23,6 @@ void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) 
                " and make sure the source file is present on the filesystem."
             << "\n---\n";
 
-        TerminalSingleton::get().printAndLog(message.str());
+        TerminalAndLoggerSingleton::get().printAndLog(message.str());
     }
 }

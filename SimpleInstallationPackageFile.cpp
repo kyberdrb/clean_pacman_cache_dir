@@ -5,7 +5,7 @@
 #include "SimpleInstallationPackageFile.h"
 
 #include "FileMoverSingleton.h"
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <sstream>
 
@@ -46,6 +46,6 @@ void SimpleInstallationPackageFile::moveToSeparateDirectoryForDeletion(const Abs
             << "\t" << *(to) << "\n\n";
     }
 
-    TerminalSingleton::get().printAndLog(message.str());
+    TerminalAndLoggerSingleton::get().printAndLog(message.str());
     FileMoverSingleton::move(from, *(to));
 }
