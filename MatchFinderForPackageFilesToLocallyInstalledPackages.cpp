@@ -33,49 +33,20 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
     // TODO iterate through multiple directories with installation package files, not only within the default pacman's cache dir "/var/cache/pacman/pkg"
     //  but also in pikaur cache directories:
 
-    // TODO share one copy of 'pacmanCacheDir' across all instances that uses it
+    // iterate cache directory for pacman
+    // TODO share one copy of 'pacmanCacheDir' across all instances that uses it, and reference it with other more accurate variable names
+    //  when used for different reasons
 //    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
 //    this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
 
+    // iterate system cache directory for pikaur
     auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
 
-    // TODO find out the home directory of current user programmatically; something like
-    //     "${HOME}/.cache/pikaur/pkg/"
-    //  in shell
-//    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>("/home/laptop/.cache/pikaur/pkg/");
-
+    // iterate user cache directory for pikaur
     std::stringstream pikaurCacheDirUserAsStream;
-
-    const char* currentUserHomeDirCheck = NULL;
-    currentUserHomeDirCheck = std::getenv("HOME");
-    currentUserHomeDirCheck = std::getenv("HOMEE");
-    currentUserHomeDirCheck = std::getenv("HOME");
-
-    std::string currentUserHomeDir{};
-    if (currentUserHomeDirCheck != NULL) {
-        currentUserHomeDir = std::getenv("HOME");
-        TerminalSingleton::get().printText(currentUserHomeDir);
-        TerminalSingleton::get().printText("\n");
-    }
-
-    //if (currentUserHomeDirCheck == NULL) {
-        // the '$HOME' variable is not defined in the system - using fallback
-        currentUserHomeDir = getpwuid(getuid())->pw_dir;
-        TerminalSingleton::get().printText(currentUserHomeDir);
-        TerminalSingleton::get().printText("\n");
-
-        currentUserHomeDir = getpwuid(geteuid())->pw_dir;
-        TerminalSingleton::get().printText(currentUserHomeDir);
-        TerminalSingleton::get().printText("\n");
-
-        currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
-        TerminalSingleton::get().printText(currentUserHomeDir);
-        TerminalSingleton::get().printText("\n");
-
-        std::exit(1);
-    //}
-
+    // The home directory detection can still fail when the user had been created without home directory
+    std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
     pikaurCacheDirUserAsStream << currentUserHomeDir;
     pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";
 
@@ -173,11 +144,24 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
                             *( const_cast<LocallyInstalledPackage*>(&locallyInstalledPackageExact) );
 
                     // For debugging purposes
-                    //  KNOWN BUG: algorithm matches installation package file 'gdb-frontend-gui' to package 'gdb'
-                    //   instead of adding it to the collection of missing packages when no 'gdb-frontend-gui' is present in the system
-                    //   but the behavior of deleting the package file, because its version ["frontend-bin-0.11.2.beta-1"]
-                    //   was lower than the one of 'gdb' ["12.1-1"]
-                    //   but other cases I didn't test, and I don't know what will happen, when the version will have different composition
+                    //  KNOWN BUG: installation package file for package 'gdb-frontend-gui' is assigned to locally installed package 'gdb',
+                    //   instead of addied to the collection of installation package files for missing packages
+                    //   because no 'gdb-frontend-gui' package is not present, i.e. missing in the system.
+                    //   But the behavior of deleting the package file, because its version was different is correct. Because the
+                    //   incorrectly related installation package file has different version than the locally installed one,
+                    //   the installation package file will be still added to the deletion candidates for the locally installed package:
+                    //   REAL VERSION COMPARISON SCENARIO
+                    //       [gdb]         [gdb-frontend-gui]
+                    //       ["12.1-1"]    ["frontend-bin-0.11.2.beta-1"]
+                    //   HYPOTHETICAL VERSION COMPARISON SCENARIO
+                    //       [gdb]         [gdb-frontend-gui]
+                    //       ["12.1-1"]    ["frontend-bin-12.1-1"]
+                    //   Even when the versions of both packages would match, the extracted package version for the unrelated installation
+                    //   package file would be partial and thus prepended with the rest of the left-over filename of the installation
+                    //   package file, thus still being marked as deletion candidate for the locally installed package.
+                    //   See function 'addPackageFileToDeletionCandidatesOnlyWhenMatchingCriteria' in 'LocallyInstalledPackage'
+                    //   to check the criteria used when adding a package file to the deletion candidates in
+                    //   'installationPackageFilesForDifferentPackageVersions'
 //                    if (matchingLocallyInstalledPackage.getName().string() == "gdb") {
 //                        TerminalSingleton::get().printText("Found suspicious package");
 //                    }
