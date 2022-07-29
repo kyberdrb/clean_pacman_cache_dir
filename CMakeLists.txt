@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 #  in order to fix a warning message "clang-13: warning: -lalpm: 'linker' input unused [-Wunused-command-line-argument]"
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message("Using GNU C++ compiler")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lalpm")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lalpm -laudit")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message("using UNIX/Apple Clang C++ compiler")
     link_libraries(alpm)

@@ -28,7 +28,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. Check the contents of the pacman's cache directory
 
-        ls -1 /var/cache/pacman/pkg | less
+        ls -1 /var/cache/pacman/pkg/| less
 
 2. Move package file in versions for other than the locally installed package version into a separate directory by executing
 
@@ -37,7 +37,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 3. Verify contents of directories
 
-        ls -1 /var/cache/pacman/pkg | less
+        ls -1 /var/cache/pacman/pkg/| less
         du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
         ls -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
 
@@ -55,7 +55,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 5. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
 
-        ls -1 /var/cache/pacman/pkg | less
+        ls -1 /var/cache/pacman/pkg/| less
 
 ## Result
 
@@ -3423,6 +3423,35 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
         - comparator predicate
             - direct comparison in comparator
                 - public friend function - all params const - 'std::set' encapsulated in class
+
+## Testing algorithm on cache directories accessible only for root
+
+Permission modification - switch to user
+
+    sudo chown --dereference laptop:users "$(dirname "$(sudo realpath "/var/cache/pikaur")")"
+
+Permission restoration - back to `root`
+
+    sudo chown --dereference root:root "$(dirname "$(sudo realpath "/var/cache/pikaur")")"
+
+Sources
+
+- https://duckduckgo.com/?q=ls+dir+cannot+access+permission+denied+even+when+owner&t=ffab&ia=web
+- https://askubuntu.com/questions/850227/ls-cannot-open-directory-permission-denied
+- https://stackoverflow.com/questions/48225618/ls-permission-denied-even-though-i-have-read-access-to-the-directory#48225881
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+get+home+directory&ia=web
+- How do you get there home directory - https://cplusplus.com/forum/beginner/24235/
+- https://stackoverflow.com/questions/42696260/how-to-get-user-home-directory-on-windows
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+get+home+directory+linux&ia=web
+- https://stackoverflow.com/questions/2910377/get-home-directory-in-linux
+- https://stackoverflow.com/questions/2910377/get-home-directory-in-linux#comment10000952_2910392
+- https://stackoverflow.com/questions/2910377/get-home-directory-in-linux#comment64750158_2910377
+- https://stackoverflow.com/questions/2910377/get-home-directory-in-linux/2910392#2910392
+- https://duckduckgo.com/?q=c%2B%2B+getuid+geteuid+sudo&t=ffab&ia=web
+- https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-geteuid-get-effective-user-id
+- https://duckduckgo.com/?t=ffab&q=c%2B%2B+get+user+behind+sudo&ia=web
+- https://stackoverflow.com/questions/10272784/how-do-i-get-the-users-real-uid-if-the-program-is-run-with-sudo
+- my own intuition: adding `-laudit` to the linker options because of compile/linking time error "undefined reference to 'audit_getloginuid()'"
 
 ## Sources
 

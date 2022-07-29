@@ -12,13 +12,13 @@ public:
             const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages,
             const LocallyInstalledPackages& locallyInstalledPackages);
 
-    void moveChosenInstallationPackageFilesToSeparateDir() const;
+    void moveChosenInstallationPackageFilesToSeparateDir(bool dryRun) const;
 
 private:
     const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages;
     const LocallyInstalledPackages& locallyInstalledPackages;
 
     // TODO share one copy of 'pacmanCacheDir'
-    // TODO rename member var 'pacmanCacheDir' to 'dirForInstalltionPackageFilesForDeletion'
-    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
+    // TODO rename member var 'pacmanCacheDir' to 'dirForInstalltionPackageFilesForDeletion'/'installationPackageFilesDeletionCandidatesDirectory'
+    const std::string pacmanCacheDir = "/var/cache/pacman/pkg/";
 };

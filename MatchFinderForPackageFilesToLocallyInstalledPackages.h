@@ -18,11 +18,9 @@ public:
 private:
     LocallyInstalledPackages& locallyInstalledPackages;
 
-    // TODO share one copy of 'pacmanCacheDir'
-    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
-
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
 
-    void relatePackageFilesToLocallyInstalledPackages();
+    void relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
+    void relatePackageFilesToLocallyInstalledPackagesForDirectory(const AbsolutePath& directoryWithInstallationPackageFiles);
 };
