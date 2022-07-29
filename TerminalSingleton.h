@@ -31,7 +31,7 @@ public:
 
 private:
     static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance;
-    std::stringstream logFilePathAsStream;
+    std::string logFilePath;
 
     TerminalSingleton();
 };

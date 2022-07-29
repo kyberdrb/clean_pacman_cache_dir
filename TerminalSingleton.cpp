@@ -23,7 +23,7 @@
 std::unique_ptr<TerminalSingleton> TerminalSingleton::theOneAndOnlyTerminalSingletonInstance = std::make_unique<TerminalSingleton>();
 
 TerminalSingleton::TerminalSingleton() :
-        logFilePathAsStream()
+        logFilePath()
 {
     std::stringstream logFileDirPathAsStream{};
     std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
@@ -37,7 +37,9 @@ TerminalSingleton::TerminalSingleton() :
     logFileNameAsStream << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d-%H_%M_%S");
     logFileNameAsStream << ".log";
 
-    this->logFilePathAsStream << logFileDirPathAsStream.str() << logFileNameAsStream.str();
+    std::stringstream logFilePathAsStream{};
+    logFilePathAsStream << logFileDirPathAsStream.str() << logFileNameAsStream.str();
+    this->logFilePath = logFilePathAsStream.str();
 }
 
 const TerminalSingleton& TerminalSingleton::get() {
@@ -47,7 +49,7 @@ const TerminalSingleton& TerminalSingleton::get() {
 const TerminalSingleton& TerminalSingleton::printAndLog(const std::string& text) const {
     std::cout << text;
 
-    std::ofstream logFile{logFilePathAsStream.str(), std::ios::app};
+    std::ofstream logFile{logFilePath, std::ios::app};
     logFile << text;
 
     return *this;
