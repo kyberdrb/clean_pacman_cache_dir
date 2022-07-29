@@ -23,6 +23,6 @@ void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) 
                " and make sure the source file is present on the filesystem."
             << "\n---\n";
 
-        TerminalSingleton::get().printText(message.str());
+        TerminalSingleton::get().printAndLog(message.str());
     }
 }

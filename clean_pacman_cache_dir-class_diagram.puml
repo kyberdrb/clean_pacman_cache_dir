@@ -358,8 +358,8 @@ enum SimpleInstallationPackageFileType {
 }
 
 class TerminalSingleton {
-    + static TerminalSingleton get()
-    + TerminalSingleton printText(string text)
+    + [static] get() : TerminalSingleton
+    + printAndLog(text : string) : TerminalSingleton
     - TerminalSingleton()
 }
 @enduml

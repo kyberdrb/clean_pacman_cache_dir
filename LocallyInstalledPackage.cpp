@@ -40,7 +40,7 @@ bool LocallyInstalledPackage::addPackageFileToDeletionCandidatesOnlyWhenMatching
 
     // For debugging purposes
 //    if (isPackageVersionDifferent) {
-//        TerminalSingleton::get().printText("this is what I was waiting for...\n");
+//        TerminalSingleton::get().printAndLog("this is what I was waiting for...\n");
 //    }
 
     bool isPackageNonignored = !this->isIgnored;
@@ -72,7 +72,7 @@ void LocallyInstalledPackage::movePackageFilesForDifferentVersionsToSeparateDir(
                 << "to separate directory:\n"
                 << "\t" << *(to) << "\n\n";
 
-        TerminalSingleton::get().printText(message.str());
+        TerminalSingleton::get().printAndLog(message.str());
         FileMoverSingleton::move(from, *(to));
     }
 }

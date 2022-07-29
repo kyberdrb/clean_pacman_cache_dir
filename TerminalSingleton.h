@@ -20,7 +20,7 @@ public:
 
     // Return reference to the instance to enable Fluent Interface, i.e. function chaining,
     //  to print text continuously
-    const TerminalSingleton& printText(const std::string& text) const;
+    const TerminalSingleton& printAndLog(const std::string& text) const;
     void printText(const std::stringstream& textStream) const;
 
     TerminalSingleton(const TerminalSingleton& otherTerminalSingleton) = delete;
@@ -31,6 +31,7 @@ public:
 
 private:
     static std::unique_ptr<TerminalSingleton> theOneAndOnlyTerminalSingletonInstance;
+    std::stringstream logFilePathAsStream;
 
-    TerminalSingleton() = default;
+    TerminalSingleton();
 };

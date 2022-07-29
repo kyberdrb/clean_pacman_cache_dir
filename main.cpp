@@ -16,9 +16,9 @@ int main() {
     // SHOW REPORT
     // Rely on the implicit move semantics - don't move the function's return value explicitly to allow compiler to do Move Elision
     TerminalSingleton::get()
-            .printText(ignoredPackageNames->generateReport())
-            .printText(locallyInstalledPackages->generateReport())
-            .printText(matchFinderWithPackageFilesRelatedToPackages->generateReport());
+            .printAndLog(ignoredPackageNames->generateReport())
+            .printAndLog(locallyInstalledPackages->generateReport())
+            .printAndLog(matchFinderWithPackageFilesRelatedToPackages->generateReport());
 
     // MOVE PACKAGE FILES TO SEPARATE DIRECTORY
     auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(
