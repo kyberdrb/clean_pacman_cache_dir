@@ -4,6 +4,7 @@
 
 #include "MatchFinderForPackageFilesToLocallyInstalledPackages.h"
 
+#include "FileMoverSingleton.h"
 #include "PackageNameMissing.h"
 #include "PackageWithInferredName.h"
 #include "TerminalAndLoggerSingleton.h"
@@ -16,13 +17,12 @@
 #include <libaudit.h> // for 'audit_getloginuid()' to detect the UID of the user who invoked 'sudo', instead of the 'root' user
 #include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
 
-// For debugging purposes
-//#include "TerminalAndLoggerSingleton.h"
-
 MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFilesToLocallyInstalledPackages(
         LocallyInstalledPackages& locallyInstalledPackages)
 :
-        locallyInstalledPackages(locallyInstalledPackages)
+        locallyInstalledPackages(locallyInstalledPackages),
+        // the home directory detection can still fail when the user had been created without home directory
+        currentUserHomeDir(getpwuid(audit_getloginuid())->pw_dir)
 {
     this->relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
 }
@@ -55,17 +55,15 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
         std::filesystem::exists(pacmanCacheDirPath);
     } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
         std::stringstream message;
-
         message
                 << exception.what() << "\n"
                 << "Skipping scanning of directory: " << pacmanCacheDirPath << "\n"
                 << "Error: Insufficient permissions to access the files in the directory or file path doesn't exist." << "\n"
                 << "Please, run this program with elevated priviledges as 'sudo' or 'root' user"
-                   " and make sure the source file is present on the filesystem."
-                << "\n---\n";
+                   " and make sure the source file is present on the filesystem." << "\n"
+                << "---\n";
 
         TerminalAndLoggerSingleton::get().printAndLog(message.str());
-
         return;
     }
 
@@ -207,9 +205,7 @@ std::string MatchFinderForPackageFilesToLocallyInstalledPackages::determinePikau
     // TODO centralize duplicate code by encapsulating the home dir detection to a separate class
     //  and use it here and in 'MatchFinderForPackageFilesToLocallyInstalledPackages.cpp'
 
-    // the home directory detection can still fail when the user had been created without home directory
-    std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
-    pikaurCacheDirUserAsStream << currentUserHomeDir;
+    pikaurCacheDirUserAsStream << this->currentUserHomeDir;
     pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";
     return pikaurCacheDirUserAsStream.str();
 }
@@ -250,13 +246,134 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::moveChosenInstallatio
     for (const auto& packageFilesRelatedToMissingPackage : this->packageFilesRelatedToMissingPackages) {
         packageFilesRelatedToMissingPackage->moveToSeparateDirectoryForDeletion(directoryForInstallationPackageFilesForDeletion);
     }
-
-    // TODO completely clean all file within all subdirs within pikaur cache directory `/var/cache/pikaur`  which likely references to `/var/cache/private/pikaur` (only accessible with superuser/sudo/root) priviledges
-    //  by not deleting the pikaur directories themselves, but by deleting all files within the pikaur directories
-
-    // TODO completely clean all files ** only ** within the pikaur cache directory `"${HOME}/.cache/pikaur/"`
-
-    // TODO completely clean all contents within the pikaur cache directory `"${HOME}/.cache/pikaur/build/"`
-
-    // TODO ** selectively ** clean all contents within the pikaur cache directory `"${HOME}/.cache/pikaur/pkg/"
 }
+
+void MatchFinderForPackageFilesToLocallyInstalledPackages::cleanUpOtherFilesInPikaurCacheDirs(
+        const AbsolutePath& destinationDirectory) const
+{
+    std::stringstream pikaurUserCacheDirAsStream{};
+    pikaurUserCacheDirAsStream << this->currentUserHomeDir << "/.cache/pikaur/";
+    auto pikaurUserCacheDir = std::make_unique<AbsolutePath>(pikaurUserCacheDirAsStream.str());
+    this->moveOnlyFilesFromDir(*pikaurUserCacheDir, destinationDirectory);
+
+    auto pikaurUserCacheDirBuildDir {std::make_unique<AbsolutePath>("/home/laptop/.cache/pikaur/build/")};
+    this->moveEverythingFromDir(*pikaurUserCacheDirBuildDir, destinationDirectory);
+
+    auto pikaurSystemCacheDir = std::make_unique<AbsolutePath>("/var/cache/pikaur");
+    this->moveOnlyFilesFromDir(*pikaurSystemCacheDir, destinationDirectory);
+
+    auto pikaurSystemCacheDirAurReposDir {std::make_unique<AbsolutePath>("/var/cache/private/pikaur/aur_repos/")};
+    this->moveEverythingFromDir(*pikaurSystemCacheDirAurReposDir, destinationDirectory);
+
+    auto pikaurSystemCacheDirBuildDir {std::make_unique<AbsolutePath>("/var/cache/private/pikaur/build/")};
+    this->moveEverythingFromDir(*pikaurSystemCacheDirBuildDir, destinationDirectory);
+}
+
+void MatchFinderForPackageFilesToLocallyInstalledPackages::moveOnlyFilesFromDir(
+        const AbsolutePath& absolutePathToSourceDirectoryAsText,
+        const AbsolutePath& absolutePathToDestinationDirectoryAsText) const
+{
+    std::filesystem::path pathToSourceDirectory {absolutePathToSourceDirectoryAsText.getAbsolutePath()};
+
+    try {
+        std::filesystem::exists(pathToSourceDirectory);
+    } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
+        std::stringstream message;
+        message
+                << exception.what() << "\n"
+                << "Skipping scanning of directory: " << pathToSourceDirectory << "\n"
+                << "Error: Insufficient permissions to access the files in the directory or file path doesn't exist." << "\n"
+                << "Please, run this program with elevated priviledges as 'sudo' or 'root' user"
+                   " and make sure the source file is present on the filesystem." << "\n"
+                << "---\n";
+
+        TerminalAndLoggerSingleton::get().printAndLog(message.str());
+        return;
+    }
+
+    for (const auto& fileInSourceDirectory : std::filesystem::directory_iterator(pathToSourceDirectory)) {
+        std::stringstream message{};
+
+        if (fileInSourceDirectory.is_regular_file()) {
+            auto pathToFileInSourceDirectory = std::make_unique<AbsolutePath>(fileInSourceDirectory.path().string());
+
+            std::stringstream destinationAbsolutePathAsStream;
+            destinationAbsolutePathAsStream
+                << absolutePathToDestinationDirectoryAsText
+                << fileInSourceDirectory.path().filename().string();
+            auto destinationAbsolutePath = std::make_unique<AbsolutePath>(destinationAbsolutePathAsStream.str());
+
+            message << "Moving file from source path:\n"
+                    << "    " << *pathToFileInSourceDirectory << "\n"
+                    << "to destination:\n"
+                    << "    " << *destinationAbsolutePath
+                    << "\n\n";
+            TerminalAndLoggerSingleton::get().printAndLog(message.str());
+
+            FileMoverSingleton::move(*pathToFileInSourceDirectory, *destinationAbsolutePath);
+        }
+    }
+}
+
+void MatchFinderForPackageFilesToLocallyInstalledPackages::moveEverythingFromDir(
+        const AbsolutePath& absolutePathToSourceDirectoryAsText,
+        const AbsolutePath& absolutePathToDestinationDirectoryAsText) const
+{
+    std::filesystem::path pathToSourceDirectory {absolutePathToSourceDirectoryAsText.getAbsolutePath()};
+
+    try {
+        std::filesystem::exists(pathToSourceDirectory);
+    } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
+        std::stringstream message;
+        message
+                << exception.what() << "\n"
+                << "Skipping scanning of directory: " << pathToSourceDirectory << "\n"
+                << "Error: Insufficient permissions to access the files in the directory or file path doesn't exist." << "\n"
+                << "Please, run this program with elevated priviledges as 'sudo' or 'root' user"
+                   " and make sure the source file is present on the filesystem." << "\n"
+                << "---\n";
+
+        TerminalAndLoggerSingleton::get().printAndLog(message.str());
+        return;
+    }
+
+    for (const auto& fileInPikaurSystemCacheBuildDir : std::filesystem::directory_iterator(pathToSourceDirectory)) {
+        auto pathToFileInSourceDirectory = std::make_unique<AbsolutePath>(fileInPikaurSystemCacheBuildDir.path().string());
+
+        std::stringstream destinationAbsolutePathAsStream;
+        destinationAbsolutePathAsStream
+                << absolutePathToDestinationDirectoryAsText
+                << fileInPikaurSystemCacheBuildDir.path().filename().string();
+        auto destinationAbsolutePath = std::make_unique<AbsolutePath>(destinationAbsolutePathAsStream.str());
+
+        std::stringstream message{};
+        message << "Moving file or directory from source path:\n"
+                << "    " << *pathToFileInSourceDirectory << "\n"
+                << "to destination:\n"
+                << "    " << *destinationAbsolutePath
+                << "\n\n";
+        TerminalAndLoggerSingleton::get().printAndLog(message.str());
+
+        FileMoverSingleton::move(*pathToFileInSourceDirectory, *destinationAbsolutePath);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

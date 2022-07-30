@@ -4,7 +4,7 @@
 
 #pragma once
 
-#incluude "MatchFinderForPackageFilesToLocallyInstalledPackages.h"
+#include "MatchFinderForPackageFilesToLocallyInstalledPackages.h"
 
 class MoverOfInstallationPackageFiles {
 public:
@@ -20,5 +20,5 @@ private:
 
     // TODO share one copy of 'pacmanCacheDir'
     // TODO rename member var 'pacmanCacheDir' to 'dirForInstalltionPackageFilesForDeletion'/'installationPackageFilesDeletionCandidatesDirectory'
-    const std::string pacmanCacheDir = "/var/cache/pacman/pkg/";
+    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 };

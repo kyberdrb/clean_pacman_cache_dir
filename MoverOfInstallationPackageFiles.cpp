@@ -35,4 +35,5 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
 
     locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
     packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);
+    packageFilesRelatedToLocallyInstalledPackages.cleanUpOtherFilesInPikaurCacheDirs(*directoryForInstallationPackageFilesForDeletion);
 }
