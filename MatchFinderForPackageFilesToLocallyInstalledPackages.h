@@ -23,4 +23,6 @@ private:
 
     void relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
     void relatePackageFilesToLocallyInstalledPackagesForDirectory(const AbsolutePath& directoryWithInstallationPackageFiles);
+
+    std::string determinePikaurCacheDirUser();
 };

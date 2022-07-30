@@ -1,3 +1,5 @@
+// CPMCD - Clean Package Manager's Cache Directories
+
 #include "MoverOfInstallationPackageFiles.h"
 #include "TerminalAndLoggerSingleton.h"
 
@@ -29,16 +31,15 @@ int main() {
 //            *matchFinderWithPackageFilesRelatedToPackages,
 //            directoryForMovedInstallationPackageFiles);
 
-    // TODO delete variable 'skipActualFileDeletion' with parameter for related function for release version:
-    //  needed to test the access to the system cache directory
-    //    "/var/cache/pikaur/pkg/"
-    //  or
-    //    "/var/cache/private/pikaur/pkg/"
-    //  for 'pikaur'
+    // TODO restore 'root' permissions for symlink to pikaur system cache directory
+    //    "/var/cache/pikaur"
+    installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir();
 
-    // Variable to run this utility with superuser/root permissions, to access the system cache dir for pikaur but to skip the deletion
-    bool skipActualFileDeletion = true;
-    installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir(skipActualFileDeletion);
+    std::stringstream message{};
+    message << "The log file for this cleanup session had been saved to:\n"
+            << TerminalAndLoggerSingleton::get().getLogFilePath()
+            << "\n";
+    TerminalAndLoggerSingleton::get().printAndLog(message.str());
 
     return 0;
 }

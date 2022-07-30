@@ -24,8 +24,10 @@ std::unique_ptr<TerminalAndLoggerSingleton> TerminalAndLoggerSingleton::theOneAn
         std::make_unique<TerminalAndLoggerSingleton>();
 
 TerminalAndLoggerSingleton::TerminalAndLoggerSingleton() :
-        logFilePath()
-{
+        logFilePath(this->determineLogFilePath())
+{}
+
+std::string TerminalAndLoggerSingleton::determineLogFilePath() {
     std::stringstream logFileDirPathAsStream{};
     std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
     logFileDirPathAsStream << currentUserHomeDir;
@@ -35,12 +37,12 @@ TerminalAndLoggerSingleton::TerminalAndLoggerSingleton() :
     std::stringstream logFileNameAsStream{};
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
-    logFileNameAsStream << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d-%H_%M_%S");
+    logFileNameAsStream << std::put_time(localtime(&in_time_t), "%Y_%m_%d-%H_%M_%S"); // formatting string inspired by '$ man date'
     logFileNameAsStream << ".log";
 
     std::stringstream logFilePathAsStream{};
     logFilePathAsStream << logFileDirPathAsStream.str() << logFileNameAsStream.str();
-    this->logFilePath = logFilePathAsStream.str();
+    return logFilePathAsStream.str();
 }
 
 const TerminalAndLoggerSingleton& TerminalAndLoggerSingleton::get() {
@@ -56,6 +58,10 @@ const TerminalAndLoggerSingleton& TerminalAndLoggerSingleton::printAndLog(const 
     return *this;
 }
 
-void TerminalAndLoggerSingleton::printText(const std::stringstream& textstream) const {
+void TerminalAndLoggerSingleton::printTextWithoutLogging(const std::stringstream& textstream) const {
     std::cout << textstream.str();
+}
+
+const std::string& TerminalAndLoggerSingleton::getLogFilePath() const {
+    return this->logFilePath;
 }

@@ -15,7 +15,7 @@ MoverOfInstallationPackageFiles::MoverOfInstallationPackageFiles(
     locallyInstalledPackages(locallyInstalledPackages)
 {}
 
-void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir(bool dryRun) const {
+void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir() const {
     std::stringstream message;
 
     message
@@ -32,10 +32,6 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
 
     const auto directoryForInstallationPackageFilesForDeletion =
             std::make_unique<AbsolutePath>(pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText);
-
-    if (dryRun) {
-        return;
-    }
 
     locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
     packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);

@@ -134,6 +134,7 @@ class MatchFinderForPackageFilesToLocallyInstalledPackages {
     - packageFilesRelatedToMissingPackages : set<SimpleInstallationPackageFile>
 
     - relatePackageFilesToLocallyInstalledPackages() : void
+    - determinePikaurCacheDirUser() : string
 }
 
 note left of MatchFinderForPackageFilesToLocallyInstalledPackages::pacmanCacheDir
@@ -360,6 +361,8 @@ enum SimpleInstallationPackageFileType {
 class TerminalAndLoggerSingleton {
     + {static} get() : TerminalAndLoggerSingleton
     + printAndLog(text : string) : TerminalAndLoggerSingleton
+    + getLogFilePath() : string
     - TerminalAndLoggerSingleton()
+    - determineLogFilePath() : string
 }
 @enduml

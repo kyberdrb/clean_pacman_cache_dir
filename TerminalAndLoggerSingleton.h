@@ -21,7 +21,9 @@ public:
     // Return reference to the instance to enable Fluent Interface, i.e. function chaining,
     //  to print text continuously
     const TerminalAndLoggerSingleton& printAndLog(const std::string& text) const;
-    void printText(const std::stringstream& textStream) const;
+    void printTextWithoutLogging(const std::stringstream& textStream) const;
+
+    const std::string& getLogFilePath() const;
 
     TerminalAndLoggerSingleton(const TerminalAndLoggerSingleton& otherTerminalAndLoggerSingleton) = delete;
     TerminalAndLoggerSingleton& operator=(const TerminalAndLoggerSingleton& otherTerminalAndLoggerSingleton) = delete;
@@ -34,4 +36,6 @@ private:
     std::string logFilePath;
 
     TerminalAndLoggerSingleton();
+
+    std::string determineLogFilePath();
 };

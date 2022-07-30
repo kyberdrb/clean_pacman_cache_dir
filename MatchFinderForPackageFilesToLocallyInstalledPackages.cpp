@@ -24,7 +24,7 @@ MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFiles
 :
         locallyInstalledPackages(locallyInstalledPackages)
 {
-    relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
+    this->relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
 }
 
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs() {
@@ -42,13 +42,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relateInstallationPac
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
 
     // Iterate user cache directory for pikaur
-    std::stringstream pikaurCacheDirUserAsStream;
-    // the home directory detection can still fail when the user had been created without home directory
-    std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
-    pikaurCacheDirUserAsStream << currentUserHomeDir;
-    pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";
-
-    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>(pikaurCacheDirUserAsStream.str());
+    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>(this->determinePikaurCacheDirUser());
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirUser);
 }
 
@@ -205,6 +199,19 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
             }
         }
     }
+}
+
+std::string MatchFinderForPackageFilesToLocallyInstalledPackages::determinePikaurCacheDirUser() {
+    std::stringstream pikaurCacheDirUserAsStream;
+
+    // TODO centralize duplicate code by encapsulating the home dir detection to a separate class
+    //  and use it here and in 'MatchFinderForPackageFilesToLocallyInstalledPackages.cpp'
+
+    // the home directory detection can still fail when the user had been created without home directory
+    std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
+    pikaurCacheDirUserAsStream << currentUserHomeDir;
+    pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";
+    return pikaurCacheDirUserAsStream.str();
 }
 
 std::string MatchFinderForPackageFilesToLocallyInstalledPackages::generateReport() const {

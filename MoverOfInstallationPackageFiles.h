@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "MatchFinderForPackageFilesToLocallyInstalledPackages.h"
+#incluude "MatchFinderForPackageFilesToLocallyInstalledPackages.h"
 
 class MoverOfInstallationPackageFiles {
 public:
@@ -12,7 +12,7 @@ public:
             const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages,
             const LocallyInstalledPackages& locallyInstalledPackages);
 
-    void moveChosenInstallationPackageFilesToSeparateDir(bool dryRun) const;
+    void moveChosenInstallationPackageFilesToSeparateDir() const;
 
 private:
     const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages;
