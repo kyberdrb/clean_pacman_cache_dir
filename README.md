@@ -6,58 +6,68 @@ A utility to delete the contents of the pacman's cache directory `/var/cache/pac
 
 The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages need to be deleted manually.
 
-## Usage
+**Maybe it could be useful to make a backup before you run this utility. It may save you precious time when something goes wrong. I tested it on my machine. I don't know yours. Proceed with caution.**
+
+## Quick Start Guide
+
+1. Clone
+
+        mkdir "${HOME}/git"
+        cd "${HOME}/git"
+        git clone https://github.com/kyberdrb/clean_pacman_cache_dir.git
+        cd clean_pacman_cache_dir
+
+1. Compile
+
+        sudo pacman --sync --refresh --refresh --needed cmake ninja
+
+        /usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -G Ninja -S "${HOME}/git/clean_pacman_cache_dir" -B "${HOME}/git/clean_pacman_cache_dir/cmake-build-release"
+
+        /usr/bin/cmake --build "${HOME}/git/cmake-build-release" --target clean_pacman_cache_dir
 
 1. Check the contents of the pacman's cache directory
 
         ls -1 /var/cache/pacman/pkg/ | less
 
-2. Move package file in versions for other than the locally installed package version into a separate directory by executing
+1. Run the compiled binary with elevated priviledges and let it do its job:
 
-        $ cd /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
-        $ sudo ./clean_pacman_cache_dir
+        sudo ./cmake-build-release/clean_pacman_cache_dir
 
-3. Verify contents of directories
+1. Check the log file printed as the last line of the output in the terminal.
+
+        less file.log
+
+1. Verify contents of directories
 
         ls -1 /var/cache/pacman/pkg/| less
         du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
         ls -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
 
-4. Delete the directory with collected package files
+1. Delete the directory with collected package files
 
-    - Less destructive - possibility to restore packages if needed and delete the rest later
+    - Less destructive - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
 
           $ sudo chown --recursive /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED --reference "${HOME}"
           $ sudo move /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
           $ gio trash ~/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
-    - More destructive - delete all files for other package version immediately
+    - More destructive - more trust, less caution, faster, simpler - delete all files for other package version immediately
 
           $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
-5. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
+1. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
 
         ls -1 /var/cache/pacman/pkg/| less
 
-## Build
-
-### CLion `Release` build
+## CLion `Release` build
 
 1. Generate makefiles
 
         $ /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/opt/clion/bin/ninja/linux/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
 
-2. Compile the binary
+1. Compile the binary
 
         $ /opt/clion/bin/cmake/linux/bin/cmake --build /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release --target clean_pacman_cache_dir
-
-### Generic CMake `Release` build (when CLion utilities are not available or accessible)
-
-    $ # Install 'cmake' and 'ninja'
-    $ sudo pacman --sync --refresh --refresh --needed cmake ninja
-
-    $ /usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
-    $ /usr/bin/cmake --build /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release --target clean_pacman_cache_dir
 
 ## Sources
 
