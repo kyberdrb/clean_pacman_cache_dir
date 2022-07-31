@@ -357,23 +357,3 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::moveEverythingFromDir
         FileMoverSingleton::move(*pathToFileInSourceDirectory, *destinationAbsolutePath);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

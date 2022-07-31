@@ -32,7 +32,7 @@ class MoverOfInstallationPackageFiles {
 }
 
 note left of MoverOfInstallationPackageFiles::pacmanCacheDir
-    "/var/cache/pacman/pkg/"
+    "/var/cache/pacman/pkg"
 end note
 
 MoverOfInstallationPackageFiles -d-> "packageFilesRelatedToLocallyInstalledPackages\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
@@ -129,12 +129,24 @@ class MatchFinderForPackageFilesToLocallyInstalledPackages {
       \n: void
 
     - locallyInstalledPackages : LocallyInstalledPackages
-    - pacmanCacheDir : string
     - partiallyDownloadedPackageFiles : set<SimpleInstallationPackageFile>
     - packageFilesRelatedToMissingPackages : set<SimpleInstallationPackageFile>
+    - currentUserHomeDir : string
 
-    - relatePackageFilesToLocallyInstalledPackages() : void
+    - relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs() : void
+    - relatePackageFilesToLocallyInstalledPackagesForDirectory(\
+        \n    directoryWithInstallationPackageFiles : AbsolutePath)\
+        \n: void
     - determinePikaurCacheDirUser() : string
+    - moveOnlyFilesFromDir(\
+        \n    absolutePathToSourceDirectoryAsText : AbsolutePath, \
+        \n    absolutePathToDestinationDirectoryAsText : AbsolutePath)\
+        \n: void
+    - moveEverythingFromDir(\
+        \n    absolutePathToSourceDirectoryAsText : AbsolutePath, \
+        \n    absolutePathToDestinationDirectoryAsText : AbsolutePath)\
+        \n: void
+
 }
 
 note left of MatchFinderForPackageFilesToLocallyInstalledPackages::pacmanCacheDir
@@ -156,6 +168,9 @@ MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..1" ExtendedInstall
 MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..*" PackageNameAndVersion : "<- creates an instance of ""PackageNameAndVersion""\nto be moved from place of creation\nto place of composition"
 MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..*" AbsolutePath : "<- creates an instance of ""AbsolutePath""\nto be moved from place of creation\nto place of composition"
 MatchFinderForPackageFilesToLocallyInstalledPackages .d.> "0..*" Filename : "<- creates an instance of ""Filename""\nto be moved from place of creation\nto place of composition"
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> FileMoverSingleton
+MatchFinderForPackageFilesToLocallyInstalledPackages .d.> TerminalAndLoggerSingleton
 
 abstract class Package {
     + Package(packageName : PackageName)
