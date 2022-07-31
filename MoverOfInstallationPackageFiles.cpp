@@ -3,7 +3,7 @@
 //
 
 #include "MoverOfInstallationPackageFiles.h"
-#include "TerminalSingleton.h"
+#include "TerminalAndLoggerSingleton.h"
 
 #include <filesystem>
 
@@ -15,7 +15,7 @@ MoverOfInstallationPackageFiles::MoverOfInstallationPackageFiles(
     locallyInstalledPackages(locallyInstalledPackages)
 {}
 
-void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir(bool dryRun) const {
+void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir() const {
     std::stringstream message;
 
     message
@@ -23,7 +23,7 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
         << "===============================================\n\n"
         << "MOVING PACKAGES\n\n";
 
-    TerminalSingleton::get().printText(message.str());
+    TerminalAndLoggerSingleton::get().printAndLog(message.str());
 
     std::string pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText =
             this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
@@ -33,10 +33,7 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
     const auto directoryForInstallationPackageFilesForDeletion =
             std::make_unique<AbsolutePath>(pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText);
 
-    if (dryRun) {
-        return;
-    }
-
     locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
     packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);
+    packageFilesRelatedToLocallyInstalledPackages.cleanUpOtherFilesInPikaurCacheDirs(*directoryForInstallationPackageFilesForDeletion);
 }
