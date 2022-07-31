@@ -1,5 +1,7 @@
 # Clear Pacman's Cache Directory
 
+a.k.a CPMCD - **C**lean **P**ackage **M**anager's **C**ache **D**irectories
+
 A utility to delete the contents of the pacman's cache directory `/var/cache/pacman/pkg/` and leave in mentioned directory only package files, that the locally installed packages were installed from.
 
 The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages need to be deleted manually.
