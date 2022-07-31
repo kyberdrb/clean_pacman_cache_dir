@@ -15,13 +15,26 @@ void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) 
 
     // catch 'std::filesystem' exception to prevent memory leaks when 'rename' fails
     try {
-        // TODO What happens when the source file/directory is renamed/moved to destination
-        //  which already contains a file/directory with the same name?
-        //  - Will the 'rename' handle this conflict situation by itself? How?
-        //    - By throwing an exception?
-        //    - By overwriting without prompting?
-        //  - Do I manually append a number to the filename? From '1' to whichever is available next,
-        //    when there are multiple duplicate files/dirs with the same name?
+        // Handle possible duplicate filename/dirname conflicts in a preserving way,
+        //  i.e. when moving a file to destination and the destination dir already has file(s) with the same name, keep all of them
+        //  by distinguishing the duplicates in their filename
+        if (std::filesystem::exists(to.getAbsolutePath())) {
+            for (int_fast32_t duplicateNumber = 1; duplicateNumber < INT_FAST32_MAX; ++duplicateNumber) {
+                std::stringstream nameOfDuplicateFile;
+
+                nameOfDuplicateFile << to.getAbsolutePath() << "-" << duplicateNumber;
+
+                const auto& nameOfDuplicateFileAsText = nameOfDuplicateFile.str();
+                bool nameOfDuplicateFileIsAvailable = !std::filesystem::exists(nameOfDuplicateFileAsText);
+                if (nameOfDuplicateFileIsAvailable) {
+                    std::filesystem::rename(from.getAbsolutePath(), nameOfDuplicateFileAsText);
+                    return;
+                }
+
+                nameOfDuplicateFile.str(std::string{});
+            }
+        }
+
         std::filesystem::rename(from.getAbsolutePath(), to.getAbsolutePath());
         TerminalAndLoggerSingleton::get().printAndLog(dividingDashedLine);
     } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
