@@ -8,7 +8,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. Check the contents of the pacman's cache directory
 
-        ls -1 /var/cache/pacman/pkg/| less
+        ls -1 /var/cache/pacman/pkg/ | less
 
 2. Move package file in versions for other than the locally installed package version into a separate directory by executing
 
@@ -592,6 +592,8 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
     - https://cplusplus.com/reference/sstream/stringstream/
     - initializing `stringstream` - short answer: https://stackoverflow.com/questions/21924156/how-to-initialize-a-stdstringstream/21924311#21924311
     - initializing `stringstream` - long answer: https://stackoverflow.com/questions/21924156/how-to-initialize-a-stdstringstream#21924263
+    - https://duckduckgo.com/?t=ffab&q=stringstream+clear&ia=web
+    - clearing/resetting/reinitializing `stringstream` - https://stackoverflow.com/questions/2848087/how-to-clear-stringstream
 - Polymorhism, Inheritance and STL (mainly `std::set`)
     - https://duckduckgo.com/?q=c%2B%2B+find+derived+vector&t=ffab&ia=web
     - https://stackoverflow.com/questions/11889178/c-can-vectorbase-contain-objects-of-type-derived#11889242
