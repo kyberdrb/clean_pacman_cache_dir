@@ -84,6 +84,10 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
         find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
         ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
 
+## Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT) documents.
+
 ## Sources
 
 - `libalpm` - library of the Arch Linux Package Manager - the `pacman`
