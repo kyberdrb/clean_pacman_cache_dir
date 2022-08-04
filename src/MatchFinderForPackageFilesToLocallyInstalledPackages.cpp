@@ -7,42 +7,32 @@
 #include "FileMoverSingleton.h"
 #include "PackageNameMissing.h"
 #include "PackageWithInferredName.h"
+#include "Paths.h"
 #include "TerminalAndLoggerSingleton.h"
 
 #include <filesystem>
 #include <memory>
 #include <set>
 
-// helpers to detect the home directory path of the current user, even behind 'sudo'
-#include <libaudit.h> // for 'audit_getloginuid()' to detect the UID of the user who invoked 'sudo', instead of the 'root' user
-#include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
-
 MatchFinderForPackageFilesToLocallyInstalledPackages::MatchFinderForPackageFilesToLocallyInstalledPackages(
         LocallyInstalledPackages& locallyInstalledPackages)
 :
-        locallyInstalledPackages(locallyInstalledPackages),
-        // the home directory detection can still fail when the user had been created without home directory
-        currentUserHomeDir(getpwuid(audit_getloginuid())->pw_dir)
+        locallyInstalledPackages(locallyInstalledPackages)
 {
     this->relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
 }
 
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs() {
     // TODO add paths into a 'std::vector' (e.g. by calling a function designated for this purpose in the constructor)
-    //  and recompute the installation package files to locally installed packages relationships in one for-each loop (e.g. in )
+    //  and recompute the installation package files to locally installed packages relationships in one for-each loop
 
-    // Iterate cache directory for pacman
-    // TODO share one copy of 'pacmanCacheDir' across all instances that uses it, and reference it with other more accurate variable names
-    //  when used for different reasons
-    auto pacmanCacheDir = std::make_unique<AbsolutePath>("/var/cache/pacman/pkg/");
+    auto pacmanCacheDir = std::make_unique<AbsolutePath>(Paths::get().getPacmanCacheDirPackageDir());
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pacmanCacheDir);
 
-    // Iterate system cache directory for pikaur
-    auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>("/var/cache/pikaur/pkg/");
+    auto pikaurCacheDirSystem = std::make_unique<AbsolutePath>(Paths::get().getPikaurSystemCacheDirPackageDir());
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirSystem);
 
-    // Iterate user cache directory for pikaur
-    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>(this->determinePikaurCacheDirUser());
+    auto pikaurCacheDirUser = std::make_unique<AbsolutePath>(Paths::get().getPikaurUserCacheDirPackageDir());
     this->relatePackageFilesToLocallyInstalledPackagesForDirectory(*pikaurCacheDirUser);
 }
 
@@ -199,17 +189,6 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
     }
 }
 
-std::string MatchFinderForPackageFilesToLocallyInstalledPackages::determinePikaurCacheDirUser() {
-    std::stringstream pikaurCacheDirUserAsStream;
-
-    // TODO centralize duplicate code by encapsulating the home dir detection to a separate class
-    //  and use it here and in 'MatchFinderForPackageFilesToLocallyInstalledPackages.cpp'
-
-    pikaurCacheDirUserAsStream << this->currentUserHomeDir;
-    pikaurCacheDirUserAsStream << "/.cache/pikaur/pkg/";
-    return pikaurCacheDirUserAsStream.str();
-}
-
 std::string MatchFinderForPackageFilesToLocallyInstalledPackages::generateReport() const {
     std::stringstream report;
 
@@ -251,21 +230,19 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::moveChosenInstallatio
 void MatchFinderForPackageFilesToLocallyInstalledPackages::cleanUpOtherFilesInPikaurCacheDirs(
         const AbsolutePath& destinationDirectory) const
 {
-    std::stringstream pikaurUserCacheDirAsStream{};
-    pikaurUserCacheDirAsStream << this->currentUserHomeDir << "/.cache/pikaur/";
-    auto pikaurUserCacheDir = std::make_unique<AbsolutePath>(pikaurUserCacheDirAsStream.str());
+    auto pikaurUserCacheDir = std::make_unique<AbsolutePath>(Paths::get().getPikaurUserCacheDir());
     this->moveOnlyFilesFromDir(*pikaurUserCacheDir, destinationDirectory);
 
-    auto pikaurUserCacheDirBuildDir {std::make_unique<AbsolutePath>("/home/laptop/.cache/pikaur/build/")};
+    auto pikaurUserCacheDirBuildDir {std::make_unique<AbsolutePath>(Paths::get().getPikaurUserCacheDirBuildDir())};
     this->moveEverythingFromDir(*pikaurUserCacheDirBuildDir, destinationDirectory);
 
-    auto pikaurSystemCacheDir = std::make_unique<AbsolutePath>("/var/cache/pikaur");
+    auto pikaurSystemCacheDir = std::make_unique<AbsolutePath>(Paths::get().getPikaurSystemCacheDir());
     this->moveOnlyFilesFromDir(*pikaurSystemCacheDir, destinationDirectory);
 
-    auto pikaurSystemCacheDirAurReposDir {std::make_unique<AbsolutePath>("/var/cache/private/pikaur/aur_repos/")};
+    auto pikaurSystemCacheDirAurReposDir {std::make_unique<AbsolutePath>(Paths::get().getPikaurSystemCacheDirAurReposDir())};
     this->moveEverythingFromDir(*pikaurSystemCacheDirAurReposDir, destinationDirectory);
 
-    auto pikaurSystemCacheDirBuildDir {std::make_unique<AbsolutePath>("/var/cache/private/pikaur/build/")};
+    auto pikaurSystemCacheDirBuildDir {std::make_unique<AbsolutePath>(Paths::get().getPikaurSystemCacheDirBuildDir())};
     this->moveEverythingFromDir(*pikaurSystemCacheDirBuildDir, destinationDirectory);
 }
 

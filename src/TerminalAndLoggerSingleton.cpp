@@ -4,17 +4,12 @@
 
 #include "TerminalAndLoggerSingleton.h"
 
+#include "Paths.h"
+
 #include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sstream>
-
-// TODO centralize duplicate code by encapsulating the home dir detection to a separate class
-//  and use it here and in 'MatchFinderForPackageFilesToLocallyInstalledPackages.cpp'
-// helpers to detect the home directory path of the current user, even behind 'sudo'
-#include <libaudit.h> // for 'audit_getloginuid()' to detect the UID of the user who invoked 'sudo', instead of the 'root' user
-#include <pwd.h> // for 'getpwuid()' to get the home directory for the given UID
 
 // Making the 'std::make_unique' a friend of this class fixes the error message in clang-tidy:
 //     "calling a private constructor of class 'TerminalAndLoggerSingleton'"
@@ -28,11 +23,7 @@ TerminalAndLoggerSingleton::TerminalAndLoggerSingleton() :
 {}
 
 std::string TerminalAndLoggerSingleton::determineLogFilePath() {
-    std::stringstream logFileDirPathAsStream{};
-    std::string currentUserHomeDir = getpwuid(audit_getloginuid())->pw_dir;
-    logFileDirPathAsStream << currentUserHomeDir;
-    logFileDirPathAsStream << "/.config/cpmcd/logs/";
-    std::filesystem::create_directories(logFileDirPathAsStream.str());
+    std::filesystem::create_directories(Paths::get().getLogFileDir());
 
     std::stringstream logFileNameAsStream{};
     auto now = std::chrono::system_clock::now();
@@ -41,7 +32,7 @@ std::string TerminalAndLoggerSingleton::determineLogFilePath() {
     logFileNameAsStream << ".log";
 
     std::stringstream logFilePathAsStream{};
-    logFilePathAsStream << logFileDirPathAsStream.str() << logFileNameAsStream.str();
+    logFilePathAsStream << Paths::get().getLogFileDir() << logFileNameAsStream.str();
     return logFilePathAsStream.str();
 }
 

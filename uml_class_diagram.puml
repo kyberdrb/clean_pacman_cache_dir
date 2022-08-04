@@ -31,10 +31,6 @@ class MoverOfInstallationPackageFiles {
     - pacmanCacheDir : string
 }
 
-note left of MoverOfInstallationPackageFiles::pacmanCacheDir
-    "/var/cache/pacman/pkg"
-end note
-
 MoverOfInstallationPackageFiles -d-> "packageFilesRelatedToLocallyInstalledPackages\n1" MatchFinderForPackageFilesToLocallyInstalledPackages
 MoverOfInstallationPackageFiles -d-> "locallyInstalledPackages\n1" LocallyInstalledPackages
 MoverOfInstallationPackageFiles .> TerminalAndLoggerSingleton
@@ -93,10 +89,6 @@ class LocallyInstalledPackages {
         \n    locallyInstalledPackage : LocallyInstalledPackage) : void
 }
 
-note left of LocallyInstalledPackages::pacmanCacheDir
-    "/var/cache/pacman/pkg/"
-end note
-
 LocallyInstalledPackages -d-> IgnoredPackageNames
 LocallyInstalledPackages *-d-> "locallyInstalledPackages\n0..*" Package
 LocallyInstalledPackages -d-> "packagesWithInstallationPackageFilesForDifferentVersions\n0..*" LocallyInstalledPackage
@@ -148,10 +140,6 @@ class MatchFinderForPackageFilesToLocallyInstalledPackages {
         \n: void
 
 }
-
-note left of MatchFinderForPackageFilesToLocallyInstalledPackages::pacmanCacheDir
-    "/var/cache/pacman/pkg/"
-end note
 
 MatchFinderForPackageFilesToLocallyInstalledPackages -> LocallyInstalledPackages
 
@@ -380,4 +368,85 @@ class TerminalAndLoggerSingleton {
     - TerminalAndLoggerSingleton()
     - determineLogFilePath() : string
 }
+
+class Paths {
+    + {static} get() : Paths
+    + getCurrentUserHomeDir() : string
+    + getLogFileDir() : string
+    + getPacmanCacheDirPackageDir() : string
+    + getPathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText() : string
+    + getPikaurUserCacheDir() : string
+    + getPikaurUserCacheDirBuildDir() : string
+    + getPikaurUserCacheDirPackageDir() : string
+    + getPikaurSystemCacheDir() : string
+    + getPikaurSystemCacheDirAurReposDir() : string
+    + getPikaurSystemCacheDirBuildDir() : string
+    + getPikaurSystemCacheDirPackageDir() : string
+
+    - currentUserHomeDir : string
+    - logFileDir : string
+    - pacmanCacheDirPackageDir : string
+    - pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText : string
+    - pikaurUserCacheDir : string
+    - pikaurUserCacheDirBuildDir : string
+    - pikaurUserCacheDirPackageDir : string
+    - pikaurSystemCacheDir : string
+    - pikaurSystemCacheDirAurReposDir : string
+    - pikaurSystemCacheDirBuildDir : string
+    - pikaurSystemCacheDirPackageDir : string
+    
+    - Paths()
+    - findHomeDirOfCurrentUser() : string
+}
+
+note left of Paths::currentUserHomeDir
+    "${HOME}"
+end note
+
+note left of Paths::logFileDir
+    "${HOME}/.config/cpmcd/logs/"
+end note
+
+note left of Paths::pacmanCacheDirPackageDir
+    "/var/cache/pacman/pkg"
+end note
+
+note left of Paths::pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText
+    "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/"
+end note
+
+note left of Paths::pikaurUserCacheDir
+    "${HOME}/.cache/pikaur/"
+end note
+
+note left of Paths::pikaurUserCacheDirBuildDir
+    "${HOME}/.cache/pikaur/build/"
+end note
+
+note left of Paths::pikaurUserCacheDirPackageDir
+    "${HOME}/.cache/pikaur/pkg/"
+end note
+
+note left of Paths::pikaurSystemCacheDir
+    "/var/cache/pikaur"
+    might be a symlink,
+    so ommitting the forward slash '/'
+    at the end of the path
+end note
+
+note left of Paths::pikaurSystemCacheDirAurReposDir
+    "/var/cache/pikaur/aur_repos/"
+end note
+
+note left of Paths::pikaurSystemCacheDirBuildDir
+    "/var/cache/pikaur/build/"
+end note
+
+note left of Paths::pikaurSystemCacheDirPackageDir
+    "/var/cache/pikaur/pkg/")
+end note
+
+MatchFinderForPackageFilesToLocallyInstalledPackages .> Paths
+MoverOfInstallationPackageFiles .> Paths
+TerminalAndLoggerSingleton .> Paths
 @enduml

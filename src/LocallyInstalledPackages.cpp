@@ -15,9 +15,8 @@
 #include "alpm.h"
 #include "alpm_list.h"
 
-#include <filesystem>
-
-#include <cassert>
+// For debugging purposes
+//#include <cassert>
 
 LocallyInstalledPackages::LocallyInstalledPackages(const IgnoredPackageNames& ignoredPackageNames) :
         ignoredPackageNames(ignoredPackageNames)

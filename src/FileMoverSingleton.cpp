@@ -35,7 +35,7 @@ void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) 
             }
         }
 
-        std::filesystem::rename(from.getAbsolutePath(), to.getAbsolutePath());
+//        std::filesystem::rename(from.getAbsolutePath(), to.getAbsolutePath());
         TerminalAndLoggerSingleton::get().printAndLog(dividingDashedLine);
     } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
         message

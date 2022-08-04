@@ -70,7 +70,7 @@ gdb.error: Request for member '_M_head_impl' is ambiguous in type 'std::tuple<Lo
   '<unnamed type> std::_Head_base<0, LocallyInstalledPackages*, false>::_M_head_impl' (std::tuple<LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Tuple_impl<0, LocallyInstalledPackages*, std::default_delete<LocallyInstalledPackages> > -> std::_Head_base<0, LocallyInstalledPackages*, false>)
 
 Breakpoint 4, FinderOfInstallationPackageFilesForPackages::relateInstallationPackageFilesToLocallyInstalledPackages (this=0x5555555ce480) at /home/laptop/git/kyberdrb/clean_pacman_cache_dir/FinderOfInstallationPackageFilesForPackages.cpp:18
-18	    std::filesystem::path pacmanCacheDir {FinderOfInstallationPackageFilesForPackages::PACMAN_CACHE_DIR_PATH};
+18	    std::filesystem::path pacmanCacheDirPackageDir {FinderOfInstallationPackageFilesForPackages::PACMAN_CACHE_DIR_PATH};
 Traceback (most recent call last):
   File "/opt/clion/bin/gdb/renderers/libstdcxx/v6/printers.py", line 1523, in __call__
     return self.lookup[basename].invoke(val)

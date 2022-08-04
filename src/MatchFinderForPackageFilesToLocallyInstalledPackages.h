@@ -22,12 +22,8 @@ private:
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> partiallyDownloadedPackageFiles;
     std::set<std::unique_ptr<SimpleInstallationPackageFile>> packageFilesRelatedToMissingPackages;
 
-    std::string currentUserHomeDir;
-
     void relateInstallationPackageFilesToLocallyInstalledPackagesForAllCacheDirs();
     void relatePackageFilesToLocallyInstalledPackagesForDirectory(const AbsolutePath& directoryWithInstallationPackageFiles);
-
-    std::string determinePikaurCacheDirUser();
 
     void moveOnlyFilesFromDir(const AbsolutePath& absolutePathToSourceDirectoryAsText, const AbsolutePath& absolutePathToDestinationDirectoryAsText) const;
     void moveEverythingFromDir(const AbsolutePath& absolutePathToSourceDirectoryAsText, const AbsolutePath& absolutePathToDestinationDirectoryAsText) const;
