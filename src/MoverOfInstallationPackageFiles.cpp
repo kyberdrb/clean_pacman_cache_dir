@@ -3,6 +3,8 @@
 //
 
 #include "MoverOfInstallationPackageFiles.h"
+
+#include "Paths.h"
 #include "TerminalAndLoggerSingleton.h"
 
 #include <filesystem>
@@ -11,8 +13,8 @@ MoverOfInstallationPackageFiles::MoverOfInstallationPackageFiles(
         const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages,
         const LocallyInstalledPackages& locallyInstalledPackages)
 :
-    packageFilesRelatedToLocallyInstalledPackages(packageFilesRelatedToLocallyInstalledPackages),
-    locallyInstalledPackages(locallyInstalledPackages)
+        packageFilesRelatedToPackages(packageFilesRelatedToLocallyInstalledPackages),
+        locallyInstalledPackages(locallyInstalledPackages)
 {}
 
 void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSeparateDir() const {
@@ -25,15 +27,12 @@ void MoverOfInstallationPackageFiles::moveChosenInstallationPackageFilesToSepara
 
     TerminalAndLoggerSingleton::get().printAndLog(message.str());
 
-    std::string pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText =
-            this->pacmanCacheDir + "/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/";
-
-    std::filesystem::create_directories(pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText);
+    std::filesystem::create_directories(Paths::get().getPathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText());
 
     const auto directoryForInstallationPackageFilesForDeletion =
-            std::make_unique<AbsolutePath>(pathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText);
+            std::make_unique<AbsolutePath>(Paths::get().getPathToDirectoryForInstallationPackageFilesDeletionCandidatesAsText());
 
-    locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
-    packageFilesRelatedToLocallyInstalledPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);
-    packageFilesRelatedToLocallyInstalledPackages.cleanUpOtherFilesInPikaurCacheDirs(*directoryForInstallationPackageFilesForDeletion);
+    this->locallyInstalledPackages.movePackageFilesForDifferentPackageVersionsToSeparateDir(*directoryForInstallationPackageFilesForDeletion);
+    this->packageFilesRelatedToPackages.moveChosenInstallationPackageFiles(*directoryForInstallationPackageFilesForDeletion);
+    this->packageFilesRelatedToPackages.cleanUpOtherFilesInPikaurCacheDirs(*directoryForInstallationPackageFilesForDeletion);
 }

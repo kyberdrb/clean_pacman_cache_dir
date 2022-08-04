@@ -10,64 +10,79 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 ## Quick Start Guide
 
-1. Clone
+1. **Clone** the repository
 
         mkdir "${HOME}/git"
         cd "${HOME}/git"
         git clone https://github.com/kyberdrb/clean_pacman_cache_dir.git
         cd clean_pacman_cache_dir
 
-1. Compile
+1. **Install dependencies**
 
         sudo pacman --sync --refresh --refresh --needed cmake ninja
 
-        /usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -G Ninja -S "${HOME}/git/clean_pacman_cache_dir" -B "${HOME}/git/clean_pacman_cache_dir/cmake-build-release"
+1. **Build** the program:
 
-        /usr/bin/cmake --build "${HOME}/git/cmake-build-release" --target clean_pacman_cache_dir
+    1. Generate makefiles
 
-1. Check the contents of the pacman's cache directory
+            /usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -G Ninja -S "${HOME}/git/clean_pacman_cache_dir" -B "${HOME}/git/clean_pacman_cache_dir/cmake-build-release"
 
-        ls -1 /var/cache/pacman/pkg/ | less
+        _[OPTIONAL ALTERNATIVE] Clion alternative with its bundled set utilities - just for reference; I prefer using the utilities of the system; skip if you already executed the command above_
 
-1. Run the compiled binary with elevated priviledges and let it do its job:
+            /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/opt/clion/bin/ninja/linux/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
+
+    1. Compile the binary executable
+
+            /usr/bin/cmake --build "${HOME}/git/clean_pacman_cache_dir/cmake-build-release" --target clean_pacman_cache_dir
+
+        _[OPTIONAL ALTERNATIVE] Clion alternative with its bundled set utilities - just for reference; skip if you executed the command above_
+
+            /opt/clion/bin/cmake/linux/bin/cmake --build "${HOME}/git/clean_pacman_cache_dir/cmake-build-release" --target clean_pacman_cache_dir
+
+1. **[OPTIONAL but recommended]**
+**Check** the contents of the pacman's cache directory
+
+        find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
+        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
+        du -sh /var/cache/pacman/pkg/
+
+1. **Run** the compiled binary with elevated priviledges
 
         sudo ./cmake-build-release/clean_pacman_cache_dir
 
-1. Check the log file printed as the last line of the output in the terminal.
+1. **Verify** the log file printed as the last line of the output in the terminal
 
         less file.log
 
-1. Verify contents of directories
+1. **Verify** contents of directories
 
-        ls -1 /var/cache/pacman/pkg/| less
-        du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
-        ls -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
+    In `/var/cache/pacman/pkg/` will be only package files related only to locally installed version for every package
+
+        find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
+        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
+
+    In `/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED` will be package files for other versions, build directories and general package manager's safely deletable files
+
+        du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+        find "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
+        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
 
 1. Delete the directory with collected package files
 
-    - Less destructive - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
+    - Less destructive - throwing deletion candidate files to _trash_ - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
 
           $ sudo chown --recursive /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED --reference "${HOME}"
           $ sudo move /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
           $ gio trash ~/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
-    - More destructive - more trust, less caution, faster, simpler - delete all files for other package version immediately
+    - More destructive - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
 
           $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
 1. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
 
-        ls -1 /var/cache/pacman/pkg/| less
-
-## CLion `Release` build
-
-1. Generate makefiles
-
-        $ /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/opt/clion/bin/ninja/linux/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
-
-1. Compile the binary
-
-        $ /opt/clion/bin/cmake/linux/bin/cmake --build /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release --target clean_pacman_cache_dir
+        find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
+        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
 
 ## Sources
 
@@ -727,6 +742,8 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
     - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/recording-and-analyzing-performance-profiles-with-perf_monitoring-and-managing-system-status-and-performance
     - https://duckduckgo.com/?t=ffab&q=gcov+testing+interpretation&ia=web
     - https://www.linuxtoday.com/blog/analyzing-code-coverage-with-gcov/
+    - https://stackoverflow.com/questions/20315388/terminal-find-directories-last-instead-of-first
+    - https://stackoverflow.com/questions/20315388/terminal-find-directories-last-instead-of-first/20325502#20325502
 - `libarchive`
     - https://duckduckgo.com/?t=ffab&q=c%2B%2B+libarchive&ia=web&iax=qa
 

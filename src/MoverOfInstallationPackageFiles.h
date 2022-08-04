@@ -8,17 +8,13 @@
 
 class MoverOfInstallationPackageFiles {
 public:
-    explicit MoverOfInstallationPackageFiles(
+    MoverOfInstallationPackageFiles(
             const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages,
             const LocallyInstalledPackages& locallyInstalledPackages);
 
     void moveChosenInstallationPackageFilesToSeparateDir() const;
 
 private:
-    const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToLocallyInstalledPackages;
+    const MatchFinderForPackageFilesToLocallyInstalledPackages& packageFilesRelatedToPackages;
     const LocallyInstalledPackages& locallyInstalledPackages;
-
-    // TODO share one copy of 'pacmanCacheDir'
-    // TODO rename member var 'pacmanCacheDir' to 'dirForInstalltionPackageFilesForDeletion'/'installationPackageFilesDeletionCandidatesDirectory'
-    const std::string pacmanCacheDir = "/var/cache/pacman/pkg";
 };

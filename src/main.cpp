@@ -12,7 +12,6 @@ int main() {
 
     // RELATE PACKAGE FILES TO THEIR RESPECTIVE PACKAGES
     auto matchFinderWithPackageFilesRelatedToPackages = std::make_unique<MatchFinderForPackageFilesToLocallyInstalledPackages>(*locallyInstalledPackages);
-    // TODO relate installation package files from multiple cache directories, e. g. pacman's and pikaur's
 //    auto matchFinderWithPackageFilesRelatedToPackages = std::make_unique<MatchFinderForPackageFilesToLocallyInstalledPackages>(*locallyInstalledPackages, installationPackageFilesCacheDirs);
 
     // SHOW REPORT
