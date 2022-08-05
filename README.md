@@ -1,10 +1,10 @@
-# Clear Pacman's Cache Directory
+# Clear Package Manager's Cache Directories
 
 a.k.a CPMCD - **C**lean **P**ackage **M**anager's **C**ache **D**irectories
 
-A utility to delete the contents of the pacman's cache directory `/var/cache/pacman/pkg/` and leave in mentioned directory only package files, that the locally installed packages were installed from.
+A utility to delete the contents of the pacman's and pikaur's cache directories and leave in mentioned directory only package files, that the locally installed packages were installed from.
 
-The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages need to be deleted manually.
+The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages are excluded from automatic deletion and need to be deleted manually if needed.
 
 **Maybe it could be useful to make a backup before you run this utility. It may save you precious time when something goes wrong. I tested it on my machine. I don't know yours. Proceed with caution.**
 
@@ -45,10 +45,11 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
         find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
         ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
         du -sh /var/cache/pacman/pkg/
+        df -h
 
 1. **Run** the compiled binary with elevated priviledges
 
-        sudo ./cmake-build-release/clean_pacman_cache_dir
+        time sudo ./cmake-build-release/clean_pacman_cache_dir
 
 1. **Verify** the log file printed as the last line of the output in the terminal
 
@@ -79,10 +80,11 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
           $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
-1. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages
+1. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages, together with amount of free space on the partition
 
         find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
         ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
+        df -h
 
 ## Contributing
 
