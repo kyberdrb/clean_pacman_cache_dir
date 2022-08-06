@@ -39,41 +39,39 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
             /opt/clion/bin/cmake/linux/bin/cmake --build "${HOME}/git/clean_pacman_cache_dir/cmake-build-release" --target clean_pacman_cache_dir
 
-1. **[OPTIONAL but recommended]**
+1. **[OPTIONAL - RECOMMENDED]**  
 **Check** the contents of the pacman's cache directory
 
-        find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
-        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
-        du -sh /var/cache/pacman/pkg/
-        df -h
+        ./helper_scripts/check_free_space_and_content_of_directories_for_package_managers.sh > "/tmp/before.log"
+        
+        less "/tmp/before.log"
 
 1. **Run** the compiled binary with elevated priviledges
 
         time sudo ./cmake-build-release/clean_pacman_cache_dir
 
-1. **Verify** the log file printed as the last line of the output in the terminal
+1. **[OPTIONAL - RECOMMENDED]**  
+**Check** the log file printed as the last line of the output in the terminal
 
-        less file.log
+        less "${HOME}/.config/cpmcd/logs/YEAR_MONTH_DAY-HOUR_MINUTE_SECOND.log
 
-1. **Verify** contents of directories
+1. **[OPTIONAL - RECOMMENDED]**  
+**Check** the content of directories.
 
-    In `/var/cache/pacman/pkg/` will be only package files related only to locally installed version for every package
-
-        find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
-        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
+    In `/var/cache/pacman/pkg/` and other package manager's directories will be only installation package files related only to locally installed version for every package.
 
     In `/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED` will be package files for other versions, build directories and general package manager's safely deletable files
 
-        du -sh /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
-        find "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
-        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED | less
+        ./helper_scripts/check_free_space_and_content_of_directories_for_package_managers.sh > "/tmp/after_move.log"
+        
+        less "/tmp/after_move.log"
 
 1. Delete the directory with collected package files
 
     - Less destructive - throwing deletion candidate files to _trash_ - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
 
           $ sudo chown --recursive /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED --reference "${HOME}"
-          $ sudo move /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
+          $ sudo mv /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
           $ gio trash ~/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
 
     - More destructive - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
@@ -82,9 +80,9 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages, together with amount of free space on the partition
 
-        find "/var/cache/pacman/pkg/" -mindepth 1 -maxdepth 1 -printf "%y: %p\n" | sort | less
-        ls --color=auto --group-directories-first -1 /var/cache/pacman/pkg/ | less
-        df -h
+        ./helper_scripts/check_free_space_and_content_of_directories_for_package_managers.sh > "/tmp/after_removal.log"
+        
+        less "/tmp/after_removal.log"
 
 ## Contributing
 
