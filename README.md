@@ -2,7 +2,7 @@
 
 a.k.a CPMCD - **C**lean **P**ackage **M**anager's **C**ache **D**irectories
 
-A utility to delete the contents of the pacman's and pikaur's cache directories and leave in mentioned directory only package files, that the locally installed packages were installed from.
+A utility to delete the contents of the pacman's and pikaur's cache directories and leave in mentioned directory only package files, that the locally installed packages were installed from, in order to free up disk space and still make a backup of installation package file available in case of application's or system's undesired behavior.
 
 The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages are excluded from automatic deletion and need to be deleted manually if needed.
 
@@ -68,15 +68,24 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. Delete the directory with collected package files
 
-    - Less destructive - throwing deletion candidate files to _trash_ - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
+    - with delayed destruction - throwing deletion candidate files to _trash_ - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
 
-          $ sudo chown --recursive /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED --reference "${HOME}"
-          $ sudo mv /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED ~/Downloads
-          $ gio trash ~/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+          $ ls -d "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
+          $ sudo chown --recursive "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED" --reference "${HOME}"
+          $ ls -d "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
+          $ sudo mv "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED" "${HOME}/Downloads/"
+          $ ls -d "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
+          $ ls -d "${HOME}/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
+          $ du -sh "${HOME}/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
+          $ gio trash "${HOME}/Downloads/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
 
-    - More destructive - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
+        Then empty trash to free up disk space.
+
+    - with immediate destruction - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
 
           $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+
+        The disk space will be freed immediately.
 
 1. Verify the contents of the pacman's cache directory, which will now contain only files for locally installed packages, together with amount of free space on the partition
 
