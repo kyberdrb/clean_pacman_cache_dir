@@ -23,37 +23,37 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. **Build** the program:
 
-    1. Generate makefiles
+    To build the release version of the binary executable from this project, run the build script in the root directory of the repository:
 
-            /usr/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -G Ninja -S "${HOME}/git/clean_pacman_cache_dir" -B "${HOME}/git/clean_pacman_cache_dir/cmake-build-release"
+        ./build-release.sh
 
-        _[OPTIONAL ALTERNATIVE] Clion alternative with its bundled set utilities - just for reference; I prefer using the utilities of the system; skip if you already executed the command above_
-
-            /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/opt/clion/bin/ninja/linux/ninja -G Ninja -S /home/laptop/git/kyberdrb/clean_pacman_cache_dir -B /home/laptop/git/kyberdrb/clean_pacman_cache_dir/cmake-build-release
-
-    1. Compile the binary executable
-
-            /usr/bin/cmake --build "${HOME}/git/clean_pacman_cache_dir/cmake-build-release" --target clean_pacman_cache_dir
-
-        _[OPTIONAL ALTERNATIVE] Clion alternative with its bundled set utilities - just for reference; skip if you executed the command above_
-
-            /opt/clion/bin/cmake/linux/bin/cmake --build "${HOME}/git/clean_pacman_cache_dir/cmake-build-release" --target clean_pacman_cache_dir
+    The script will show the path to the executable after it finished building the executable.
 
 1. **[OPTIONAL - RECOMMENDED]**  
-**Check** the contents of the pacman's cache directory
+    **Check** the contents of the pacman's cache directory
 
         ./helper_scripts/check_free_space_and_content_of_directories_for_package_managers.sh > "/tmp/before.log"
         
         less "/tmp/before.log"
 
-1. **Run** the compiled binary with elevated priviledges
+1. Copy the path to the executable given by the build script, paste it again to the terminal and run it with elevated priviledges:
 
         time sudo ./cmake-build-release/clean_pacman_cache_dir
 
-1. **[OPTIONAL - RECOMMENDED]**  
-**Check** the log file printed as the last line of the output in the terminal
+    For dry run, only to see the list of packages and package files for different package versions, run the program without `sudo` as a regular user:
 
-        less "${HOME}/.config/cpmcd/logs/YEAR_MONTH_DAY-HOUR_MINUTE_SECOND.log
+        time ./cmake-build-release/clean_pacman_cache_dir
+
+    or just
+
+        ./cmake-build-release/clean_pacman_cache_dir
+
+1. **[OPTIONAL - RECOMMENDED]**  
+**Check** the log file printed as the last line of the output in the terminal (usually the last one listed):
+
+        ls -1 "${HOME}/.config/cpmcd/logs/"
+
+        less "${HOME}/.config/cpmcd/logs/YEAR_MONTH_DAY-HOUR_MINUTE_SECOND.log"
 
 1. **[OPTIONAL - RECOMMENDED]**  
 **Check** the content of directories.
@@ -83,7 +83,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
     - with immediate destruction - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
 
-          $ sudo rm -r /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED
+          $ sudo rm --recursive --force /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/
 
         The disk space will be freed immediately.
 
