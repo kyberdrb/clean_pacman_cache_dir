@@ -2,7 +2,9 @@
 
 a.k.a CPMCD - **C**lean **P**ackage **M**anager's **C**ache **D**irectories
 
-A utility to delete the contents of the pacman's and pikaur's cache directories and leave in mentioned directory only package files, that the locally installed packages were installed from, in order to free up disk space and still make a backup of installation package file available in case of application's or system's undesired behavior.
+A utility to delete the contents of the package managers cache directories and leave in mentioned directory only package files, that the locally installed packages were installed from, in order to free up disk space and still make a backup of installation package file available in case of application's or system's undesired behavior.
+
+**Currently supported pacmange managers are `pacman` and `pikaur`.**
 
 The packages that are listed next to `IgnorePkg` option in the pacman's configuration file - by default at `/etc/pacman.conf` are excluded from deletion. Package files that belong to the ignored packages and deviate from the locally installed version of installed packages are excluded from automatic deletion and need to be deleted manually if needed.
 
@@ -36,13 +38,13 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
         
         less "/tmp/before.log"
 
-1. Copy the path to the executable given by the build script, paste it again to the terminal and run it with elevated priviledges:
-
-        time sudo ./cmake-build-release/clean_pacman_cache_dir
-
-    For dry run, only to see the list of packages and package files for different package versions, run the program without `sudo` as a regular user:
+1. Copy the path to the executable given by the build script, paste it again to the terminal and make a dry run first, only to see the list of packages and package files for different package versions, run the program without `sudo` as a regular user:
 
         time ./cmake-build-release/clean_pacman_cache_dir
+
+    Then run it with elevated priviledges
+
+        time sudo ./cmake-build-release/clean_pacman_cache_dir
 
     or just
 
@@ -68,7 +70,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
 1. Delete the directory with collected package files
 
-    - with delayed destruction - throwing deletion candidate files to _trash_ - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
+    - **with delayed destruction** - throwing deletion candidate files to _trash_ - less trust, more caution, slower, more complicated - possibility to restore packages if needed and delete the rest later
 
           $ ls -d "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED"
           $ sudo chown --recursive "/var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED" --reference "${HOME}"
@@ -81,7 +83,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
         Then empty trash to free up disk space.
 
-    - with immediate destruction - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
+    - **with immediate destruction** - deleting entire directory with deletion candidate files related to packages - more trust, less caution, faster, simpler
 
           $ sudo rm --recursive --force /var/cache/pacman/pkg/PACKAGE_FILES_FOR_VERSIONS_OTHER_THAN_LOCALLY_INSTALLED/
 
@@ -633,7 +635,10 @@ See [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT) docum
     - initializing `stringstream` - short answer: https://stackoverflow.com/questions/21924156/how-to-initialize-a-stdstringstream/21924311#21924311
     - initializing `stringstream` - long answer: https://stackoverflow.com/questions/21924156/how-to-initialize-a-stdstringstream#21924263
     - https://duckduckgo.com/?t=ffab&q=stringstream+clear&ia=web
-    - clearing/resetting/reinitializing `stringstream` - https://stackoverflow.com/questions/2848087/how-to-clear-stringstream
+    - https://duckduckgo.com/?t=ffab&q=c%2B%2B+clear+stringstream&ia=web&iax=qa
+    - clearing/resetting/reinitializing `stringstream`
+        - https://stackoverflow.com/questions/2848087/how-to-clear-stringstream
+        - https://stackoverflow.com/questions/2848087/how-to-clear-stringstream/2848109#2848109
 - Polymorhism, Inheritance and STL (mainly `std::set`)
     - https://duckduckgo.com/?q=c%2B%2B+find+derived+vector&t=ffab&ia=web
     - https://stackoverflow.com/questions/11889178/c-can-vectorbase-contain-objects-of-type-derived#11889242
@@ -4148,7 +4153,7 @@ Tue Jul  5 03:06:57 PM CEST 2022</pre>
 
 ## Testing algorithm on cache directories accessible only for root
 
-Permission modification - switch to user
+Permission modification - switch to user - **FOR DEBUGGING PURPOSES**
 
     sudo chown --dereference laptop:users "$(dirname "$(sudo realpath "/var/cache/pikaur")")"
 

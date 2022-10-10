@@ -12,6 +12,8 @@ int main() {
 
     // RELATE PACKAGE FILES TO THEIR RESPECTIVE PACKAGES
     auto matchFinderWithPackageFilesRelatedToPackages = std::make_unique<MatchFinderForPackageFilesToLocallyInstalledPackages>(*locallyInstalledPackages);
+
+    // TODO parametrize 'installationPackageFilesCacheDirs' - add from config file or from option from user input
 //    auto matchFinderWithPackageFilesRelatedToPackages = std::make_unique<MatchFinderForPackageFilesToLocallyInstalledPackages>(*locallyInstalledPackages, installationPackageFilesCacheDirs);
 
     // SHOW REPORT
@@ -25,17 +27,18 @@ int main() {
     auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(
             *matchFinderWithPackageFilesRelatedToPackages,
             *locallyInstalledPackages);
+
+    // TODO parametrize 'directoryForMovedInstallationPackageFiles' - add from config file or from option from user input
 //    auto installationPackageFilesMover = std::make_unique<MoverOfInstallationPackageFiles>(
 //            *locallyInstalledPackages,
 //            *matchFinderWithPackageFilesRelatedToPackages,
 //            directoryForMovedInstallationPackageFiles);
 
-    // TODO restore 'root' permissions for symlink to pikaur system cache directory
-    //    "/var/cache/pikaur"
     installationPackageFilesMover->moveChosenInstallationPackageFilesToSeparateDir();
 
     std::stringstream message{};
-    message << "The log file for this cleanup session had been saved to:\n"
+    message << "\n"
+            << "The log file for this cleanup session had been saved to:\n"
             << TerminalAndLoggerSingleton::get().getLogFilePath()
             << "\n";
     TerminalAndLoggerSingleton::get().printAndLog(message.str());

@@ -18,7 +18,8 @@ void FileMoverSingleton::move(const AbsolutePath& from, const AbsolutePath& to) 
         // Handle possible duplicate filename/dirname conflicts in a preserving way,
         //  i.e. when moving a file to destination and the destination dir already has file(s) with the same name, keep all of them
         //  by distinguishing the duplicates in their filename
-        if (std::filesystem::exists(to.getAbsolutePath())) {
+        bool doesDestinationPathExist = std::filesystem::exists(to.getAbsolutePath());
+        if (doesDestinationPathExist) {
             for (int_fast32_t duplicateNumber = 1; duplicateNumber < INT_FAST32_MAX; ++duplicateNumber) {
                 std::stringstream nameOfDuplicateFile;
 

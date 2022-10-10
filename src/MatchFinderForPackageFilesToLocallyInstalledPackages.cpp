@@ -39,15 +39,15 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relateInstallationPac
 void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToLocallyInstalledPackagesForDirectory(
         const AbsolutePath& directoryWithInstallationPackageFiles)
 {
-    std::filesystem::path pacmanCacheDirPath {directoryWithInstallationPackageFiles.getAbsolutePath()};
+    std::filesystem::path cacheDirPath {directoryWithInstallationPackageFiles.getAbsolutePath()};
 
     try {
-        std::filesystem::exists(pacmanCacheDirPath);
+        bool doesCacheDirExist = std::filesystem::exists(cacheDirPath);
     } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
         std::stringstream message;
         message
                 << exception.what() << "\n"
-                << "Skipping scanning of directory: " << pacmanCacheDirPath << "\n"
+                << "Skipping scanning of directory: " << cacheDirPath << "\n"
                 << "Error: Insufficient permissions to access the files in the directory or file path doesn't exist." << "\n"
                 << "Please, run this program with elevated priviledges as 'sudo' or 'root' user"
                    " and make sure the source file is present on the filesystem." << "\n"
@@ -57,7 +57,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::relatePackageFilesToL
         return;
     }
 
-    for (const auto& packageFile : std::filesystem::directory_iterator(pacmanCacheDirPath)) {
+    for (const auto& packageFile : std::filesystem::directory_iterator(cacheDirPath)) {
         const auto& packageFileExtension = packageFile.path().extension().string();
 
         const auto& packageAbsolutePathAsText = packageFile.path().string();
@@ -253,7 +253,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::moveOnlyFilesFromDir(
     std::filesystem::path pathToSourceDirectory {absolutePathToSourceDirectoryAsText.getAbsolutePath()};
 
     try {
-        std::filesystem::exists(pathToSourceDirectory);
+        bool doesSourceDirPathExist = std::filesystem::exists(pathToSourceDirectory);
     } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
         std::stringstream message;
         message
@@ -299,7 +299,7 @@ void MatchFinderForPackageFilesToLocallyInstalledPackages::moveEverythingFromDir
     std::filesystem::path pathToSourceDirectory {absolutePathToSourceDirectoryAsText.getAbsolutePath()};
 
     try {
-        std::filesystem::exists(pathToSourceDirectory);
+        bool doesSourceDirPathExist = std::filesystem::exists(pathToSourceDirectory);
     } catch (const std::filesystem::__cxx11::filesystem_error& exception) {
         std::stringstream message;
         message
