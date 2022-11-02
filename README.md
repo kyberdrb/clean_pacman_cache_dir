@@ -48,7 +48,7 @@ The packages that are listed next to `IgnorePkg` option in the pacman's configur
 
     or just
 
-        ./cmake-build-release/clean_pacman_cache_dir
+        sudo ./cmake-build-release/clean_pacman_cache_dir
 
 1. **[OPTIONAL - RECOMMENDED]**  
 **Check** the log file printed as the last line of the output in the terminal (usually the last one listed):
