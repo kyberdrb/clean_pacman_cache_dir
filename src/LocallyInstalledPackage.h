@@ -8,6 +8,7 @@
 
 #include "ExtendedInstallationPackageFile.h"
 
+#include <cstdint>
 #include <vector>
 
 class LocallyInstalledPackage : public Package {
